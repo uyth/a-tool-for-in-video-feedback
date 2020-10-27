@@ -16,6 +16,12 @@ Requirements:
 
 #### MongoDB setup
 
+Start MongoDB on the system:
+```
+sudo systemctl start mongod
+```
+
+
 Open the MongoDB shell with the command:
 
 ```
