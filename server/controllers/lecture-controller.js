@@ -1,6 +1,7 @@
 const Lecture = require('../models/lecture-model')
+const Course = require('../models/course-model')
 
-createLecture = (req, res) => {
+createLecture = async (req, res) => {
     const body = req.body
 
     if (!body) {
@@ -10,11 +11,24 @@ createLecture = (req, res) => {
         })
     }
 
+    const course = await Course.findById(body.courseId)
+
+    if (!course) {
+        return res.status(400).json({
+            success: false,
+            error: 'Could not find course with id ' + body.courseId,
+        })
+    }
+
     const lecture = new Lecture(body)
 
     if (!lecture) {
         return res.status(400).json({ success: false, error: err })
     }
+
+    course.populate('lectures').execPopulate()
+
+    console.log(course.populate('lectures').execPopulate())
 
     lecture
         .save()
@@ -51,6 +65,8 @@ updateLecture = async (req, res) => {
             })
         }
         lecture.title = body.title
+        lecture.courseId = body.courseId
+        lecture.video = body.video
         lecture
             .save()
             .then(() => {
