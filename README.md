@@ -16,22 +16,32 @@ Requirements:
 
 #### MongoDB setup
 
+<<<<<<< HEAD
 Start MongoDB on the system:
 ```
 sudo systemctl start mongod
 ```
 
 
+=======
+>>>>>>> 21d4a36b5d52566ca79bac1e29c33c1fb9f7f6fa
 Open the MongoDB shell with the command:
 
 ```
 mongo
 ```
 
+<<<<<<< HEAD
 Make a new database called `lectures`:
 
 ```
 > use lectures
+=======
+Make a new database called `videos`:
+
+```
+> use videos
+>>>>>>> 21d4a36b5d52566ca79bac1e29c33c1fb9f7f6fa
 ```
 
 
