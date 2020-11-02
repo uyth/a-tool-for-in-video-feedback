@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { VideoPlayer } from '../components';
 import { Feedback } from '../components';
 
-import { Container, Button } from 'react-bootstrap';
+import { Container, Button, Spinner } from 'react-bootstrap';
 import { useEffect } from 'react';
 import api from '../api'
 
@@ -27,7 +27,7 @@ export default function Lecture(props) {
 
   const [videoState, setVideoState] = useState(initVideoState);
   const [feedbacks, setFeedbacks] = useState(initFeedbacks);
-  const [videoData, setVideoData] = useState(null);
+  const [lectureData, setLectureData] = useState(null);
 
   function addFeedback(feedback) {
     setFeedbacks([...feedbacks, feedback]);
@@ -55,13 +55,17 @@ export default function Lecture(props) {
 
   async function fetchVideo() {
     const res = await api.getLectureById(props.match.params.id);
-    setVideoData(res.data.data.video)
+    setLectureData(res.data.data)
   }
 
   return (
     <Container>
-      <h1>{videoData ? videoData.title : "loading"}</h1>
-      <VideoPlayer videoData={videoData} actions={{pauseVideo:pauseVideo, rewind10: rewind10}}/>
+      {lectureData ? 
+        <>
+          <h1>{lectureData.title}</h1>
+          <VideoPlayer videoData={lectureData.video} actions={{pauseVideo:pauseVideo, rewind10: rewind10}}/>
+        </> : <Spinner animation="border" />
+      }
       <Metrics score={videoState.learningScore} callback={addFeedback}/>
       <Feedback feedbacks={feedbacks}/>
     </Container>
