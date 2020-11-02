@@ -5,12 +5,16 @@ const Lecture = new Schema({
 	title: String,
 	courseId: { type: Schema.Types.ObjectId, ref: 'Course'},
 	video: {
-		videoUrl: String,
-		captions: {
-			captionsUrl: String,
-			language: String,
+		sources: [{
+			src: String,
+			srctype: String,
+		}],
+		tracks: [{
+			kind: String,
+			src: String,
+			srclang: String,
 			label: String
-		}
+		}],
 	}
 })
 
