@@ -1,0 +1,237 @@
+WEBVTT
+
+1
+00:00:07.870 --> 00:00:10.415
+Welcome. If you're returning,
+
+2
+00:00:10.415 --> 00:00:12.050
+we're delighted to have you.
+
+3
+00:00:12.050 --> 00:00:14.520
+If you're just joining us for the first time,
+
+4
+00:00:14.520 --> 00:00:16.170
+we're also glad that you're with us.
+
+5
+00:00:16.170 --> 00:00:20.965
+At this point, we're assuming that you're comfortable with functions, with dictionaries,
+
+6
+00:00:20.965 --> 00:00:24.200
+you can extract data from nested data structures,
+
+7
+00:00:24.200 --> 00:00:27.935
+and that you are comfortable with Python's list comprehensions.
+
+8
+00:00:27.935 --> 00:00:30.380
+If you're joining us for the first time,
+
+9
+00:00:30.380 --> 00:00:32.720
+please make sure to look at the video on
+
+10
+00:00:32.720 --> 00:00:37.380
+the Runestone environment because we'll still be using that for much of what we do here.
+
+11
+00:00:37.380 --> 00:00:38.870
+I'm Steve Oney.
+
+12
+00:00:38.870 --> 00:00:41.720
+I'm Paul Resnick. We're both faculty members
+
+13
+00:00:41.720 --> 00:00:43.895
+at the University of Michigan, School of Information.
+
+14
+00:00:43.895 --> 00:00:46.280
+In this course, you'll learn about classes.
+
+15
+00:00:46.280 --> 00:00:50.060
+Classes are nice because they allow you to combine the methods and data
+
+16
+00:00:50.060 --> 00:00:54.125
+that are relevant to some problem into one nice easy-to-use package.
+
+17
+00:00:54.125 --> 00:00:58.520
+In fact, classes are so nice that some programming languages like Java,
+
+18
+00:00:58.520 --> 00:01:02.075
+require you to use classes in order to use the language at all.
+
+19
+00:01:02.075 --> 00:01:04.265
+Python makes classes optional,
+
+20
+00:01:04.265 --> 00:01:06.080
+but as you'll find out in this course,
+
+21
+00:01:06.080 --> 00:01:09.550
+they can make your code much easier to read and write.
+
+22
+00:01:09.550 --> 00:01:12.240
+You'll also learn about Class inheritance.
+
+23
+00:01:12.240 --> 00:01:15.200
+Class inheritance allows you to reuse code which
+
+24
+00:01:15.200 --> 00:01:18.610
+can make your code a lot more concise and easier to read.
+
+25
+00:01:18.610 --> 00:01:21.545
+You'll also learn about test cases in this course.
+
+26
+00:01:21.545 --> 00:01:25.010
+It's kind of an advanced topic for an intro programming sequence,
+
+27
+00:01:25.010 --> 00:01:27.230
+but we think it's really valuable to get into the habit of writing
+
+28
+00:01:27.230 --> 00:01:30.770
+test cases from the very beginning of your programming career.
+
+29
+00:01:30.770 --> 00:01:35.915
+A test case is a way of specifying what a function or a class should do.
+
+30
+00:01:35.915 --> 00:01:38.435
+If you write some test cases,
+
+31
+00:01:38.435 --> 00:01:40.340
+and then you implement your function,
+
+32
+00:01:40.340 --> 00:01:41.900
+if it passes the test cases,
+
+33
+00:01:41.900 --> 00:01:44.240
+you know that the function is implemented correctly.
+
+34
+00:01:44.240 --> 00:01:48.300
+If it doesn't pass, you know you did something wrong with the function.
+
+35
+00:01:48.320 --> 00:01:51.650
+You'll also learn how to handle exceptions.
+
+36
+00:01:51.650 --> 00:01:55.535
+So, you've probably encountered runtime exceptions before.
+
+37
+00:01:55.535 --> 00:01:57.830
+Whenever you encounter a runtime exception.
+
+38
+00:01:57.830 --> 00:02:00.350
+So, when you have a variable that doesn't exist,
+
+39
+00:02:00.350 --> 00:02:02.045
+when you try to divide by zero.
+
+40
+00:02:02.045 --> 00:02:03.730
+Whenever something like that happens,
+
+41
+00:02:03.730 --> 00:02:06.270
+then Python just stops running your program,
+
+42
+00:02:06.270 --> 00:02:08.130
+and gives you an error message.
+
+43
+00:02:08.130 --> 00:02:12.170
+So, we'll learn how to actually handle these kinds of runtime exceptions,
+
+44
+00:02:12.170 --> 00:02:16.590
+and give you more control over how Python evaluates your code.
+
+45
+00:02:16.790 --> 00:02:19.210
+In the project for this course,
+
+46
+00:02:19.210 --> 00:02:22.445
+you'll use what you learned in write a game of "Wheel of Fortune",
+
+47
+00:02:22.445 --> 00:02:25.415
+and you're going to use classes to represent the human player,
+
+48
+00:02:25.415 --> 00:02:26.765
+and the computer player,
+
+49
+00:02:26.765 --> 00:02:31.990
+and you'll use methods to specify how these players can compete against each other.
+
+50
+00:02:31.990 --> 00:02:34.275
+Dr. Charles, Chuck Severance,
+
+51
+00:02:34.275 --> 00:02:37.070
+will make a cameo to show you how classes and
+
+52
+00:02:37.070 --> 00:02:42.220
+inheritance make it easy to implement web programming using the Django framework.
+
+53
+00:02:42.220 --> 00:02:46.630
+Like previous courses, we'll mostly have screencasts with code examples,
+
+54
+00:02:46.630 --> 00:02:49.190
+but we'll occasionally come on screen in order
+
+55
+00:02:49.190 --> 00:02:52.805
+to introduce words of wisdom or to introduce topics.
+
+56
+00:02:52.805 --> 00:02:54.760
+I'll offer a few more dad jokes,
+
+57
+00:02:54.760 --> 00:02:56.160
+but not too many this time,
+
+58
+00:02:56.160 --> 00:02:58.245
+because this course is mostly Steve.
+
+59
+00:02:58.245 --> 00:03:01.840
+So let's get started. Bye for now.

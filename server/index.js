@@ -15,11 +15,10 @@ app.use(bodyParser.json())
 
 db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
-
 app.use('/api', lecturesRouter)
 app.use('/api', coursesRouter)
 
 app.listen(apiPort, () => console.log(`Server running on port ${apiPort}`))
+
+// serve static files
+app.use(express.static('public'))
