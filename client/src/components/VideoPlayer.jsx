@@ -223,19 +223,14 @@ export default function VideoPlayer({videoData, actions}) {
 
     return (
         <figure id="videoContainer" data-fullscreen="false">
-            {/* add poster */}
             <video id="video" preload="auto">
-                {videoData ?
-                    <>
-                        <source src={videoData.sources[0].src} type={videoData.sources[0].srctype}/>
-                        <track
-                            src={videoData.tracks[0].src} default
-                            kind={videoData.tracks[0].kind}
-                            srcLang={videoData.tracks[0].srclang}
-                            label={videoData.tracks[0].label}
-                            />
-                    </> : "Loading"
-                }
+                <source src={videoData.sources[0].src} type={videoData.sources[0].srctype}/>
+                <track
+                    src={videoData.tracks[0].src} default
+                    kind={videoData.tracks[0].kind}
+                    srcLang={videoData.tracks[0].srclang}
+                    label={videoData.tracks[0].label}
+                />
             </video>
             <div id="video-controls" className="controls" data-state="hidden">
                 <div className="progress">
