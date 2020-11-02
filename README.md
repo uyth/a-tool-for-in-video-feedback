@@ -51,3 +51,21 @@ Start the server:
 ```
 npx nodemon index.js
 ```
+
+## Client
+
+### Setup
+
+In the client folder, install packages:
+
+```
+npm install
+```
+
+### Start up client
+
+In the client folder, install packages:
+```
+npm start
+```
+

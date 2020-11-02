@@ -1,0 +1,84 @@
+#video {
+    width: 100%;
+}
+
+.button-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    background: #ffffff;
+    border: 1px solid #dfdfdf;
+    color: #000000;
+    fill: #000000;
+}
+
+.button-bar span, .button-bar button, .button-bar button:active, .button-bar button:focus {
+    border: 0;
+    border-left: 1px solid #dfdfdf;
+    border-right: 1px solid #dfdfdf;
+    padding: 0.5em;
+    background: none;
+    outline: none;
+}
+
+
+#time-display {
+    align-self: center;
+    font-weight: 200;
+}
+
+#playback-display {
+    display: flex;
+    justify-content: space-between;
+}
+
+#playback-label {
+    text-align: center;
+    width: 80px;
+}
+
+#playblack-label {
+    line-height: 2.5em;
+}
+
+.controls progress:hover {
+    cursor: pointer;
+}
+
+button[data-state="active"] {
+    color: #0095dd;
+}
+
+.controls progress {
+    display:block;
+    width:100%;
+    height:81%;
+    margin-top:0.125rem;
+    border:none;
+    color:#0095dd;
+    -moz-border-radius:2px;
+    -webkit-border-radius:2px;
+    border-radius:2px;
+}
+.controls progress[data-state="fake"] {
+    background:#e6e6e6;
+    height:65%;
+ }
+ .controls progress span {
+    width:0%;
+    height:100%;
+    display:inline-block;
+    background-color:#2a84cd;  
+}
+ .controls progress::-moz-progress-bar {
+    background-color:#0095dd;
+}
+ 
+ .controls progress::-webkit-progress-value {
+    background-color:#0095dd;
+}
+
+/* WebVTT cues */
+::cue { 
+	color:#ccc;
+}
