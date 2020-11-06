@@ -11,28 +11,17 @@ createLecture = async (req, res) => {
         })
     }
 
-    const course = await Course.findById(body.courseId)
-
-    if (!course) {
-        return res.status(400).json({
-            success: false,
-            error: 'Could not find course with id ' + body.courseId,
-        })
-    }
-
     const lecture = new Lecture(body)
 
     if (!lecture) {
         return res.status(400).json({ success: false, error: err })
     }
 
-    course.populate('lectures').execPopulate()
-
-    console.log(course.populate('lectures').execPopulate())
 
     lecture
         .save()
         .then(() => {
+            Course.findByIdAndUpdate({_id: lecture.courseId}, {$push: {lectures: lecture._id}}).exec()
             return res.status(201).json({
                 success: true,
                 id: lecture._id,
@@ -57,7 +46,7 @@ updateLecture = async (req, res) => {
         })
     }
 
-    Lecture.findOne({ _id: req.params.id }, (err, lecture) => {
+    Lecture.findOne({ _id: req.params.id }, async (err, lecture) => {
         if (err) {
             return res.status(404).json({
                 err,
@@ -65,6 +54,10 @@ updateLecture = async (req, res) => {
             })
         }
         lecture.title = body.title
+        if (lecture.courseId != body.courseId) {
+            await Course.findByIdAndUpdate({_id: body.courseId}, {$push: {lectures: lecture}}).exec()
+            await Course.findOneAndUpdate({_id: lecture.courseId}, {$pull: {lectures: lecture._id}}).exec()
+        }
         lecture.courseId = body.courseId
         lecture.video = body.video
         lecture
@@ -86,7 +79,8 @@ updateLecture = async (req, res) => {
 }
 
 deleteLecture = async (req, res) => {
-    await Lecture.findOneAndDelete({ _id: req.params.id }, (err, lecture) => {
+    await Lecture.findOneAndDelete({ _id: req.params.id }, async (err, lecture) => {
+        await Course.findOneAndUpdate({_id: lecture.courseId}, {$pull: {lectures: lecture._id}}).exec()
         if (err) {
             return res.status(400).json({ success: false, error: err })
         }
