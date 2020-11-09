@@ -26,11 +26,12 @@ const EVENTS = {
     PROGRESS_CLICK: "PROGRESS_CLICK"
 }
 
+var formatTime = function(seconds) {
+    if (seconds) return new Date(seconds * 1000).toISOString().substr(14, 5);
+    else return "00:00"
+}
+
 export default function VideoPlayer({videoData, actions}) {   
-    var formatTime = function(seconds) {
-        if (seconds) return new Date(seconds * 1000).toISOString().substr(14, 5);
-        else return "00:00"
-    }
 
     const [supportsVideo, setSupportsVideo] = useState(false);
     const [fullScreenEnabled, setFullscreenEnabled] = useState(false);
