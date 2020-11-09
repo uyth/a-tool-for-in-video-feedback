@@ -28,12 +28,14 @@ export default function Lecture(props) {
   const [videoState, setVideoState] = useState(initVideoState);
   const [feedbacks, setFeedbacks] = useState(initFeedbacks);
   const [lectureData, setLectureData] = useState(null);
+  const [session, setSession] = useState(null);
 
   function addFeedback(feedback) {
     setFeedbacks([...feedbacks, feedback]);
   }
 
-  function logEvent(event) {
+  async function logEvent(event) {
+    await api.logVideoEvent(session, event)
     console.log(event)
   }
 
@@ -53,17 +55,27 @@ export default function Lecture(props) {
 
 
   useEffect(() => {
-    fetchVideo()
+    async function fetchVideo() {
+      const res = await api.getLectureById(props.match.params.id);
+      setLectureData(res.data.data)
+    }
+  
+    async function createSession() {
+      let session = {
+        lecture: props.match.params.id,
+        events: [],
+      }
+      const res = await api.createSession(session);
+      setSession(res.data.id)
+    }
+    
+    fetchVideo();
+    createSession();
   }, []);
-
-  async function fetchVideo() {
-    const res = await api.getLectureById(props.match.params.id);
-    setLectureData(res.data.data)
-  }
 
   return (
     <Container>
-      {lectureData ? 
+      {lectureData && session ?
         <>
           <h1>{lectureData.title}</h1>
           <VideoPlayer videoData={lectureData.video} actions={{pauseVideo:pauseVideo, rewind10: rewind10, logEvent: logEvent}}/>
