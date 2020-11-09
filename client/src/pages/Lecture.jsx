@@ -33,6 +33,9 @@ export default function Lecture(props) {
     setFeedbacks([...feedbacks, feedback]);
   }
 
+  function logEvent(event) {
+    console.log(event)
+  }
 
   function pauseVideo() {
     setVideoState({...videoState, learningScore: Math.max(videoState.learningScore-0.2, 0)});
@@ -63,7 +66,7 @@ export default function Lecture(props) {
       {lectureData ? 
         <>
           <h1>{lectureData.title}</h1>
-          <VideoPlayer videoData={lectureData.video} actions={{pauseVideo:pauseVideo, rewind10: rewind10}}/>
+          <VideoPlayer videoData={lectureData.video} actions={{pauseVideo:pauseVideo, rewind10: rewind10, logEvent: logEvent}}/>
         </> : <Spinner animation="border" />
       }
       <Metrics score={videoState.learningScore} callback={addFeedback}/>

@@ -15,8 +15,18 @@ import Replay10Icon from '@material-ui/icons/Replay10';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 
-export default function VideoPlayer({videoData, actions}) {
+const EVENTS = {
+    PLAY: "PLAY",
+    PAUSE: "PAUSE",
+    REWIND10: "REWIND10",
+    FORWARD10: "FORWARD10",
+    SEEKING: "SEEKING",
+    SEEKED: "SEEKED",
+    RATECHANGE: "RATECHANGE",
+    PROGRESS_CLICK: "PROGRESS_CLICK"
+}
 
+export default function VideoPlayer({videoData, actions}) {   
     var formatTime = function(seconds) {
         if (seconds) return new Date(seconds * 1000).toISOString().substr(14, 5);
         else return "00:00"
@@ -144,7 +154,53 @@ export default function VideoPlayer({videoData, actions}) {
         }
     }, [video, videoControls, captions])
 
-    // init playback event listeners
+    // log events
+    useEffect(() => {
+        var generateEventlog = (type) => {
+            return {
+                eventType: type,
+                eventTimestamp: Date.now(),
+                videoSnapshot: {
+                    currentTime: video.currentTime,
+                    duration: video.duration,
+                    paused: video.paused,
+                    playbackRate: video.playbackRate,
+                    played: video.played,
+                }
+            }
+        }
+        if (video && progress) {
+            video.addEventListener("play", function(e) {
+                actions.logEvent(generateEventlog(EVENTS.PLAY))
+            })
+            video.addEventListener("pause", function(e) {
+                actions.logEvent(generateEventlog(EVENTS.PAUSE))
+            })
+            video.addEventListener("ratechange", function(e) {
+                actions.logEvent(generateEventlog(EVENTS.RATECHANGE))
+            })
+            video.addEventListener("seeking", function(e) {
+                actions.logEvent(generateEventlog(EVENTS.SEEKING))
+            })
+            video.addEventListener("seeked", function(e) {
+                actions.logEvent(generateEventlog(EVENTS.SEEKED))
+            })
+            progress.addEventListener("click", function(e) {
+                actions.logEvent(generateEventlog(EVENTS.PROGRESS_CLICK))
+            }) 
+            progress.addEventListener("mouseenter", function(e) {
+                actions.logEvent(generateEventlog("MOUSE_ENTER"))
+            })
+            progress.addEventListener("mouseleave", function(e) {
+                actions.logEvent(generateEventlog("MOUSE_LEAVE"))
+            })
+            progress.addEventListener("mousedown", function(e) {
+                actions.logEvent(generateEventlog("MOUSE_DOWN"))
+            })
+        }
+    }, [video, progress])
+
+    // init video controllers event listeners
     useEffect(() => {
         if (video && videoControls && playpause && stop && rewind10 
             && progress && progressBar && playbackFaster && playbackSlower) {
