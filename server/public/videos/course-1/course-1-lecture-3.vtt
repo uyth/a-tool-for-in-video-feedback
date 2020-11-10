@@ -1,0 +1,161 @@
+WEBVTT
+
+1
+00:00:08.000 --> 00:00:10.995
+Hi everyone. Welcome back.
+
+2
+00:00:10.995 --> 00:00:13.950
+A test case expresses requirements for
+
+3
+00:00:13.950 --> 00:00:17.355
+a program in a way that can be checked automatically.
+
+4
+00:00:17.355 --> 00:00:19.860
+It expresses what some objects value should
+
+5
+00:00:19.860 --> 00:00:23.475
+be at a specific spot in the program execution.
+
+6
+00:00:23.475 --> 00:00:27.660
+There are several reasons why it's a good habit to write test cases.
+
+7
+00:00:27.660 --> 00:00:30.780
+First, writing down test cases forces
+
+8
+00:00:30.780 --> 00:00:34.365
+us to be more concrete about what the program should do.
+
+9
+00:00:34.365 --> 00:00:37.530
+It's hard to correctly implement a program if you're not
+
+10
+00:00:37.530 --> 00:00:41.400
+completely clear about what that program ought to be doing.
+
+11
+00:00:41.400 --> 00:00:46.820
+Second, test cases can give you feedback as you're writing the code.
+
+12
+00:00:46.820 --> 00:00:49.670
+Actually, you've already experienced that with
+
+13
+00:00:49.670 --> 00:00:54.140
+the autograders that gave you feedback in some of the active code windows.
+
+14
+00:00:54.140 --> 00:00:56.310
+We wrote those test cases.
+
+15
+00:00:56.310 --> 00:00:59.350
+Now, you'll get to write your own.
+
+16
+00:00:59.510 --> 00:01:03.950
+Third, writing test cases is a good preview of
+
+17
+00:01:03.950 --> 00:01:08.495
+the unit testing practice that is used on pretty much all larger software projects.
+
+18
+00:01:08.495 --> 00:01:11.870
+When there's a lot of code and many contributors,
+
+19
+00:01:11.870 --> 00:01:13.430
+the project really needs to know when
+
+20
+00:01:13.430 --> 00:01:18.065
+my code is breaking some other function that was calling it.
+
+21
+00:01:18.065 --> 00:01:21.685
+So, big projects will have tens of thousands of unit tests,
+
+22
+00:01:21.685 --> 00:01:24.230
+and they all get run every time someone tries to
+
+23
+00:01:24.230 --> 00:01:27.690
+contribute any change to any of the code.
+
+24
+00:01:27.790 --> 00:01:32.150
+We have previously suggested that it's a good idea to first write down
+
+25
+00:01:32.150 --> 00:01:36.740
+comments about what your code is supposed to do before actually writing the code.
+
+26
+00:01:36.740 --> 00:01:41.540
+You can think of writing test cases as basically an extension of that advice.
+
+27
+00:01:41.540 --> 00:01:44.555
+Instead of just writing a human-readable comment,
+
+28
+00:01:44.555 --> 00:01:47.645
+you write a computer executable test case.
+
+29
+00:01:47.645 --> 00:01:51.710
+For example, before writing the code to implement a function,
+
+30
+00:01:51.710 --> 00:01:54.560
+you'd write a few test cases that check whether
+
+31
+00:01:54.560 --> 00:01:57.455
+the function returns the right kind of object,
+
+32
+00:01:57.455 --> 00:02:02.700
+whether it's returning the correct values when invoked on particular inputs.
+
+33
+00:02:03.200 --> 00:02:05.715
+At the end of this lesson,
+
+34
+00:02:05.715 --> 00:02:07.590
+you should be able to,
+
+35
+00:02:07.590 --> 00:02:12.570
+first, use the test.textequal function to express test cases.
+
+36
+00:02:12.570 --> 00:02:15.200
+Second, you should be able to identify when
+
+37
+00:02:15.200 --> 00:02:19.505
+a return value test is needed and when a side effect tests is needed,
+
+38
+00:02:19.505 --> 00:02:22.310
+and you should be able to identify and express
+
+39
+00:02:22.310 --> 00:02:26.045
+edge cases for functions and for class definitions.
+
+40
+00:02:26.045 --> 00:02:29.520
+I'll see you at the end. Bye for now.
