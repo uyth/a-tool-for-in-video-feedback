@@ -6,7 +6,21 @@ video lectures.
 
 ## Server
 
-Requirements:
+The server API is exposed at [http://localhost:3000/api](http://localhost:3000/api)
+
+**API**
+
+Some of the available APIs are:
+
+* [http://localhost:3000/api/lectures](http://localhost:3000/api/lectures)
+* [http://localhost:3000/api/lectures/:id](http://localhost:3000/api/lectures/:id)
+* [http://localhost:3000/api/courses](http://localhost:3000/api/courses)
+* [http://localhost:3000/api/courses/:id](http://localhost:3000/api/courses/:id)
+* [http://localhost:3000/api/sessions](http://localhost:3000/api/sessions)
+* [http://localhost:3000/api/sessions/:id](http://localhost:3000/api/sessions/:id)
+
+
+### Requirements
 *   MongoDB
 *   Node
 *   npm
@@ -64,6 +78,10 @@ npx nodemon index.js
 ```
 
 ## Client
+
+The client is available at [http://localhost:8000/](http://localhost:8000/).
+It is using a web proxy at port 3000 so node can serve static
+files without CORS issues.
 
 ### Setup
 
