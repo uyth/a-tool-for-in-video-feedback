@@ -22,6 +22,8 @@ sudo systemctl start mongod
 ```
 
 
+**ALternative 1: Empty database**
+
 Open the MongoDB shell with the command:
 
 ```
@@ -33,6 +35,15 @@ Make a new database called `lectures`:
 ```
 > use lectures
 ```
+
+**Alternative 2: Prepopulated database**
+
+In the root of the project, run the command
+```
+mongorestore dump/
+```
+
+MongoDB should now be populated with some example material.
 
 
 #### Server setup
