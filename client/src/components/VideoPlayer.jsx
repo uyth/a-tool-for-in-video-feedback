@@ -33,58 +33,29 @@ var formatTime = function(seconds) {
 
 export default function VideoPlayer({videoData, actions}) {   
 
-    const [supportsVideo, setSupportsVideo] = useState(false);
-    const [fullScreenEnabled, setFullscreenEnabled] = useState(false);
+    const fullScreenEnabled = !!(document.fullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled || document.webkitSupportsFullscreen || document.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
 
-    const [videoContainer, setVideoContainer] = useState(null);
-    const [video, setVideo] = useState(null);
-    const [videoControls, setVideoControls] = useState(null);
-    const [fullscreen, setFullscreen] = useState(null);
-    const [captions, setCaptions] = useState(null);
-    
+    const videoContainer = document.getElementById('videoContainer');
+    const videoControls = document.getElementById('video-controls')
+    const video = document.getElementById('video')
+    const fullscreen = document.getElementById('fs')
+    const captions = document.getElementById('captions')
+
     // playback controllers
-    const [playpause, setPlayPause] = useState(null);
-    const [stop, setStop] = useState(null);
-    const [rewind10, setRewind10] = useState(null);
-    const [progress, setProgress] = useState(null);
+    const playpause = document.getElementById('playpause');
+    const stop = document.getElementById('stop');
+    const rewind10 = document.getElementById('rewind10');
+    const progress = document.getElementById('progress');
+    const progressBar = document.getElementById('progress-bar');
+    const playbackFaster = document.getElementById('playback-faster');
+    const playbackSlower = document.getElementById('playback-slower');
     let progressMouseDown = false;
-    const [progressBar, setProgressBar] = useState(null);
-    const [playbackFaster, setPlaybackFaster] = useState(null)
-    const [playbackSlower, setPlaybackSlower] = useState(null)
-
+    
     // volume controllers
-    const [mute, setMute] = useState(null);
-    const [volinc, setVolinc] = useState(null);
-    const [voldec, setVoldec] = useState(null);
+    const mute = document.getElementById('mute');
+    const volinc = document.getElementById('setVolinc');
+    const voldec = document.getElementById('setVoldec');
 
-    // check if it supports html5
-    useEffect(() => {
-        setSupportsVideo(!!document.createElement('video').canPlayType);
-        setFullscreenEnabled(!!(document.fullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled || document.webkitSupportsFullscreen || document.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen));
-    }, []);
-
-    // set controllers
-    useEffect(() => {
-        setVideoContainer(document.getElementById('videoContainer'))
-        setVideo(document.getElementById('video'))
-        setVideoControls(document.getElementById('video-controls'))
-        setFullscreen(document.getElementById('fs'))
-        setCaptions(document.getElementById('captions'))
-
-        // playback controls
-        setPlayPause(document.getElementById('playpause'))
-        setStop(document.getElementById('stop'))
-        setRewind10(document.getElementById('rewind10'))
-        setProgress(document.getElementById('progress'))
-        setProgressBar(document.getElementById('progress-bar'))
-        setPlaybackFaster(document.getElementById('playback-faster'))
-        setPlaybackSlower(document.getElementById('playback-slower'))
-        
-        // volume controls
-        setMute(document.getElementById('mute'))
-        setVolinc(document.getElementById('volinc'))
-        setVoldec(document.getElementById('voldec'))
-    }, [supportsVideo])
 
     // setup fullscreen support
     useEffect(() => {
