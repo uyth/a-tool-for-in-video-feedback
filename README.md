@@ -36,7 +36,7 @@ sudo systemctl start mongod
 ```
 
 
-**ALternative 1: Empty database**
+**Alternative 1: Empty database**
 
 Open the MongoDB shell with the command:
 
@@ -93,7 +93,7 @@ npm install
 
 ### Start up client
 
-In the client folder, install packages:
+Start the client:
 ```
 npm start
 ```
