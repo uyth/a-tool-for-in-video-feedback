@@ -47,6 +47,7 @@ export default function VideoPlayer({videoData, actions}) {
     const [stop, setStop] = useState(null);
     const [rewind10, setRewind10] = useState(null);
     const [progress, setProgress] = useState(null);
+    let progressMouseDown = false;
     const [progressBar, setProgressBar] = useState(null);
     const [playbackFaster, setPlaybackFaster] = useState(null)
     const [playbackSlower, setPlaybackSlower] = useState(null)
@@ -235,10 +236,14 @@ export default function VideoPlayer({videoData, actions}) {
                 progress.value = video.currentTime;
                 progressBar.style.width = Math.floor((video.currentTime / video.duration) * 100) + '%';
             });
-            progress.addEventListener('click', function(e) {
-                var pos = (e.pageX  - this.offsetLeft) / this.offsetWidth;
+            function scrub(e) {
+                var pos = (e.pageX - progress.offsetLeft) / progress.offsetWidth;
                 video.currentTime = pos * video.duration;
-            });
+            }
+            progress.addEventListener('mousedown', () => { progressMouseDown = true });
+            progress.addEventListener('mouseup', () => { progressMouseDown = false });
+            progress.addEventListener('mousemove', (e) => {progressMouseDown && scrub(e)});
+            progress.addEventListener('click', (e) => scrub(e));
             playbackFaster.addEventListener('click', function(e) {
                 alterPlayback('+')
             })
@@ -253,7 +258,7 @@ export default function VideoPlayer({videoData, actions}) {
                 }
             }
         }
-    }, [video, videoControls, playpause, stop, rewind10, progress, progressBar, playbackFaster, playbackSlower])
+    }, [video, videoControls, playpause, stop, rewind10, progress, progressBar, playbackFaster, playbackSlower, progressMouseDown])
 
     // init volume event listeners
     useEffect(() => {
