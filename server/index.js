@@ -6,6 +6,7 @@ const db = require('./db')
 const lecturesRouter = require('./routes/lectures-router')
 const coursesRouter = require('./routes/courses-router')
 const sessionsRouter = require('./routes/sessions-router')
+const feedbackRouter = require('./routes/feedback-router')
 
 const app = express()
 const apiPort = 3000
@@ -19,6 +20,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 app.use('/api', lecturesRouter)
 app.use('/api', coursesRouter)
 app.use('/api', sessionsRouter)
+app.use('/api', feedbackRouter)
 
 app.listen(apiPort, () => console.log(`Server running on port ${apiPort}`))
 
