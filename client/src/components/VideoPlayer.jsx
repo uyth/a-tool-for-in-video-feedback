@@ -35,7 +35,7 @@ export default function VideoPlayer({videoData, actions}) {
 
     const fullScreenEnabled = !!(document.fullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled || document.webkitSupportsFullscreen || document.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
 
-    const videoContainer = document.getElementById('videoContainer');
+    const videoContainer = document.getElementById('video-container');
     const videoControls = document.getElementById('video-controls')
     const video = document.getElementById('video')
     const fullscreen = document.getElementById('fs')
@@ -46,7 +46,7 @@ export default function VideoPlayer({videoData, actions}) {
     const stop = document.getElementById('stop');
     const rewind10 = document.getElementById('rewind10');
     const seeker = document.getElementById('seeker');
-    let seekerMouseDown = false;
+    let activeSeek = false;
     
     // volume controllers
     const mute = document.getElementById('mute');
@@ -108,7 +108,6 @@ export default function VideoPlayer({videoData, actions}) {
             for (var i = 0; i < video.textTracks.length; i++) {
                 video.textTracks[i].mode = 'showing';
             }
-            
             captions.setAttribute("data-state", "active");
             captions.addEventListener('click', function(e) {
                 if (video.textTracks[0].mode === 'showing') {
@@ -185,7 +184,7 @@ export default function VideoPlayer({videoData, actions}) {
 
     function videoTimeUpdate() {
         if (!seeker.getAttribute('max')) seeker.setAttribute('max', video.duration);
-        seeker.value = video.currentTime;
+        if (!activeSeek) seeker.value = video.currentTime;
     }
 
     function handlePlaybackSelect(speed) {
@@ -203,9 +202,6 @@ export default function VideoPlayer({videoData, actions}) {
             video.controls = false;
             
             seeker.value = 0;
-            video.addEventListener('loadedmetadata', function() {
-                seeker.setAttribute('max', video.duration);
-            });
 
             // Display the user defined video controls
             videoControls.style.display = 'block';
@@ -227,15 +223,21 @@ export default function VideoPlayer({videoData, actions}) {
                 videoTimeUpdate();
             });
             function scrub(e) {
-                var pos = (e.pageX - seeker.offsetLeft) / seeker.offsetWidth;
-                video.currentTime = pos * video.duration;
+                video.currentTime = e.target.value;
             }
-            seeker.addEventListener('mousedown', () => { seekerMouseDown = true });
-            seeker.addEventListener('mouseup', () => { seekerMouseDown = false });
-            seeker.addEventListener('mousemove', (e) => {seekerMouseDown && scrub(e)});
+            seeker.addEventListener('mousedown', () => {
+                video.pause();
+                activeSeek = true;
+            });
+            seeker.addEventListener('mouseup', () => {
+                video.play();
+                activeSeek = false;
+            });
+            seeker.addEventListener('mousemove', (e) => {activeSeek && scrub(e)});
             seeker.addEventListener('click', (e) => scrub(e));
         }
-    }, [video, videoControls, playpause, stop, rewind10, seeker, seekerMouseDown])
+    }, [video, videoControls, playpause, stop, rewind10, seeker])
+
 
     // init volume event listeners
     useEffect(() => {
@@ -250,7 +252,7 @@ export default function VideoPlayer({videoData, actions}) {
     }, [video, videoControls, mute, volumeSlider])
 
     return (
-        <figure id="videoContainer" data-fullscreen="false">
+        <figure id="video-container" data-video-paused={video ? video.paused : true} data-fullscreen="false">
             <video id="video" preload="auto">
                 <source src={videoData.sources[0].src} type={videoData.sources[0].srctype}/>
                 <track
@@ -261,8 +263,8 @@ export default function VideoPlayer({videoData, actions}) {
                 />
             </video>
             <div id="video-controls" className="controls" data-state="hidden">
-                <div className="timeline">
-                    <input id="seeker" type="range" min="0"/>
+                <div id="timeline-container">
+                    <input id="seeker" type="range" min="0" step="1"/>
                 </div>
                 <div className="button-bar">
                     <ButtonGroup className="button-bar-left">
@@ -300,6 +302,5 @@ export default function VideoPlayer({videoData, actions}) {
                 </div>
             </div>
         </figure>
-
     )
 }
