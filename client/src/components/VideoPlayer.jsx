@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './videoPlayer.css';
 
-import { ButtonGroup, DropdownButton, Dropdown, SplitButton } from 'react-bootstrap'
+import { ButtonGroup, Dropdown, SplitButton } from 'react-bootstrap'
 import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
 import FullscreenIcon from '@material-ui/icons/Fullscreen'
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
@@ -12,8 +12,6 @@ import StopIcon from '@material-ui/icons/Stop';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import Replay10Icon from '@material-ui/icons/Replay10';
-import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
 
 const EVENTS = {
     PLAY: "PLAY",
