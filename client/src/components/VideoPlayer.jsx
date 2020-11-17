@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './videoPlayer.css';
 
-import { ButtonGroup } from 'react-bootstrap'
+import { ButtonGroup, DropdownButton, Dropdown, SplitButton } from 'react-bootstrap'
 import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
 import FullscreenIcon from '@material-ui/icons/Fullscreen'
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
@@ -46,8 +46,6 @@ export default function VideoPlayer({videoData, actions}) {
     const stop = document.getElementById('stop');
     const rewind10 = document.getElementById('rewind10');
     const seeker = document.getElementById('seeker');
-    const playbackFaster = document.getElementById('playback-faster');
-    const playbackSlower = document.getElementById('playback-slower');
     let seekerMouseDown = false;
     
     // volume controllers
@@ -190,10 +188,17 @@ export default function VideoPlayer({videoData, actions}) {
         seeker.value = video.currentTime;
     }
 
+    function handlePlaybackSelect(speed) {
+        video.playbackRate = speed;
+    }
+
+    function handlePlaybackClick() {
+        video.playbackRate = video.playbackRate == 2 ? 0.5 : video.playbackRate + 0.25
+    }
+
     // init video controllers event listeners
     useEffect(() => {
-        if (video && videoControls && playpause && stop && rewind10 
-            && seeker && playbackFaster && playbackSlower) {
+        if (video && videoControls && playpause && stop && rewind10 && seeker) {
             // Hide the default controls
             video.controls = false;
             
@@ -229,21 +234,8 @@ export default function VideoPlayer({videoData, actions}) {
             seeker.addEventListener('mouseup', () => { seekerMouseDown = false });
             seeker.addEventListener('mousemove', (e) => {seekerMouseDown && scrub(e)});
             seeker.addEventListener('click', (e) => scrub(e));
-            playbackFaster.addEventListener('click', function(e) {
-                alterPlayback('+')
-            })
-            playbackSlower.addEventListener('click', function(e) {
-                alterPlayback('-')
-            })
-            var alterPlayback = function(dir) {
-                if (dir === "+") {
-                    if (video.playbackRate < 2) video.playbackRate += 0.25;
-                } else if (dir === "-") {
-                    if (video.playbackRate > 0.5) video.playbackRate -= 0.25;
-                }
-            }
         }
-    }, [video, videoControls, playpause, stop, rewind10, seeker, playbackFaster, playbackSlower, seekerMouseDown])
+    }, [video, videoControls, playpause, stop, rewind10, seeker, seekerMouseDown])
 
     // init volume event listeners
     useEffect(() => {
@@ -277,13 +269,26 @@ export default function VideoPlayer({videoData, actions}) {
                         <button id="playpause" data-state="play" onClick={() => actions.pauseVideo()}>{video && video.paused ? <PlayArrowIcon/> : <PauseIcon/>}</button>
                         <button id="stop" type="button" data-state="stop"><StopIcon/></button>
                         <button id="rewind10" type="button" data-state="replay" onClick={() => actions.rewind10()}><Replay10Icon/></button>
-                        <span id="time-display">{video && formatTime(video.currentTime)} : {video && formatTime(video.duration)}</span>
+                        <span id="time-display">{video && formatTime(video.currentTime)} / {video && formatTime(video.duration)}</span>
                     </ButtonGroup>
                     <ButtonGroup className="button-bar-right">
-                        <div id="playback-display">
-                            <button id="playback-slower" type="button" data-state="playback-slower"><RemoveIcon/></button>
-                            <span id="playback-label">{video && video.playbackRate}x</span>
-                            <button id="playback-faster" type="button" data-state="playback-faster"><AddIcon/></button>
+                        <div id="playback-container">
+                            <SplitButton
+                                id={"playback-speed"}
+                                as={ButtonGroup}
+                                drop={"up"}
+                                variant="light"
+                                onClick={handlePlaybackClick}
+                                onSelect={handlePlaybackSelect}
+                                title={`${video && video.playbackRate}x`}
+                            >
+                                <Dropdown.Item eventKey="2">2x</Dropdown.Item>
+                                <Dropdown.Item eventKey="1.75">1.75x</Dropdown.Item>
+                                <Dropdown.Item eventKey="1.5">1.5x</Dropdown.Item>
+                                <Dropdown.Item eventKey="1.25">1.25x</Dropdown.Item>
+                                <Dropdown.Item eventKey="1">1x</Dropdown.Item>
+                                <Dropdown.Item eventKey="0.75">0.75x</Dropdown.Item>
+                            </SplitButton>
                         </div>
                         <div id="volume-controls">
                             <button id="mute" type="button" data-state="mute">{video && video.muted ? <VolumeOffIcon/> : video && video.volume < 0.1 ? <VolumeMuteIcon/> :  video && video.volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
