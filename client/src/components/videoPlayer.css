@@ -19,10 +19,8 @@
     fill: #000000;
 }
 
-.button-bar span, .button-bar button, .button-bar button:active, .button-bar button:focus {
+.button-bar button, .button-bar button:active, .button-bar button:focus {
     border: 0;
-    border-left: 1px solid #dfdfdf;
-    border-right: 1px solid #dfdfdf;
     padding: 0.5em;
     background: none;
     outline: none;
@@ -41,12 +39,10 @@
 
 #playback-label {
     text-align: center;
-    width: 80px;
+    width: 40px;
+    padding: 0.5em 0;
 }
 
-#playblack-label {
-    line-height: 2.5em;
-}
 
 .controls progress:hover {
     cursor: pointer;

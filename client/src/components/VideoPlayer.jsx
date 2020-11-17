@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import './videoPlayer.css';
 
 import { ButtonGroup } from 'react-bootstrap'
@@ -52,8 +52,7 @@ export default function VideoPlayer({videoData, actions}) {
     
     // volume controllers
     const mute = document.getElementById('mute');
-    const volinc = document.getElementById('setVolinc');
-    const voldec = document.getElementById('setVoldec');
+    const volumeSlider = document.getElementById('volume-slider');
 
     // setup fullscreen support
     useEffect(() => {
@@ -248,26 +247,15 @@ export default function VideoPlayer({videoData, actions}) {
 
     // init volume event listeners
     useEffect(() => {
-        if (video && videoControls && volinc && voldec && mute) {
+        if (video && videoControls && mute && volumeSlider) {
             mute.addEventListener('click', function(e) {
                 video.muted = !video.muted;
             });
-            volinc.addEventListener('click', function(e) {
-                alterVolume('+');
-            });
-            voldec.addEventListener('click', function(e) {
-                alterVolume('-');
-            });
-            var alterVolume = function(dir) {
-                var currentVolume = Math.floor(video.volume * 10) / 10;
-                if (dir === '+') {
-                    if (currentVolume < 1) video.volume += 0.1;
-                } else if (dir === '-') {
-                    if (currentVolume > 0) video.volume -= 0.1;
-                }
-            }
+            volumeSlider.addEventListener("change", function (e) {
+                video.volume = volumeSlider.value;
+            })
         }
-    }, [voldec, volinc, video, videoControls, mute])
+    }, [video, videoControls, mute, volumeSlider])
 
     return (
         <figure id="videoContainer" data-fullscreen="false">
@@ -291,16 +279,15 @@ export default function VideoPlayer({videoData, actions}) {
                         <button id="rewind10" type="button" data-state="replay" onClick={() => actions.rewind10()}><Replay10Icon/></button>
                         <span id="time-display">{video && formatTime(video.currentTime)} : {video && formatTime(video.duration)}</span>
                     </ButtonGroup>
-                    <ButtonGroup className="button-bar-left">
+                    <ButtonGroup className="button-bar-right">
                         <div id="playback-display">
                             <button id="playback-slower" type="button" data-state="playback-slower"><RemoveIcon/></button>
                             <span id="playback-label">{video && video.playbackRate}x</span>
                             <button id="playback-faster" type="button" data-state="playback-faster"><AddIcon/></button>
                         </div>
-                        <div>
-                            <button id="voldec" type="button" data-state="voldown"><RemoveIcon/></button>
+                        <div id="volume-controls">
                             <button id="mute" type="button" data-state="mute">{video && video.muted ? <VolumeOffIcon/> : video && video.volume < 0.1 ? <VolumeMuteIcon/> :  video && video.volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
-                            <button id="volinc" type="button" data-state="volup"><AddIcon/></button>
+                            <input id="volume-slider" type="range" min="0" max="1" step="0.1"/>
                         </div>
                         <button id="captions" type="button" data-state="captions"><ClosedCaptionIcon/></button>
                         <button id="fs" type="button" data-state="go-fullscreen"><FullscreenIcon/></button>
