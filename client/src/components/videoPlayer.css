@@ -15,10 +15,26 @@
     margin-bottom: -0.5em;
 }
 
-
-#video-controls[data-state="hidden"] {
-    display: none;
+#video-controls[data-state="hidden"] .button-bar {
+    margin-bottom: -3em;
+    transition-duration: 2s;
 }
+
+#video-controls[data-state="active"] {
+    bottom: 0;
+    transition-duration: 0.5s;
+}
+
+
+#video-controls[data-state="hidden"] .button-bar {
+    opacity: 0;
+    transition-duration: 2s;
+} 
+
+#video-controls[data-state="active"] .button-bar {
+    opacity: 1;
+    transition-duration: 0.5s;
+} 
 
 #video-controls {
     position: absolute;

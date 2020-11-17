@@ -211,6 +211,13 @@ export default function VideoPlayer({videoData, actions}) {
                 togglePlay();
             })
             
+            videoContainer.addEventListener("mouseover", function(e) {
+                videoControls.setAttribute("data-state", "active");
+            })
+            videoContainer.addEventListener("mouseleave", function(e) {
+                setTimeout(() => videoControls.setAttribute("data-state", "hidden"), 3000);
+            })
+
             stop.addEventListener('click', function(e) {
                 stopVideo();
             });
