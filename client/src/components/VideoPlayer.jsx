@@ -45,17 +45,15 @@ export default function VideoPlayer({videoData, actions}) {
     const playpause = document.getElementById('playpause');
     const stop = document.getElementById('stop');
     const rewind10 = document.getElementById('rewind10');
-    const progress = document.getElementById('progress');
-    const progressBar = document.getElementById('progress-bar');
+    const seeker = document.getElementById('seeker');
     const playbackFaster = document.getElementById('playback-faster');
     const playbackSlower = document.getElementById('playback-slower');
-    let progressMouseDown = false;
+    let seekerMouseDown = false;
     
     // volume controllers
     const mute = document.getElementById('mute');
     const volinc = document.getElementById('setVolinc');
     const voldec = document.getElementById('setVoldec');
-
 
     // setup fullscreen support
     useEffect(() => {
@@ -108,7 +106,7 @@ export default function VideoPlayer({videoData, actions}) {
     }, [fullScreenEnabled, fullscreen, videoContainer])
 
     useEffect(() => {
-        if (video && videoControls && captions) {
+        if (video && captions) {
             // turn off autodisplay of captions
             for (var i = 0; i < video.textTracks.length; i++) {
                 video.textTracks[i].mode = 'showing';
@@ -125,7 +123,7 @@ export default function VideoPlayer({videoData, actions}) {
                 }
             })
         }
-    }, [video, videoControls, captions])
+    }, [video, captions])
 
     // log events
     useEffect(() => {
@@ -142,7 +140,7 @@ export default function VideoPlayer({videoData, actions}) {
                 }
             }
         }
-        if (video && progress) {
+        if (video && seeker) {
             video.addEventListener("play", function(e) {
                 actions.logEvent(generateEventlog(EVENTS.PLAY))
             })
@@ -158,63 +156,80 @@ export default function VideoPlayer({videoData, actions}) {
             video.addEventListener("seeked", function(e) {
                 actions.logEvent(generateEventlog(EVENTS.SEEKED))
             })
-            progress.addEventListener("click", function(e) {
+            seeker.addEventListener("click", function(e) {
                 actions.logEvent(generateEventlog(EVENTS.PROGRESS_CLICK))
             }) 
-            progress.addEventListener("mouseenter", function(e) {
+            seeker.addEventListener("mouseenter", function(e) {
                 actions.logEvent(generateEventlog("MOUSE_ENTER"))
             })
-            progress.addEventListener("mouseleave", function(e) {
+            seeker.addEventListener("mouseleave", function(e) {
                 actions.logEvent(generateEventlog("MOUSE_LEAVE"))
             })
-            progress.addEventListener("mousedown", function(e) {
+            seeker.addEventListener("mousedown", function(e) {
                 actions.logEvent(generateEventlog("MOUSE_DOWN"))
             })
         }
-    }, [video, progress])
+    }, [video, seeker])
+
+    function togglePlay() {
+        if (video.paused || video.ended) video.play();
+        else video.pause();
+    }
+
+    function stopVideo() {
+        video.pause();
+        video.currentTime = 0;
+        seeker.value = 0;
+    }
+
+    function rewindVideo(seconds) {
+        video.currentTime -= seconds;
+    }
+
+    function videoTimeUpdate() {
+        if (!seeker.getAttribute('max')) seeker.setAttribute('max', video.duration);
+        seeker.value = video.currentTime;
+    }
 
     // init video controllers event listeners
     useEffect(() => {
         if (video && videoControls && playpause && stop && rewind10 
-            && progress && progressBar && playbackFaster && playbackSlower) {
+            && seeker && playbackFaster && playbackSlower) {
             // Hide the default controls
             video.controls = false;
+            
+            seeker.value = 0;
+            video.addEventListener('loadedmetadata', function() {
+                seeker.setAttribute('max', video.duration);
+            });
 
             // Display the user defined video controls
             videoControls.style.display = 'block';
 
             playpause.addEventListener('click', function(e) {
-                if (video.paused || video.ended) video.play();
-                else video.pause();
+                togglePlay();
             });
+            video.addEventListener("click", function(e) {
+                togglePlay();
+            })
+            
             stop.addEventListener('click', function(e) {
-                video.pause();
-                video.currentTime = 0;
-                progress.value = 0;
+                stopVideo();
             });
             rewind10.addEventListener('click', function(e) {
-                video.currentTime -= 10;
+                rewindVideo(10);
             })
-            video.addEventListener('loadedmetadata', function() {
-                progress.setAttribute('max', video.duration);
-            });
             video.addEventListener('timeupdate', function() {
-                progress.value = video.currentTime;
-                progressBar.style.width = Math.floor((video.currentTime / video.duration) * 100) + '%';
-            });
-            video.addEventListener('timeupdate', function() {
-                if (!progress.getAttribute('max')) progress.setAttribute('max', video.duration);
-                progress.value = video.currentTime;
-                progressBar.style.width = Math.floor((video.currentTime / video.duration) * 100) + '%';
+                videoTimeUpdate();
             });
             function scrub(e) {
-                var pos = (e.pageX - progress.offsetLeft) / progress.offsetWidth;
+                var pos = (e.pageX - seeker.offsetLeft) / seeker.offsetWidth;
                 video.currentTime = pos * video.duration;
             }
-            progress.addEventListener('mousedown', () => { progressMouseDown = true });
-            progress.addEventListener('mouseup', () => { progressMouseDown = false });
-            progress.addEventListener('mousemove', (e) => {progressMouseDown && scrub(e)});
-            progress.addEventListener('click', (e) => scrub(e));
+            seeker.addEventListener('mousedown', () => { seekerMouseDown = true });
+            seeker.addEventListener('mouseup', () => { seekerMouseDown = false });
+            seeker.addEventListener('mousemove', (e) => {seekerMouseDown && scrub(e)});
+            seeker.addEventListener('click', (e) => scrub(e));
             playbackFaster.addEventListener('click', function(e) {
                 alterPlayback('+')
             })
@@ -229,7 +244,7 @@ export default function VideoPlayer({videoData, actions}) {
                 }
             }
         }
-    }, [video, videoControls, playpause, stop, rewind10, progress, progressBar, playbackFaster, playbackSlower, progressMouseDown])
+    }, [video, videoControls, playpause, stop, rewind10, seeker, playbackFaster, playbackSlower, seekerMouseDown])
 
     // init volume event listeners
     useEffect(() => {
@@ -266,8 +281,8 @@ export default function VideoPlayer({videoData, actions}) {
                 />
             </video>
             <div id="video-controls" className="controls" data-state="hidden">
-                <div className="progress">
-                    <progress id="progress" value="0" min="0"><span id="progress-bar"/></progress>
+                <div className="timeline">
+                    <input id="seeker" type="range" min="0"/>
                 </div>
                 <div className="button-bar">
                     <ButtonGroup className="button-bar-left">
