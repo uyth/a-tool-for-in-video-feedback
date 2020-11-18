@@ -24,6 +24,12 @@ const EVENTS = {
     PROGRESS_CLICK: "PROGRESS_CLICK"
 }
 
+const BUTTON_KEYS = {
+    SPACEBAR: 32,
+    LEFT_KEY: 37,
+    RIGHT_KEY: 39
+}
+
 var formatTime = function(seconds) {
     if (seconds) return new Date(seconds * 1000).toISOString().substr(14, 5);
     else return "00:00"
@@ -176,8 +182,14 @@ export default function VideoPlayer({videoData, actions}) {
         seeker.value = 0;
     }
 
-    function rewindVideo(seconds) {
+    function forward(seconds) {
+        video.currentTime += seconds;
+        if (video.paused) togglePlay();
+    }
+
+    function rewind(seconds) {
         video.currentTime -= seconds;
+        if (video.paused) togglePlay();
     }
 
     function videoTimeUpdate() {
@@ -196,6 +208,24 @@ export default function VideoPlayer({videoData, actions}) {
     // init video controllers event listeners
     useEffect(() => {
         if (video && videoControls && playpause && stop && rewind10 && seeker) {
+            
+            document.onkeydown = function(e) {
+                if (e.keyCode == BUTTON_KEYS.LEFT_KEY){
+                    e.preventDefault();
+                    rewind(10)
+                } else if (e.keyCode == BUTTON_KEYS.RIGHT_KEY){
+                    e.preventDefault();
+                    forward(10)
+                }
+            }
+
+            document.body.onkeypress = function(e){
+                if(e.keyCode == 32){
+                    e.preventDefault();
+                    togglePlay();
+                }
+            }
+
             // Hide the default controls
             video.controls = false;
             
@@ -222,7 +252,7 @@ export default function VideoPlayer({videoData, actions}) {
                 stopVideo();
             });
             rewind10.addEventListener('click', function(e) {
-                rewindVideo(10);
+                rewind(10);
             })
             video.addEventListener('timeupdate', function() {
                 videoTimeUpdate();
