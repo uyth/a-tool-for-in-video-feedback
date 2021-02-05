@@ -1,4 +1,4 @@
-fs = require('fs');
+const fs = require('fs');
 const axios = require('axios');
 
 const rakejs = require('@shopping24/rake-js');
@@ -20,7 +20,7 @@ const domainStopwords = [...stopwords, ...instrucationalWords];
 const sentenceTokenizer = new natural.SentenceTokenizer();
 const wordTokenizer = new natural.AggressiveTokenizer();
 
-const MIN_KEYWORD_SCORE = 0.0;
+const MIN_KEYWORD_SCORE = 0.1;
 
 getFeedback = async (req, res) => {
 
@@ -39,18 +39,19 @@ getFeedback = async (req, res) => {
     const retextKeywordsLocal = await extractKeywordsWithRetext(vttObject, timeRanges);
     const retextKeywordsGlobal = await extractKeywordsWithRetext(vttObject, null);
 
-    let keywords = retextKeywordsLocal.slice(0, 2).map(k => k.keyword);
+    let keywords = rakeKeywordsLocal.slice(0, 1).map(k => k.keyword);
 
-    const questions = await getQuestions(keywords)
+    const stackoverflow = await searchStackOverflow(keywords)
 
-    return res.status(400).json({
+    return res.status(200).json({
         success: true,
         message: "Feedback was successful",
         data: {
             title: title,
             wholeText: wholeText,
             targetText: targetText,
-            questions: questions,
+            stackOverflow: stackoverflow,
+            keywords: keywords,
             tfIdfKeywordsLocal: tfIdfKeywordsLocal,
             rakeKeywordsLocal: rakeKeywordsLocal,
             retextKeywordsLocal: retextKeywordsLocal,
@@ -66,7 +67,8 @@ const generateVttObject = function (path) {
 }
 
 const readVtt = function (path) {
-    return fs.readFileSync(path, "utf-8", function (err, data) {
+    // return fs.readFileSync(`public${path}`, "utf-8", function (err, data) {
+    return fs.readFileSync(`${path}`, "utf-8", function (err, data) {
         if (err) {
             return console.log(err);
         }
@@ -160,19 +162,20 @@ const isOverlappingRanges = function (start1, end1, start2, end2) {
     return start1 <= end2 && start2 <= end1;
 }
 
-const getQuestions = async function (keywords) {
-    const question_response = await axios.get("https://api.stackexchange.com/2.2/search/advanced", {
+const searchStackOverflow = async function (keywords) {
+    const response = await axios.get("https://api.stackexchange.com/2.2/search/advanced", {
         params: {
             site: "stackoverflow",
             sort: "relevance",
             order: "desc",
-            pagesize: 1,
+            pagesize: 10,
             accepted: true,
-            tagged: keywords.join(";")
+            q: keywords.join(" "),
+            tagged: "java",
         }
     });
 
-    let questions = question_response.data["items"];
+    let questions = response.data["items"];
 
     questions = questions.map(q => {
         return {
@@ -208,7 +211,7 @@ const extractKeywordsWithRetext = async (vttObject, timeRanges) => {
 
     file = await retext()
         .use(pos)
-        .use(retextKeywords, options = { maximum: 20 })
+        .use(retextKeywords, options = { maximum: 10 })
         .process(file);
 
     let keywords = file.data.keywords
@@ -220,14 +223,16 @@ const extractKeywordsWithRetext = async (vttObject, timeRanges) => {
     let keyphrases = file.data.keyphrases
         .map(p => { return { phrase: p.matches[0].nodes.map(toString), score: p.score } })
         .filter(p => p.phrase.length > 1)
-        .map(p => { return { keyword: p.phrase.join(""), score: maxScore } })
+        .map(p => { return { keyword: p.phrase.join(""), score: p.score } })
+        // .map(p => { return { keyword: p.phrase.join(""), score: maxScore } })
 
-    keywords = keywords.concat(keyphrases);
 
     keywords = keywords
         .map(k => { return { keyword: k.keyword, score: k.score / maxScore } })
         .filter(k => k.score > MIN_KEYWORD_SCORE);
 
+    keywords = keywords.concat(keyphrases);
+    
     return keywords;
 }
 
