@@ -31,13 +31,8 @@ getFeedback = async (req, res) => {
     const wholeText = extractVttContent(vttObject);
     const targetText = extractVttContent(filteredVttObject);
 
-    const tfIdfKeywordsLocal = extractKeywordsWithTfIdf(vttObject, timeRanges).slice(0, 20);
-
     const rakeKeywordsLocal = extractKeywordsWithRake(vttObject, timeRanges).slice(0, 20);
     const rakeKeywordsGlobal = extractKeywordsWithRake(vttObject, null).slice(0, 20);
-
-    const retextKeywordsLocal = await extractKeywordsWithRetext(vttObject, timeRanges);
-    const retextKeywordsGlobal = await extractKeywordsWithRetext(vttObject, null);
 
     let keywords = rakeKeywordsLocal.slice(0, 1).map(k => k.keyword);
 
@@ -52,11 +47,8 @@ getFeedback = async (req, res) => {
             targetText: targetText,
             stackOverflow: stackoverflow,
             keywords: keywords,
-            tfIdfKeywordsLocal: tfIdfKeywordsLocal,
             rakeKeywordsLocal: rakeKeywordsLocal,
-            retextKeywordsLocal: retextKeywordsLocal,
             rakeKeywordsGlobal: rakeKeywordsGlobal,
-            retextKeywordsGlobal: retextKeywordsGlobal,
         },
     })
 }
