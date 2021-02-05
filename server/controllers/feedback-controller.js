@@ -38,6 +38,8 @@ getFeedback = async (req, res) => {
 
     const stackoverflow = await searchStackOverflow(keywords)
 
+    console.log(stackoverflow)
+
     return res.status(200).json({
         success: true,
         message: "Feedback was successful",
@@ -59,8 +61,8 @@ const generateVttObject = function (path) {
 }
 
 const readVtt = function (path) {
-    // return fs.readFileSync(`public${path}`, "utf-8", function (err, data) {
-    return fs.readFileSync(`${path}`, "utf-8", function (err, data) {
+    return fs.readFileSync(`public${path}`, "utf-8", function (err, data) {
+    // return fs.readFileSync(`${path}`, "utf-8", function (err, data) {
         if (err) {
             return console.log(err);
         }
@@ -154,7 +156,7 @@ const isOverlappingRanges = function (start1, end1, start2, end2) {
     return start1 <= end2 && start2 <= end1;
 }
 
-const searchStackOverflow = async function (keywords) {
+const searchStackOverflow = async function (keywords, tagged) {
     const response = await axios.get("https://api.stackexchange.com/2.2/search/advanced", {
         params: {
             site: "stackoverflow",
@@ -163,7 +165,7 @@ const searchStackOverflow = async function (keywords) {
             pagesize: 10,
             accepted: true,
             q: keywords.join(" "),
-            tagged: "java",
+            tagged: tagged,
         }
     });
 

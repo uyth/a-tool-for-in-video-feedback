@@ -14,24 +14,15 @@ const initVideoState = {
 const ALPHA = 0.5;
 const BASELINE = 1.0;
 
-const initFeedbacks = [
-  {
-      timestamp: "1:25",
-      title: "Feedback 1",
-      content: "This is a feedback",
-      keywords: ["python", "inheritance"]
-  },
-]
-
 export default function Lecture(props) {
 
   const [videoState, setVideoState] = useState(initVideoState);
-  const [feedbacks, setFeedbacks] = useState(initFeedbacks);
+  const [feedbacks, setFeedbacks] = useState([]);
   const [lectureData, setLectureData] = useState(null);
   const [session, setSession] = useState(null);
-
+  
   function addFeedback(feedback) {
-    setFeedbacks([...feedbacks, feedback]);
+    setFeedbacks([...feedbacks, ...feedback]);
   }
 
   async function logEvent(event) {
@@ -81,24 +72,50 @@ export default function Lecture(props) {
           <VideoPlayer videoData={lectureData.video} actions={{pauseVideo:pauseVideo, rewind10: rewind10, logEvent: logEvent}}/>
         </> : <Spinner animation="border" />
       }
-      <Metrics score={videoState.learningScore} callback={addFeedback}/>
+      <DebugTool videoState={videoState} lectureData={lectureData} callback={addFeedback}/>
       <Feedback feedbacks={feedbacks}/>
     </Container>
   )
 }
 
-function Metrics({score, callback}) {
+function DebugTool({videoState, lectureData, callback}) {
   return (
     <>
-      <h2>Learning metrics</h2>
-      <p>Score: {score}</p>
+      <h2>Debugging</h2>
+      <p>Score: {videoState.learningScore}</p>
+      <p>Score: {lectureData ? lectureData.video.currentTime: null}</p>
       <p>
-        <Button onClick={() => callback({
-          timestamp: "2:10",
-          title: "Feedback Title",
-          content: "Hello, I was added by the button",
-          keywords: ["python", "something"]
-        })}>Add new feedback!</Button>
+        <Button onClick={async () => {
+          let payload = {
+            title: lectureData.title,
+            transcript: lectureData.video.tracks[0].src,
+            timeRanges: [[150, 200]],
+          }
+
+          let response = await api.getFeedback(payload);
+          
+          console.log(response)
+
+          let data = response.data.data;
+
+          const { stackOverflow, keywords } = data;
+
+          console.log(stackOverflow);
+          console.log(keywords);
+
+          let structuredStackOverflow = stackOverflow.map(s => {
+            return {            
+              timestamp: "2:10",
+              title: s.title,
+              link: s.link,
+              keywords: keywords,
+              timerange: ["1:20", "1:40"]
+            }
+          })
+
+          callback(structuredStackOverflow)
+        }
+        }>Add new feedback!</Button>
       </p>
     </>
   )

@@ -1,24 +1,36 @@
 import React from 'react'
 
-import { Card } from 'react-bootstrap'
+import { Card, Button, OverlayTrigger, Popover } from 'react-bootstrap'
 
 function FeedbackCard({props}) {
     return (
         <Card>
             <Card.Body>
                 <Card.Title>{props.title}</Card.Title>
-                <Card.Text>{props.timestamp} {props.content}</Card.Text>
-                <Card.Text>Based on keywords: {props.keywords.join(", ")}</Card.Text>
+                <Card.Text>Keywords: {props.keywords.join(", ")}</Card.Text>
+                <div>
+                    <Button variant="primary" href={props.link}>Go to source</Button>
+                    <OverlayTrigger trigger="focus" placement="top" overlay={
+                        <Popover>
+                            <Popover.Title as="h3">Why this feedback?</Popover.Title>
+                            <Popover.Content>
+                                <p>Based on the timerange: {props.timerange.join(" - ")}</p>
+                                <p>Based on keywords: {props.keywords.join(", ")}</p>
+                                <p>Triggered @{props.timestamp}</p>
+                            </Popover.Content>
+                        </Popover>                    
+                    }>
+                        <Button variant="secondary">Why this feedback?</Button>
+                    </OverlayTrigger>
+                </div>
             </Card.Body>
         </Card>
     )
 }
 
 export default function Feedback({feedbacks}) {
-
     return (
         <>
-            <h2>Feedback</h2>
             { feedbacks.map((f, key) => <FeedbackCard key={key} props={f}/>) }
         </>
     )

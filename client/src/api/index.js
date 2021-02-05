@@ -11,6 +11,7 @@ export const deleteLectureById = id => api.delete(`/lectures/${id}`)
 export const getLectureById = id => api.get(`/lectures/${id}`)
 export const createSession = payload => api.post(`/sessions/`, payload)
 export const logVideoEvent = (id, payload) => api.patch(`/sessions/${id}`, payload)
+export const getFeedback = payload => api.post(`/feedback`, payload)
 
 const apis = {
     insertLecture,
@@ -20,6 +21,7 @@ const apis = {
     getLectureById,
     createSession,
     logVideoEvent,
+    getFeedback
 }
 
 export default apis
