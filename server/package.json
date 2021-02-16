@@ -23,7 +23,8 @@
     "retext-pos": "^3.0.0",
     "stopword": "^1.0.3",
     "to-vfile": "^6.1.0",
-    "vfile": "^4.2.0"
+    "vfile": "^4.2.0",
+    "ws": "^7.4.3"
   },
   "devDependencies": {
     "prettier": "2.1.2"
