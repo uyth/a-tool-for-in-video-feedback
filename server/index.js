@@ -63,6 +63,7 @@ async function receiveMessage(ID, payload, socket) {
 async function processEvent(socket, data) {
     console.log("event: " + data.event.eventType);
     console.log("event: " + data.event.videoSnapshot.currentTime);
+    await wsController.updateSession(data.session, data.event);
     if (data.event.eventType == "PAUSE") sendFeedback(socket, data);
 }
 
