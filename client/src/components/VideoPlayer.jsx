@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './videoPlayer.css';
 
 import { ButtonGroup, Dropdown, SplitButton } from 'react-bootstrap'
 import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
-import FullscreenIcon from '@material-ui/icons/Fullscreen'
+import ClosedCaptionOutlinedIcon from '@material-ui/icons/ClosedCaptionOutlined';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import VolumeDownIcon from '@material-ui/icons/VolumeDown';
 import VolumeMuteIcon from '@material-ui/icons/VolumeMute';
@@ -21,7 +23,10 @@ const EVENTS = {
     SEEKING: "SEEKING",
     SEEKED: "SEEKED",
     RATECHANGE: "RATECHANGE",
-    PROGRESS_CLICK: "PROGRESS_CLICK"
+    SEEKBAR_CLICK: "SEEKBAR_CLICK",
+    SEEKBAR_MOUSE_ENTER: "SEEKBAR_MOUSE_ENTER",
+    SEEKBAR_MOUSE_LEAVE: "SEEKBAR_MOUSE_LEAVE",
+    SEEKBAR_MOUSE_DOWN: "SEEKBAR_MOUSE_DOWN",
 }
 
 const BUTTON_KEYS = {
@@ -32,34 +37,104 @@ const BUTTON_KEYS = {
 
 var formatTime = function(seconds) {
     if (seconds) return new Date(seconds * 1000).toISOString().substr(14, 5);
-    else return "00:00"
+    else return "00:00";
 }
 
 export default function VideoPlayer({videoData, actions}) {   
 
     const fullScreenEnabled = !!(document.fullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled || document.webkitSupportsFullscreen || document.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
 
-    const videoContainer = document.getElementById('video-container');
-    const videoControls = document.getElementById('video-controls')
-    const video = document.getElementById('video')
-    const fullscreen = document.getElementById('fs')
-    const captions = document.getElementById('captions')
+    const videoContainer = useRef();
+    const videoControls = useRef();
+    const video = useRef();
+    const fullscreenButton = useRef();
+    const captionsButton = useRef();
 
     // playback controllers
-    const playpause = document.getElementById('playpause');
-    const stop = document.getElementById('stop');
-    const rewind10 = document.getElementById('rewind10');
-    const seeker = document.getElementById('seeker');
-    let activeSeek = false;
-    
-    // volume controllers
-    const mute = document.getElementById('mute');
-    const volumeSlider = document.getElementById('volume-slider');
+    const playpauseButton = useRef();
+    const stopButton = useRef();
+    const rewind10Button = useRef();
+    const seekSlider = useRef();
 
-    // setup fullscreen support
+    let [isSeeking, setIsSeeking] = useState(false);
+    let [isPaused, setIsPaused] = useState(true);
+    let [currentTime, setCurrentTime] = useState(0);
+    let [duration, setDuration] = useState(0);
+    let [activeCaptions, setActiveCaptions] = useState(true);
+    let [playbackRate, setPlaybackRate] = useState(1);
+    let [isMute, setIsMute] = useState(false);
+    let [volume, setVolume] = useState(1);
+    let [isFullscreen, setFullscreen] = useState(false);
+    let [seekValue, setSeekValue] = useState(0);
+
+    // volume controllers
+    const muteButton = useRef();
+    const volumeSlider = useRef();
+
+    // init general video settings
     useEffect(() => {
-        var setFullscreenData = function(state) {
-            videoContainer.setAttribute('data-fullscreen', !!state);
+        // Hide the default controls
+        video.current.controls = false;
+
+        // Display the user defined video controls
+        videoControls.current.style.display = 'block';
+
+        seekSlider.current.value = 0;
+        if (!seekSlider.current.getAttribute('max')) seekSlider.current.setAttribute('max', video.current.duration);
+
+        video.current.addEventListener("loadeddata", () => setDuration(video.current.duration));
+
+    }, [video, videoControls, seekSlider]);
+
+    // init playback controller event listeners
+    useEffect(() => {
+        if (video && videoControls && playpauseButton && stopButton && rewind10Button && seekSlider) {
+            // keyboard controls
+            document.onkeydown = (e) => {
+                if (e.keyCode == BUTTON_KEYS.LEFT_KEY) {
+                    e.preventDefault();
+                    rewind(10);
+                } else if (e.keyCode == BUTTON_KEYS.RIGHT_KEY) {
+                    e.preventDefault();
+                    forward(10);
+                }
+            }
+            document.body.onkeypress = (e) => {
+                if(e.keyCode == BUTTON_KEYS.SPACEBAR) {
+                    e.preventDefault();
+                    togglePlay();
+                }
+            }
+
+            video.current.addEventListener('timeupdate', () => timeUpdate());
+
+            // button controllers
+            playpauseButton.current.addEventListener('click', () => togglePlay());
+            video.current.addEventListener("click", () => togglePlay());
+            stopButton.current.addEventListener('click', () => stopVideo());
+            rewind10Button.current.addEventListener('click', () => rewind(10));
+            
+            // seeker controls
+            seekSlider.current.addEventListener("change", e => setSeekValue(e.target.value));
+            seekSlider.current.addEventListener("mousemove", e => setSeekValue(e.target.value));
+            seekSlider.current.addEventListener('mousedown', () => {
+                pause();
+                setIsSeeking(true);
+            });
+            seekSlider.current.addEventListener('mouseup', () => {
+                play();
+                setIsSeeking(false);
+            });
+
+        }
+    }, [video, videoControls, playpauseButton, stopButton, rewind10Button, seekSlider]);
+
+
+    // // setup fullscreen support
+    useEffect(() => {
+        var toggleFullscreen = function(state) {
+            videoContainer.current.setAttribute('data-fullscreen', state);
+            setFullscreen(state);
         };
     
         var isFullScreen = function() {
@@ -72,58 +147,47 @@ export default function VideoPlayer({videoData, actions}) {
                 else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
                 else if (document.webkitCancelFullScreen) document.webkitCancelFullScreen();
                 else if (document.msExitFullscreen) document.msExitFullscreen();
-                setFullscreenData(false);
-            }
-            else {
-                if (videoContainer.requestFullscreen) videoContainer.requestFullscreen();
-                else if (videoContainer.mozRequestFullScreen) videoContainer.mozRequestFullScreen();
-                else if (videoContainer.webkitRequestFullScreen) videoContainer.webkitRequestFullScreen();
-                else if (videoContainer.msRequestFullscreen) videoContainer.msRequestFullscreen();
-                setFullscreenData(true);
+                toggleFullscreen(false);
+            } else {
+                if (videoContainer.current.requestFullscreen) videoContainer.current.requestFullscreen();
+                else if (videoContainer.current.mozRequestFullScreen) videoContainer.current.mozRequestFullScreen();
+                else if (videoContainer.current.webkitRequestFullScreen) videoContainer.current.webkitRequestFullScreen();
+                else if (videoContainer.current.msRequestFullscreen) videoContainer.current.msRequestFullscreen();
+                toggleFullscreen(true);
             }
         };
 
-        if (fullscreen) {
+        if (fullscreenButton) {
             if (!fullScreenEnabled) {
-                fullscreen.style.display = 'none';
+                fullscreenButton.current.style.display = 'none';
             }
-            fullscreen.addEventListener('click', function(e) {
-                handleFullscreen();
-            });
-            document.addEventListener('fullscreenchange', function(e) {
-                setFullscreenData(!!(document.fullscreen || document.fullscreenElement));
-            });
-            document.addEventListener('webkitfullscreenchange', function() {
-                setFullscreenData(!!document.webkitIsFullScreen);
-            });
-            document.addEventListener('mozfullscreenchange', function() {
-                setFullscreenData(!!document.mozFullScreen);
-            });
-            document.addEventListener('msfullscreenchange', function() {
-                setFullscreenData(!!document.msFullscreenElement);
-            });
+            fullscreenButton.current.addEventListener('click', () => handleFullscreen());
+            document.addEventListener('fullscreenchange', () => toggleFullscreen(!!(document.fullscreen || document.fullscreenElement)));
+            document.addEventListener('webkitfullscreenchange', () => toggleFullscreen(!!document.webkitIsFullScreen));
+            document.addEventListener('mozfullscreenchange', () => toggleFullscreen(!!document.mozFullScreen));
+            document.addEventListener('msfullscreenchange', () => toggleFullscreen(!!document.msFullscreenElement));
         }
 
-    }, [fullScreenEnabled, fullscreen, videoContainer])
+    }, [fullScreenEnabled, fullscreenButton, videoContainer]);
 
+    // captions
     useEffect(() => {
-        if (video && captions) {
+        if (video && captionsButton) {
             // turn off autodisplay of captions
-            for (var i = 0; i < video.textTracks.length; i++) {
-                video.textTracks[i].mode = 'showing';
+            for (var i = 0; i < video.current.textTracks.length; i++) {
+                video.current.textTracks[i].mode = 'showing';
             }
-            captions.setAttribute("data-state", "active");
-            captions.addEventListener('click', function(e) {
-                if (video.textTracks[0].mode === 'showing') {
-                    video.textTracks[0].mode = 'hidden'
-                    captions.setAttribute("data-state", "disabled");
+            captionsButton.current.addEventListener('click', () => {
+                if (video.current.textTracks[0].mode === 'showing') {
+                    video.current.textTracks[0].mode = 'hidden';
+                    setActiveCaptions(false);
                 } else {
-                    captions.setAttribute("data-state", "active");
-                    video.textTracks[0].mode = 'showing'
+                    video.current.textTracks[0].mode = 'showing'
+                    setActiveCaptions(true);
                 }
             })
         }
-    }, [video, captions])
+    }, [video, captionsButton]);
 
     // log events
     useEffect(() => {
@@ -132,163 +196,107 @@ export default function VideoPlayer({videoData, actions}) {
                 eventType: type,
                 eventTimestamp: Date.now(),
                 videoSnapshot: {
-                    currentTime: video.currentTime,
-                    duration: video.duration,
-                    paused: video.paused,
-                    playbackRate: video.playbackRate,
-                    played: video.played,
+                    currentTime: video.current.currentTime,
+                    duration: video.current.duration,
+                    paused: video.current.paused,
+                    playbackRate: video.current.playbackRate,
+                    played: video.current.played,
                 }
             }
         }
-        if (video && seeker) {
-            video.addEventListener("play", function(e) {
-                actions.logEvent(generateEventlog(EVENTS.PLAY))
-            })
-            video.addEventListener("pause", function(e) {
-                actions.logEvent(generateEventlog(EVENTS.PAUSE))
-            })
-            video.addEventListener("ratechange", function(e) {
-                actions.logEvent(generateEventlog(EVENTS.RATECHANGE))
-            })
-            video.addEventListener("seeking", function(e) {
-                actions.logEvent(generateEventlog(EVENTS.SEEKING))
-            })
-            video.addEventListener("seeked", function(e) {
-                actions.logEvent(generateEventlog(EVENTS.SEEKED))
-            })
-            seeker.addEventListener("click", function(e) {
-                actions.logEvent(generateEventlog(EVENTS.PROGRESS_CLICK))
-            }) 
-            seeker.addEventListener("mouseenter", function(e) {
-                actions.logEvent(generateEventlog("MOUSE_ENTER"))
-            })
-            seeker.addEventListener("mouseleave", function(e) {
-                actions.logEvent(generateEventlog("MOUSE_LEAVE"))
-            })
-            seeker.addEventListener("mousedown", function(e) {
-                actions.logEvent(generateEventlog("MOUSE_DOWN"))
-            })
+        if (video.current && seekSlider) {
+            video.current.addEventListener("play", () => actions.logEvent(generateEventlog(EVENTS.PLAY)));
+            video.current.addEventListener("pause", () => actions.logEvent(generateEventlog(EVENTS.PAUSE)));
+            video.current.addEventListener("ratechange", () => actions.logEvent(generateEventlog(EVENTS.RATECHANGE)));
+            video.current.addEventListener("seeking", () => actions.logEvent(generateEventlog(EVENTS.SEEKING)));
+            video.current.addEventListener("seeked", () => actions.logEvent(generateEventlog(EVENTS.SEEKED)));
+            seekSlider.current.addEventListener("click", () => actions.logEvent(generateEventlog(EVENTS.SEEKBAR_CLICK)));
+            seekSlider.current.addEventListener("mouseenter", () => actions.logEvent(generateEventlog(EVENTS.SEEKBAR_MOUSE_ENTER)));
+            seekSlider.current.addEventListener("mouseleave", () => actions.logEvent(generateEventlog(EVENTS.SEEKBAR_MOUSE_LEAVE)));
+            seekSlider.current.addEventListener("mousedown", () => actions.logEvent(generateEventlog(EVENTS.SEEKBAR_MOUSE_DOWN)));
         }
-    }, [video, seeker])
+    }, [video, seekSlider]);
+
+    // basic video playback
 
     function togglePlay() {
-        if (video.paused || video.ended) video.play();
-        else video.pause();
+        if (video.current.paused || video.current.ended) play();
+        else pause();
+    }
+
+    function play() {
+        video.current.play();
+        setIsPaused(false);
+    }
+    
+    function pause() {
+        video.current.pause();
+        setIsPaused(true);
     }
 
     function stopVideo() {
-        video.pause();
-        video.currentTime = 0;
-        seeker.value = 0;
+        pause();
+        video.current.currentTime = 0;
+        seekSlider.current.value = 0;
     }
 
     function forward(seconds) {
-        video.currentTime += seconds;
-        if (video.paused) togglePlay();
+        video.current.currentTime += seconds;
+        if (video.current.paused) togglePlay();
     }
 
     function rewind(seconds) {
-        video.currentTime -= seconds;
-        if (video.paused) togglePlay();
+        video.current.currentTime -= seconds;
+        if (video.current.paused) togglePlay();
     }
 
-    function videoTimeUpdate() {
-        if (!seeker.getAttribute('max')) seeker.setAttribute('max', video.duration);
-        if (!activeSeek) seeker.value = video.currentTime;
-    }
+    // vido playback rate
 
     function handlePlaybackSelect(speed) {
-        video.playbackRate = speed;
+        setPlaybackRate(speed);
     }
 
     function handlePlaybackClick() {
-        video.playbackRate = video.playbackRate == 2 ? 0.5 : video.playbackRate + 0.25
+        setPlaybackRate(video.current.playbackRate == 2 ? 0.5 : video.current.playbackRate + 0.25);
     }
 
-    // init video controllers event listeners
     useEffect(() => {
-        if (video && videoControls && playpause && stop && rewind10 && seeker) {
-            
-            document.onkeydown = function(e) {
-                if (e.keyCode == BUTTON_KEYS.LEFT_KEY){
-                    e.preventDefault();
-                    rewind(10)
-                } else if (e.keyCode == BUTTON_KEYS.RIGHT_KEY){
-                    e.preventDefault();
-                    forward(10)
-                }
-            }
+        video.current.playbackRate = playbackRate;
+    }, [playbackRate]);
 
-            document.body.onkeypress = function(e){
-                if(e.keyCode == 32){
-                    e.preventDefault();
-                    togglePlay();
-                }
-            }
+    // video time update handling
 
-            // Hide the default controls
-            video.controls = false;
-            
-            seeker.value = 0;
+    var timeUpdate = () => setCurrentTime(video.current.currentTime);
 
-            // Display the user defined video controls
-            videoControls.style.display = 'block';
-
-            playpause.addEventListener('click', function(e) {
-                togglePlay();
-            });
-            video.addEventListener("click", function(e) {
-                togglePlay();
-            })
-            
-            videoContainer.addEventListener("mouseover", function(e) {
-                videoControls.setAttribute("data-state", "active");
-            })
-            videoContainer.addEventListener("mouseleave", function(e) {
-                setTimeout(() => videoControls.setAttribute("data-state", "hidden"), 3000);
-            })
-
-            stop.addEventListener('click', function(e) {
-                stopVideo();
-            });
-            rewind10.addEventListener('click', function(e) {
-                rewind(10);
-            })
-            video.addEventListener('timeupdate', function() {
-                videoTimeUpdate();
-            });
-            function scrub(e) {
-                video.currentTime = e.target.value;
-            }
-            seeker.addEventListener('mousedown', () => {
-                video.pause();
-                activeSeek = true;
-            });
-            seeker.addEventListener('mouseup', () => {
-                video.play();
-                activeSeek = false;
-            });
-            seeker.addEventListener('mousemove', (e) => {activeSeek && scrub(e)});
-            seeker.addEventListener('click', (e) => scrub(e));
+    useEffect(() => {
+        var handleTimeUpdate = () => {
+            if (!isSeeking) seekSlider.current.value = currentTime;
         }
-    }, [video, videoControls, playpause, stop, rewind10, seeker])
+        handleTimeUpdate();
+    }, [currentTime, isSeeking]);
 
+    useEffect(() => {
+        var handleScrub = () => {
+            if (!isSeeking) seekSlider.current.value = seekValue;
+            video.current.currentTime = seekValue;
+        }
+        handleScrub();
+    }, [isSeeking, seekValue]);
 
     // init volume event listeners
     useEffect(() => {
-        if (video && videoControls && mute && volumeSlider) {
-            mute.addEventListener('click', function(e) {
-                video.muted = !video.muted;
-            });
-            volumeSlider.addEventListener("change", function (e) {
-                video.volume = volumeSlider.value;
-            })
+        if (video && videoControls && muteButton && volumeSlider) {
+            muteButton.current.addEventListener('click', () => setIsMute(!video.current.muted));
+            volumeSlider.current.addEventListener("change", () => setVolume(volumeSlider.current.value));
         }
-    }, [video, videoControls, mute, volumeSlider])
+    }, [video, videoControls, muteButton, volumeSlider]);
+
+    useEffect(() => { video.current.muted = isMute }, [isMute]);
+    useEffect(() => { video.current.volume = volume }, [volume]);
 
     return (
-        <figure id="video-container" data-video-paused={video ? video.paused : true} data-fullscreen="false">
-            <video id="video" preload="auto">
+        <figure id="video-container" ref={videoContainer} data-video-paused={video ? video.paused : true} data-fullscreen="false">
+            <video id="video" ref={video}>
                 <source src={videoData.sources[0].src} type={videoData.sources[0].srctype}/>
                 <track
                     src={videoData.tracks[0].src} default
@@ -297,16 +305,16 @@ export default function VideoPlayer({videoData, actions}) {
                     label={videoData.tracks[0].label}
                 />
             </video>
-            <div id="video-controls" className="controls" data-state="hidden">
+            <div id="video-controls" ref={videoControls} className="controls">
                 <div id="timeline-container">
-                    <input id="seeker" type="range" min="0" step="1"/>
+                    <input id="seeker" ref={seekSlider} type="range" min="0" step="1" outline="none"/>
                 </div>
                 <div className="button-bar">
                     <ButtonGroup className="button-bar-left">
-                        <button id="playpause" data-state="play" onClick={() => actions.pauseVideo()}>{video && video.paused ? <PlayArrowIcon/> : <PauseIcon/>}</button>
-                        <button id="stop" type="button" data-state="stop"><StopIcon/></button>
-                        <button id="rewind10" type="button" data-state="replay" onClick={() => actions.rewind10()}><Replay10Icon/></button>
-                        <span id="time-display">{video && formatTime(video.currentTime)} / {video && formatTime(video.duration)}</span>
+                        <button id="playpause" ref={playpauseButton}>{isPaused ? <PlayArrowIcon/> : <PauseIcon/>}</button>
+                        <button id="stop" ref={stopButton} type="button"><StopIcon/></button>
+                        <button id="rewind10" ref={rewind10Button} type="button"><Replay10Icon/></button>
+                        <span id="time-display">{formatTime(currentTime)} / {formatTime(duration)}</span>
                     </ButtonGroup>
                     <ButtonGroup className="button-bar-right">
                         <div id="playback-container">
@@ -317,7 +325,7 @@ export default function VideoPlayer({videoData, actions}) {
                                 variant="light"
                                 onClick={handlePlaybackClick}
                                 onSelect={handlePlaybackSelect}
-                                title={`${video && video.playbackRate}x`}
+                                title={`${playbackRate}x`}
                             >
                                 <Dropdown.Item eventKey="2">2x</Dropdown.Item>
                                 <Dropdown.Item eventKey="1.75">1.75x</Dropdown.Item>
@@ -328,11 +336,15 @@ export default function VideoPlayer({videoData, actions}) {
                             </SplitButton>
                         </div>
                         <div id="volume-controls">
-                            <button id="mute" type="button" data-state="mute">{video && video.muted ? <VolumeOffIcon/> : video && video.volume < 0.1 ? <VolumeMuteIcon/> :  video && video.volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
-                            <input id="volume-slider" type="range" min="0" max="1" step="0.1"/>
+                            <button id="mute" ref={muteButton} type="button">{isMute ? <VolumeOffIcon/> : volume < 0.1 ? <VolumeMuteIcon/> :  volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
+                            <input id="volume-slider" ref={volumeSlider} type="range" min="0" max="1" step="0.1"/>
                         </div>
-                        <button id="captions" type="button" data-state="captions"><ClosedCaptionIcon/></button>
-                        <button id="fs" type="button" data-state="go-fullscreen"><FullscreenIcon/></button>
+                        <button id="captions" ref={captionsButton} type="button">
+                            {activeCaptions ? <ClosedCaptionIcon data-state="active"/> : <ClosedCaptionOutlinedIcon/>}
+                        </button>
+                        <button id="fs" ref={fullscreenButton} type="button" data-state="go-fullscreen">
+                            {isFullscreen ? <FullscreenExitIcon/> : <FullscreenIcon/>}
+                        </button>
                     </ButtonGroup>
                 </div>
             </div>
