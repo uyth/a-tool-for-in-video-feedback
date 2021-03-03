@@ -21,7 +21,16 @@ updateSession = async (sessionId, body) => {
         const event = await new Event(body).save();
         const session = await Session.findByIdAndUpdate({ _id: sessionId }, {$push: {events: event}});
         await session.save();
-        return { success: true, id: session._id, message: 'Session updated!' }
+
+        let struggling = false;
+        if (event.eventType == "PAUSE") struggling = true;
+        else if (event.eventType == "RATECHANGE") {
+            let currentSnapshot = event.videoSnapshot;
+            let lastSnapshot = session.events[session.events.length-1].videoSnapshot;
+            struggling = currentSnapshot.playbackRate < lastSnapshot.playbackRate;
+        }
+        
+        return { success: true, id: session._id, message: 'Session updated!', struggling: struggling }
     } catch (error) {
         return {error: error, message: "Session not updated"}
     }
