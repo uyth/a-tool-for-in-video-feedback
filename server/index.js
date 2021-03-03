@@ -48,33 +48,33 @@ wsServer.on('connection', socket => {
 })
 
 async function receiveMessage(ID, payload, socket) {
-    console.log("receiving message")
     let data = JSON.parse(payload);
-
+    console.log("receiving message")
+    console.log("Type of data: " + data.type)
     if (data.type == "INIT_SESSION") {
         let response = await wsController.createSession(data.data)
         socket.send(JSON.stringify(response));
     } else if (data.type == "EVENT") {
-        let times = []
-        times.push(Date.now()) // TIME LOGGING
-        if (data.event.eventType == "PAUSE") {
-            let timestamp = data.event.videoSnapshot.currentTime;
-            let keywords = await wsController.extractKeywords(data.session, timestamp);
-            times.push(Date.now())  // TIME LOGGING
-            let stackOverflow = await wsController.searchStackOverflow(keywords);
-            times.push(Date.now()) // TIME LOGGING
-            socket.send(JSON.stringify({
-                "type": "SET_FEEDBACK",
-                "feedback": stackOverflow
-            }))
-
-        }
-        console.log("stacktime: "+ Number(times[2]-times[1]))
-        console.log("keywordtime: "+ Number(times[1]-times[0]))
-        console.log("total: "+ Number(times[2]-times[0]))
+        processEvent(socket, data);
     }
-    }
+    console.log("");
+}
 
+async function processEvent(socket, data) {
+    console.log("event: " + data.event.eventType);
+    console.log("event: " + data.event.videoSnapshot.currentTime);
+    if (data.event.eventType == "PAUSE") sendFeedback(socket, data);
+}
+
+async function sendFeedback(socket, data) {
+    let times = []
+    times.push(Date.now()) // TIME LOGGING
+    let timestamp = data.event.videoSnapshot.currentTime;
+    let stackOverflow = await wsController.searchStackOverflow(data.session, timestamp);
+    times.push(Date.now()) // TIME LOGGING
+    console.log("search time: "+ Number(times[1]-times[0]))
+    socket.send(JSON.stringify({"type": "SET_FEEDBACK", "feedback": stackOverflow}))
+}
 
 wsServer.on('close', () => {
   console.log("disconnected");

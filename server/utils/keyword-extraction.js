@@ -8,10 +8,10 @@ const MIN_SCORE_THRESHOLD = 0.1;
 const MAX_AMOUNT_KEYWORDS = 1;
 const MAX_WORDS_PER_KEYWORD = 2;
 
-const extractKeywordsFromVtt = function (vttPath, timestamp) {
+const extractKeywordsFromVtt = function (vttPath, timeRanges) {
 
     let vttObject = generateVttObject(vttPath)
-    if (timestamp) vttObject = filterVtt(vttObject, [[timestamp-10, timestamp+10]]);
+    if (timeRanges) vttObject = filterVtt(vttObject, timeRanges);
 
     let text = extractVttCaptions(vttObject).toLowerCase();
 
