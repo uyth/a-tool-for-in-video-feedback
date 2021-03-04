@@ -18,22 +18,23 @@ createSession = async (body) => {
 updateSession = async (sessionId, body) => {
 
     try {
-        const event = await new Event(body).save();
-        const session = await Session.findByIdAndUpdate({ _id: sessionId }, {$push: {events: event}});
+        let event = await new Event(body).save();
+        let session = await Session.findByIdAndUpdate({ _id: sessionId }, {$push: {events: event}});
         await session.save();
 
         let struggling = false;
         if (event.eventType == "PAUSE") struggling = true;
         else if (event.eventType == "RATECHANGE") {
             let currentSnapshot = event.videoSnapshot;
-            let lastSnapshot = session.events[session.events.length-1].videoSnapshot;
-            struggling = currentSnapshot.playbackRate < lastSnapshot.playbackRate;
+            let prevSnapshot = session.events[session.events.length-1].videoSnapshot;
+            struggling = currentSnapshot.playbackRate < prevSnapshot.playbackRate;
         } else if (event.eventType == "SKIP_BACK") {
             struggling = true;
         }
         
         return { success: true, id: session._id, message: 'Session updated!', struggling: struggling }
     } catch (error) {
+        console.log("Could not update session");
         return {error: error, message: "Session not updated"}
     }
 }
