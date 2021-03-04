@@ -28,6 +28,8 @@ updateSession = async (sessionId, body) => {
             let currentSnapshot = event.videoSnapshot;
             let lastSnapshot = session.events[session.events.length-1].videoSnapshot;
             struggling = currentSnapshot.playbackRate < lastSnapshot.playbackRate;
+        } else if (event.eventType == "SKIP_BACK") {
+            struggling = true;
         }
         
         return { success: true, id: session._id, message: 'Session updated!', struggling: struggling }
