@@ -18,15 +18,11 @@ import Replay10Icon from '@material-ui/icons/Replay10';
 const EVENTS = {
     PLAY: "PLAY",
     PAUSE: "PAUSE",
-    REWIND10: "REWIND10",
-    FORWARD10: "FORWARD10",
-    SEEKING: "SEEKING",
-    SEEKED: "SEEKED",
+    SKIP_BACK: "SKIP_BACK",
+    SKIP_FORWARD: "SKIP_FORWARD",
     RATECHANGE: "RATECHANGE",
-    SEEKBAR_CLICK: "SEEKBAR_CLICK",
-    SEEKBAR_MOUSE_ENTER: "SEEKBAR_MOUSE_ENTER",
-    SEEKBAR_MOUSE_LEAVE: "SEEKBAR_MOUSE_LEAVE",
     SEEKBAR_MOUSE_DOWN: "SEEKBAR_MOUSE_DOWN",
+    SEEKBAR_MOUSE_UP: "SEEKBAR_MOUSE_UP"
 }
 
 const BUTTON_KEYS = {
@@ -94,9 +90,11 @@ export default function VideoPlayer({videoData, actions}) {
                 if (e.keyCode == BUTTON_KEYS.LEFT_KEY) {
                     e.preventDefault();
                     rewind(10);
+                    generateEventlog(EVENTS.SKIP_BACK);
                 } else if (e.keyCode == BUTTON_KEYS.RIGHT_KEY) {
                     e.preventDefault();
                     forward(10);
+                    generateEventlog(EVENTS.SKIP_FORWARD);
                 }
             }
             document.body.onkeypress = (e) => {
@@ -116,19 +114,37 @@ export default function VideoPlayer({videoData, actions}) {
             
             // seeker controls
             seekSlider.current.addEventListener("change", e => setSeekValue(e.target.value));
-            seekSlider.current.addEventListener("mousemove", e => setSeekValue(e.target.value));
-            seekSlider.current.addEventListener('mousedown', () => {
-                pause();
-                setIsSeeking(true);
-            });
-            seekSlider.current.addEventListener('mouseup', () => {
-                play();
-                setIsSeeking(false);
-            });
+            seekSlider.current.addEventListener('mousedown', () => setIsSeeking(true));
+            seekSlider.current.addEventListener('mouseup', () => setIsSeeking(false));
 
         }
     }, [video, videoControls, playpauseButton, stopButton, rewind10Button, seekSlider]);
 
+    // log events
+    useEffect(() => {
+        if (video.current && seekSlider.current && rewind10Button) {
+            video.current.addEventListener("play", () => generateEventlog(EVENTS.PLAY));
+            video.current.addEventListener("pause", () => generateEventlog(EVENTS.PAUSE));
+            video.current.addEventListener("ratechange", () => generateEventlog(EVENTS.RATECHANGE));
+            rewind10Button.current.addEventListener("click", () => generateEventlog(EVENTS.SKIP_BACK));
+            seekSlider.current.addEventListener("mousedown", () => generateEventlog(EVENTS.SEEKBAR_MOUSE_DOWN));
+            seekSlider.current.addEventListener("mouseup", () => generateEventlog(EVENTS.SEEKBAR_MOUSE_UP));
+        }
+    }, [video, seekSlider, rewind10Button]);
+
+    var generateEventlog = (type) => {
+        actions.logEvent({
+            eventType: type,
+            eventTimestamp: Date.now(),
+            videoSnapshot: {
+                currentTime: video.current.currentTime,
+                duration: video.current.duration,
+                paused: video.current.paused,
+                playbackRate: video.current.playbackRate,
+                played: video.current.played,
+            }
+        });
+    }
 
     // // setup fullscreen support
     useEffect(() => {
@@ -189,34 +205,6 @@ export default function VideoPlayer({videoData, actions}) {
         }
     }, [video, captionsButton]);
 
-    // log events
-    useEffect(() => {
-        var generateEventlog = (type) => {
-            return {
-                eventType: type,
-                eventTimestamp: Date.now(),
-                videoSnapshot: {
-                    currentTime: video.current.currentTime,
-                    duration: video.current.duration,
-                    paused: video.current.paused,
-                    playbackRate: video.current.playbackRate,
-                    played: video.current.played,
-                }
-            }
-        }
-        if (video.current && seekSlider) {
-            video.current.addEventListener("play", () => actions.logEvent(generateEventlog(EVENTS.PLAY)));
-            video.current.addEventListener("pause", () => actions.logEvent(generateEventlog(EVENTS.PAUSE)));
-            video.current.addEventListener("ratechange", () => actions.logEvent(generateEventlog(EVENTS.RATECHANGE)));
-            video.current.addEventListener("seeking", () => actions.logEvent(generateEventlog(EVENTS.SEEKING)));
-            video.current.addEventListener("seeked", () => actions.logEvent(generateEventlog(EVENTS.SEEKED)));
-            seekSlider.current.addEventListener("click", () => actions.logEvent(generateEventlog(EVENTS.SEEKBAR_CLICK)));
-            seekSlider.current.addEventListener("mouseenter", () => actions.logEvent(generateEventlog(EVENTS.SEEKBAR_MOUSE_ENTER)));
-            seekSlider.current.addEventListener("mouseleave", () => actions.logEvent(generateEventlog(EVENTS.SEEKBAR_MOUSE_LEAVE)));
-            seekSlider.current.addEventListener("mousedown", () => actions.logEvent(generateEventlog(EVENTS.SEEKBAR_MOUSE_DOWN)));
-        }
-    }, [video, seekSlider]);
-
     // basic video playback
 
     function togglePlay() {
@@ -275,13 +263,20 @@ export default function VideoPlayer({videoData, actions}) {
         handleTimeUpdate();
     }, [currentTime, isSeeking]);
 
+    // 
     useEffect(() => {
-        var handleScrub = () => {
+        var handleSeek = () => {
             if (!isSeeking) seekSlider.current.value = seekValue;
+        }
+        handleSeek();
+    }, [isSeeking, seekValue]);
+
+    useEffect(() => {
+        var handleSeek = () => {
             video.current.currentTime = seekValue;
         }
-        handleScrub();
-    }, [isSeeking, seekValue]);
+        handleSeek();
+    }, [seekValue]);
 
     // init volume event listeners
     useEffect(() => {
