@@ -263,10 +263,14 @@ export default function VideoPlayer({videoData, actions}) {
         handleTimeUpdate();
     }, [currentTime, isSeeking]);
 
-    // 
+    // handle seek
+
     useEffect(() => {
         var handleSeek = () => {
-            if (!isSeeking) seekSlider.current.value = seekValue;
+            if (!isSeeking) {
+                seekSlider.current.value = seekValue;
+                if (isPaused) play();
+            }
         }
         handleSeek();
     }, [isSeeking, seekValue]);
