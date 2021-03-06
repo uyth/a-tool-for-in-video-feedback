@@ -3,23 +3,24 @@ const Lecture = require('../models/lecture-model')
 
 const { extractKeywordsFromVtt } = require('../utils/keyword-extraction');
 
-createSession = async (body) => {
-
+createSession = async (socket, body) => {
+    let response;
     try {
         const session = await new Session(body).save()
         await Lecture.findByIdAndUpdate({_id: body.lecture}, {$push: {sessions: session._id}}).exec()
-        return { type: "SET_SESSION_ID", session: session._id, message: 'Session created' }
+        response = { type: "SET_SESSION_ID", session: session._id, message: 'Session created' };
     } catch (error) {
         console.log(error)
-        return {error: error, message: "Session not created"}
+        response = {error: error, message: "Session not created"}
     }
+    socket.send(JSON.stringify(response));
 }
 
-updateSession = async (sessionId, body) => {
-
+processEvent = async (socket, data) => {
+    console.log("event: " + data.event.eventType + " at time " + data.event.videoSnapshot.currentTime);
     try {
-        let event = await new Event(body).save();
-        let session = await Session.findByIdAndUpdate({ _id: sessionId }, {$push: {events: event}});
+        let event = await new Event(data.event).save();
+        let session = await Session.findByIdAndUpdate({ _id: data.session }, {$push: {events: event}});
         await session.save();
 
         let struggling = false;
@@ -31,12 +32,21 @@ updateSession = async (sessionId, body) => {
         } else if (event.eventType == "SKIP_BACK") {
             struggling = true;
         }
-        
-        return { success: true, id: session._id, message: 'Session updated!', struggling: struggling }
+        if (struggling) sendFeedback(socket, data);
     } catch (error) {
         console.log("Could not update session");
         return {error: error, message: "Session not updated"}
     }
+}
+
+async function sendFeedback(socket, data) {
+    let times = []
+    times.push(Date.now()) // TIME LOGGING
+    let timestamp = data.event.videoSnapshot.currentTime;
+    let stackOverflow = await searchStackOverflow(data.session, timestamp);
+    times.push(Date.now()) // TIME LOGGING
+    console.log("search time: "+ Number(times[1]-times[0]))
+    socket.send(JSON.stringify({"type": "SET_FEEDBACK", "feedback": stackOverflow}))
 }
 
 const axios = require('axios');

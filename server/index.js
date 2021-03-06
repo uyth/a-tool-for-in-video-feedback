@@ -52,29 +52,11 @@ async function receiveMessage(ID, payload, socket) {
     console.log("receiving message")
     console.log("Type of data: " + data.type)
     if (data.type == "INIT_SESSION") {
-        let response = await wsController.createSession(data.data)
-        socket.send(JSON.stringify(response));
+        await wsController.createSession(socket, data.data);
     } else if (data.type == "EVENT") {
-        processEvent(socket, data);
+        await wsController.processEvent(socket, data);
     }
     console.log("");
-}
-
-async function processEvent(socket, data) {
-    console.log("event: " + data.event.eventType);
-    console.log("event: " + data.event.videoSnapshot.currentTime);
-    let response = await wsController.updateSession(data.session, data.event);
-    if (response.struggling) sendFeedback(socket, data);
-}
-
-async function sendFeedback(socket, data) {
-    let times = []
-    times.push(Date.now()) // TIME LOGGING
-    let timestamp = data.event.videoSnapshot.currentTime;
-    let stackOverflow = await wsController.searchStackOverflow(data.session, timestamp);
-    times.push(Date.now()) // TIME LOGGING
-    console.log("search time: "+ Number(times[1]-times[0]))
-    socket.send(JSON.stringify({"type": "SET_FEEDBACK", "feedback": stackOverflow}))
 }
 
 wsServer.on('close', () => {
