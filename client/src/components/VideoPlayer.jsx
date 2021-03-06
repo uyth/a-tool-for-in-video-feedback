@@ -133,6 +133,10 @@ export default function VideoPlayer({videoData, actions}) {
     }, [video, seekSlider, rewind10Button]);
 
     var generateEventlog = (type) => {
+        let timeranges = [];
+        for (let i = 0; i < video.current.played.length; i++) {
+            timeranges.push([video.current.played.start(i), video.current.played.end(i)])
+        }
         actions.logEvent({
             eventType: type,
             eventTimestamp: Date.now(),
@@ -141,7 +145,7 @@ export default function VideoPlayer({videoData, actions}) {
                 duration: video.current.duration,
                 paused: video.current.paused,
                 playbackRate: video.current.playbackRate,
-                played: video.current.played,
+                played: timeranges,
             }
         });
     }

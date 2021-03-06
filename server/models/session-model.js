@@ -1,11 +1,6 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose;
 
-const TimeRange = new Schema({
-	start: Number,
-	end: Number
-})
-
 const Event = new Schema({
 	eventType: String,
 	eventTimestamp: Date,
@@ -14,7 +9,7 @@ const Event = new Schema({
 		duration: Number,
 		paused: Boolean,
 		playbackRate: Number,
-		played: [TimeRange]
+		played: [[Number]]
 	}
 },
 {timestamps: true})
