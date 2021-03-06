@@ -24,7 +24,7 @@ processEvent = async (socket, data) => {
         await session.save();
 
         let struggling = false;
-        if (event.eventType == "PAUSE") struggling = true;
+        if (event.eventType == "PAUSE") handlePauseEvent(socket, data);
         else if (event.eventType == "RATECHANGE") {
             let currentSnapshot = event.videoSnapshot;
             let prevSnapshot = session.events[session.events.length-1].videoSnapshot;
@@ -35,8 +35,15 @@ processEvent = async (socket, data) => {
         if (struggling) sendFeedback(socket, data);
     } catch (error) {
         console.log("Could not update session");
-        return {error: error, message: "Session not updated"}
     }
+}
+
+handlePauseEvent = (socket, data) => {
+    setTimeout(async () => {
+        let session = await Session.findById(data.session);
+        let lastEvent = session.events[session.events.length-1];
+        if (lastEvent.eventType == "PAUSE") sendFeedback(socket, data);
+    }, 5000);
 }
 
 async function sendFeedback(socket, data) {
@@ -100,6 +107,5 @@ extractKeywords = async (sessionId, timestamp) => {
 
 module.exports = {
     createSession,
-    updateSession,
-    searchStackOverflow
+    processEvent,
 }
