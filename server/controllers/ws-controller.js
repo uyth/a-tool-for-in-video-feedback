@@ -29,9 +29,8 @@ processEvent = async (socket, data) => {
             let currentSnapshot = event.videoSnapshot;
             let prevSnapshot = session.events[session.events.length-1].videoSnapshot;
             struggling = currentSnapshot.playbackRate < prevSnapshot.playbackRate;
-        } else if (event.eventType == "SKIP_BACK") {
-            struggling = true;
-        }
+        } else if (event.eventType == "SKIP_BACK") handleSkipBack(socket, data);
+
         if (struggling) sendFeedback(socket, data);
     } catch (error) {
         console.log("Could not update session");
@@ -45,6 +44,23 @@ handlePauseEvent = (socket, data) => {
         if (lastEvent.eventType == "PAUSE") sendFeedback(socket, data);
     }, 5000);
 }
+
+handleSkipBack = (socket, data) => {
+    setTimeout(async () => {
+        let session = await Session.findById(data.session);
+        let lastEvent = session.events[session.events.length-1];
+        if (lastEvent.eventType == "SKIP_BACK") {
+            let snapshot = lastEvent.videoSnapshot;
+            if (snapshot.played.some(seg => hasWatchedSegment(snapshot.currentTime, seg[0], seg[1]))) {
+                sendFeedback(socket, data);
+            }
+        }
+    }, 3000);
+}
+
+hasWatchedSegment = (currentTime, start, end) => {
+    return start <= currentTime && currentTime <= end;
+} 
 
 async function sendFeedback(socket, data) {
     let times = []
