@@ -3,7 +3,7 @@ const Lecture = require('../models/lecture-model')
 
 const { extractKeywordsFromVtt } = require('../utils/keyword-extraction');
 
-const MILLIS_IN_MINUTE = 60000;
+const MILLIS_IN_SECONDS = 1000;
 
 createSession = async (socket, body) => {
     let response;
@@ -26,7 +26,7 @@ processEvent = async (socket, data) => {
         await session.save();
 
         if (event.eventType == "PAUSE") handlePauseEvent(socket, data);
-        else if (event.eventType == "RATECHANGE") handleRatechange(socket, data, session, event)
+        else if (event.eventType == "RATECHANGE") handleRatechange(socket, data)
         else if (event.eventType == "SKIP_BACK") handleSkipBack(socket, data);
         else if (event.eventType == "SKIP_FORWARD") handleSkipForward(socket, data);
 
@@ -43,12 +43,31 @@ handlePauseEvent = (socket, data) => {
     }, 5000);
 }
 
-handleRatechange = (socket, data, session, event) => {
-    let currentSnapshot = event.videoSnapshot;
-    let prevSnapshot = session.events[session.events.length-1].videoSnapshot;
-    let isStruggling = currentSnapshot.playbackRate < prevSnapshot.playbackRate;
+handleRatechange = (socket, data) => {
+    setTimeout(async () => {
+        let session = await Session.findById(data.session);
+        let lastEvents = filterLastEvents(session, 5);
 
-    if (isStruggling) sendFeedback(socket, data);
+        let firstRatechange = lastEvents.find(e => e.eventType=="RATECHANGE");
+
+        let ratechangeIndex;
+        for (var i = 0; i < session.events.length; i++) {
+            ratechangeIndex = i;
+            if (firstRatechange == session.events[i]) break;
+        }
+
+        let prevSnapshot = session.events[ratechangeIndex-1].videoSnapshot;
+        let currentSnapshot = session.events[session.events.length-1].videoSnapshot;
+
+        let isStruggling = currentSnapshot.playbackRate < prevSnapshot.playbackRate;
+
+        if (isStruggling) sendFeedback(socket, data);
+    }, 5000);
+}
+
+filterLastEvents = (session, seconds) => {
+    let lastEvent = session.events[session.events.length-1];
+    return session.events.filter(e => e.timestamp.getTime() + MILLIS_IN_SECONDS*seconds >= lastEvent.timestamp.getTime());
 }
 
 handleSkipBack = (socket, data) => {
@@ -71,8 +90,7 @@ hasWatchedSegment = (currentTime, start, end) => {
 handleSkipForward = (socket, data) => {
     setTimeout(async () => {
         let session = await Session.findById(data.session);
-        let lastEvent = session.events[session.events.length-1];
-        let lastMinuteEvents = session.events.filter(e => e.timestamp.getTime() + MILLIS_IN_MINUTE >= lastEvent.timestamp.getTime());    
+        let lastMinuteEvents = filterLastEvents(session, 60)
     
         let skipCount = lastMinuteEvents.reduce(((count, event) => count + (event.eventType=="SKIP_FORWARD" ? 1 : 0)), 0);
 
