@@ -23,15 +23,10 @@ processEvent = async (socket, data) => {
         let session = await Session.findByIdAndUpdate({ _id: data.session }, {$push: {events: event}});
         await session.save();
 
-        let struggling = false;
         if (event.eventType == "PAUSE") handlePauseEvent(socket, data);
-        else if (event.eventType == "RATECHANGE") {
-            let currentSnapshot = event.videoSnapshot;
-            let prevSnapshot = session.events[session.events.length-1].videoSnapshot;
-            struggling = currentSnapshot.playbackRate < prevSnapshot.playbackRate;
-        } else if (event.eventType == "SKIP_BACK") handleSkipBack(socket, data);
+        else if (event.eventType == "RATECHANGE") handleRatechange(socket, data, session, event)
+        else if (event.eventType == "SKIP_BACK") handleSkipBack(socket, data);
 
-        if (struggling) sendFeedback(socket, data);
     } catch (error) {
         console.log("Could not update session");
     }
@@ -43,6 +38,14 @@ handlePauseEvent = (socket, data) => {
         let lastEvent = session.events[session.events.length-1];
         if (lastEvent.eventType == "PAUSE") sendFeedback(socket, data);
     }, 5000);
+}
+
+handleRatechange = (socket, data, session, event) => {
+    let currentSnapshot = event.videoSnapshot;
+    let prevSnapshot = session.events[session.events.length-1].videoSnapshot;
+    let isStruggling = currentSnapshot.playbackRate < prevSnapshot.playbackRate;
+
+    if (isStruggling) sendFeedback(socket, data);
 }
 
 handleSkipBack = (socket, data) => {
