@@ -73,12 +73,13 @@ filterLastEvents = (session, seconds) => {
 handleSkipBack = (socket, data) => {
     setTimeout(async () => {
         let session = await Session.findById(data.session);
-        let lastEvent = session.events[session.events.length-1];
-        if (lastEvent.eventType == "SKIP_BACK") {
-            let snapshot = lastEvent.videoSnapshot;
-            if (snapshot.played.some(seg => hasWatchedSegment(snapshot.currentTime, seg[0], seg[1]))) {
-                sendFeedback(socket, data);
-            }
+        let lastEvents = filterLastEvents(session, 10);
+        
+        let lastSkipBack = lastEvents.reverse().find(e => e.eventType == "SKIP_BACK");
+
+        let snapshot = lastSkipBack.videoSnapshot;
+        if (snapshot.played.some(seg => hasWatchedSegment(snapshot.currentTime, seg[0], seg[1]))) {
+            sendFeedback(socket, data);
         }
     }, 3000);
 }
