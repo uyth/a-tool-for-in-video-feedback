@@ -139,7 +139,7 @@ export default function VideoPlayer({videoData, actions}) {
         }
         actions.logEvent({
             eventType: type,
-            eventTimestamp: Date.now(),
+            timestamp: Date.now(),
             videoSnapshot: {
                 currentTime: video.current.currentTime,
                 duration: video.current.duration,

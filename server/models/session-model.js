@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const Event = new Schema({
 	eventType: String,
-	eventTimestamp: Date,
+	timestamp: Date,
 	videoSnapshot: {
 		currentTime: Number,
 		duration: Number,

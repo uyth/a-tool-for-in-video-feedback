@@ -3,6 +3,8 @@ const Lecture = require('../models/lecture-model')
 
 const { extractKeywordsFromVtt } = require('../utils/keyword-extraction');
 
+const MILLIS_IN_SECONDS = 60000;
+
 createSession = async (socket, body) => {
     let response;
     try {
@@ -26,6 +28,7 @@ processEvent = async (socket, data) => {
         if (event.eventType == "PAUSE") handlePauseEvent(socket, data);
         else if (event.eventType == "RATECHANGE") handleRatechange(socket, data, session, event)
         else if (event.eventType == "SKIP_BACK") handleSkipBack(socket, data);
+        else if (event.eventType == "SKIP_FORWARD") handleSkipForward(socket, data);
 
     } catch (error) {
         console.log("Could not update session");
@@ -64,6 +67,18 @@ handleSkipBack = (socket, data) => {
 hasWatchedSegment = (currentTime, start, end) => {
     return start <= currentTime && currentTime <= end;
 } 
+
+handleSkipForward = (socket, data) => {
+    setTimeout(async () => {
+        let session = await Session.findById(data.session);
+        let lastEvent = session.events[session.events.length-1];
+        let lastMinuteEvents = session.events.filter(e => e.timestamp.getTime() + MILLIS_IN_SECONDS >= lastEvent.timestamp.getTime());    
+    
+        let skipCount = lastMinuteEvents.reduce(((count, event) => count + (event.eventType=="SKIP_FORWARD" ? 1 : 0)), 0);
+
+        if (skipCount < 3) sendFeedback(socket, data);
+    }, 5000);
+}
 
 async function sendFeedback(socket, data) {
     let times = []
