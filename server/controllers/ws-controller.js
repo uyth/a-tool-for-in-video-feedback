@@ -102,8 +102,11 @@ handleSkipForward = (socket, data) => {
 async function sendFeedback(socket, data) {
     let times = []
     times.push(Date.now()) // TIME LOGGING
-    let timestamp = data.event.videoSnapshot.currentTime;
-    let stackOverflow = await searchStackOverflow(data.session, timestamp);
+    let session = await Session.findById(data.session);
+    let lastEvent = session.events[session.events.length-1];
+    let timestamp = lastEvent.videoSnapshot.currentTime;
+    
+    let stackOverflow = await searchStackOverflow(session.lecture, timestamp);
     times.push(Date.now()) // TIME LOGGING
     console.log("search time: "+ Number(times[1]-times[0]))
     socket.send(JSON.stringify({"type": "SET_FEEDBACK", "feedback": stackOverflow}))
@@ -111,8 +114,8 @@ async function sendFeedback(socket, data) {
 
 const axios = require('axios');
 
-searchStackOverflow = async function (sessionId, timestamp, tagged) {
-    let keywords = await extractKeywords(sessionId, timestamp);
+searchStackOverflow = async function (lectureId, timestamp, tagged) {
+    let keywords = await extractKeywords(lectureId, timestamp);
     let response = await axios.get("https://api.stackexchange.com/2.2/search/advanced", {
             params: {
                 site: "stackoverflow",
@@ -142,10 +145,9 @@ searchStackOverflow = async function (sessionId, timestamp, tagged) {
     return questions;
 }
 
-extractKeywords = async (sessionId, timestamp) => {
+extractKeywords = async (lectureId, timestamp) => {
     try {
-        let session = await Session.findById({_id: sessionId})
-        let lecture = await Lecture.findById({_id: session.lecture})
+        let lecture = await Lecture.findById({_id: lectureId})
 
         let vttPath = lecture.video.tracks[0].src
         let keywords = extractKeywordsFromVtt(vttPath, [[timestamp-10, timestamp+10]])
