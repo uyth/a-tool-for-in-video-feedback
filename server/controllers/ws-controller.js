@@ -3,7 +3,7 @@ const Lecture = require('../models/lecture-model')
 
 const { extractKeywordsFromVtt } = require('../utils/keyword-extraction');
 
-const MILLIS_IN_SECONDS = 60000;
+const MILLIS_IN_MINUTE = 60000;
 
 createSession = async (socket, body) => {
     let response;
@@ -72,7 +72,7 @@ handleSkipForward = (socket, data) => {
     setTimeout(async () => {
         let session = await Session.findById(data.session);
         let lastEvent = session.events[session.events.length-1];
-        let lastMinuteEvents = session.events.filter(e => e.timestamp.getTime() + MILLIS_IN_SECONDS >= lastEvent.timestamp.getTime());    
+        let lastMinuteEvents = session.events.filter(e => e.timestamp.getTime() + MILLIS_IN_MINUTE >= lastEvent.timestamp.getTime());    
     
         let skipCount = lastMinuteEvents.reduce(((count, event) => count + (event.eventType=="SKIP_FORWARD" ? 1 : 0)), 0);
 
