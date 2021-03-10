@@ -86,7 +86,15 @@ export default function VideoPlayer({videoData, actions}) {
     // init playback controller event listeners
     useEffect(() => {
         if (video && videoControls && playpauseButton && stopButton && rewind10Button && seekSlider) {
-            // keyboard controls
+            video.current.addEventListener('timeupdate', () => timeUpdate());
+            video.current.addEventListener("ratechange", () => generateEventlog(EVENTS.RATECHANGE));
+
+            // skip events
+            rewind10Button.current.addEventListener('click', () => {
+                generateEventlog(EVENTS.SKIP_INIT);
+                rewind(10);
+                generateEventlog(EVENTS.SKIP_BACK);
+            });
             document.onkeydown = (e) => {
                 if (e.keyCode == BUTTON_KEYS.LEFT_KEY) {
                     e.preventDefault();
@@ -100,26 +108,21 @@ export default function VideoPlayer({videoData, actions}) {
                     generateEventlog(EVENTS.SKIP_FORWARD);
                 }
             }
+
+            // toggle play events
+            playpauseButton.current.addEventListener('click', () => togglePlay());
+            video.current.addEventListener("click", () => togglePlay());
             document.body.onkeypress = (e) => {
                 if(e.keyCode == BUTTON_KEYS.SPACEBAR) {
                     e.preventDefault();
                     togglePlay();
                 }
             }
-
-            video.current.addEventListener('timeupdate', () => timeUpdate());
-
-            // button controllers
-            playpauseButton.current.addEventListener('click', () => togglePlay());
-            video.current.addEventListener("click", () => togglePlay());
             stopButton.current.addEventListener('click', () => stopVideo());
-            rewind10Button.current.addEventListener('click', () => {
-                generateEventlog(EVENTS.SKIP_INIT);
-                rewind(10);
-                generateEventlog(EVENTS.SKIP_BACK);
-            });
+            video.current.addEventListener("play", () => generateEventlog(EVENTS.PLAY));
+            video.current.addEventListener("pause", () => generateEventlog(EVENTS.PAUSE));
             
-            // seeker controls
+            // seek events
             seekSlider.current.addEventListener('mousedown', () => {
                 generateEventlog(EVENTS.SEEK_START);
                 setIsSeeking(true);
@@ -130,14 +133,6 @@ export default function VideoPlayer({videoData, actions}) {
         }
     }, [video, videoControls, playpauseButton, stopButton, rewind10Button, seekSlider]);
 
-    // log events
-    useEffect(() => {
-        if (video.current && seekSlider.current && rewind10Button) {
-            video.current.addEventListener("play", () => generateEventlog(EVENTS.PLAY));
-            video.current.addEventListener("pause", () => generateEventlog(EVENTS.PAUSE));
-            video.current.addEventListener("ratechange", () => generateEventlog(EVENTS.RATECHANGE));
-        }
-    }, [video, seekSlider, rewind10Button]);
 
     var generateEventlog = (type) => {
         let timeranges = [];
