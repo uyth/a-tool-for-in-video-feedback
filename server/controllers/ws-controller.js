@@ -112,10 +112,14 @@ handleSeekBack = (socket, data) => {
         let seekStart = last10Seconds.find(e => e.eventType == "SEEK_START");
         let seekEnd = last10Seconds.reverse().find(e => e.eventType == "SEEK_END");
         
-        let replayLength = seekEnd.videoSnapshot.currentTime - seekStart.videoSnapshot.currentTime;
+        let seekCount = last10Seconds.reduce((count, event) => count + (event.eventType=="SEEK_START" ? 1 : 0),0);
 
-        if (replayLength > 30) sendFeedback(socket, data);
-    }, 5000);
+        let replayLength = seekStart.videoSnapshot.currentTime - seekEnd.videoSnapshot.currentTime;
+
+        if (replayLength > 30 && seekCount < 3) {
+            sendFeedback(socket, data);
+        }
+    }, 3000);
 }
 
 
