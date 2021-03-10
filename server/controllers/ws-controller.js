@@ -29,6 +29,7 @@ processEvent = async (socket, data) => {
         else if (event.eventType == "RATECHANGE") handleRatechange(socket, data)
         else if (event.eventType == "SKIP_BACK") handleSkipBack(socket, data);
         else if (event.eventType == "SKIP_FORWARD") handleSkipForward(socket, data);
+        else if (event.eventType == "SEEK_END") handleSeekBack(socket, data);
 
     } catch (error) {
         console.log("Could not update session");
@@ -98,6 +99,21 @@ handleSkipForward = (socket, data) => {
         if (skipCount < 3) sendFeedback(socket, data);
     }, 5000);
 }
+
+handleSeekBack = (socket, data) => {
+    setTimeout(async () => {
+        let session = await Session.findById(data.session);
+        let last10Seconds = filterLastEvents(session, 10);
+        
+        let seekStart = last10Seconds.find(e => e.eventType == "SEEK_START");
+        let seekEnd = last10Seconds.reverse().find(e => e.eventType == "SEEK_END");
+        
+        let replayLength = seekEnd.videoSnapshot.currentTime - seekStart.videoSnapshot.currentTime;
+
+        if (replayLength > 30) sendFeedback(socket, data);
+    }, 5000);
+}
+
 
 async function sendFeedback(socket, data) {
     let times = []

@@ -21,8 +21,8 @@ const EVENTS = {
     SKIP_BACK: "SKIP_BACK",
     SKIP_FORWARD: "SKIP_FORWARD",
     RATECHANGE: "RATECHANGE",
-    SEEKBAR_MOUSE_DOWN: "SEEKBAR_MOUSE_DOWN",
-    SEEKBAR_MOUSE_UP: "SEEKBAR_MOUSE_UP"
+    SEEK_START: "SEEK_START",
+    SEEK_END: "SEEK_END"
 }
 
 const BUTTON_KEYS = {
@@ -113,8 +113,8 @@ export default function VideoPlayer({videoData, actions}) {
             rewind10Button.current.addEventListener('click', () => rewind(10));
             
             // seeker controls
-            seekSlider.current.addEventListener("change", e => setSeekValue(e.target.value));
             seekSlider.current.addEventListener('mousedown', () => setIsSeeking(true));
+            seekSlider.current.addEventListener("change", e => setSeekValue(e.target.value));
             seekSlider.current.addEventListener('mouseup', () => setIsSeeking(false));
 
         }
@@ -127,8 +127,8 @@ export default function VideoPlayer({videoData, actions}) {
             video.current.addEventListener("pause", () => generateEventlog(EVENTS.PAUSE));
             video.current.addEventListener("ratechange", () => generateEventlog(EVENTS.RATECHANGE));
             rewind10Button.current.addEventListener("click", () => generateEventlog(EVENTS.SKIP_BACK));
-            seekSlider.current.addEventListener("mousedown", () => generateEventlog(EVENTS.SEEKBAR_MOUSE_DOWN));
-            seekSlider.current.addEventListener("mouseup", () => generateEventlog(EVENTS.SEEKBAR_MOUSE_UP));
+            seekSlider.current.addEventListener("mousedown", () => generateEventlog(EVENTS.SEEK_START));
+            seekSlider.current.addEventListener("click", () => generateEventlog(EVENTS.SEEK_END));
         }
     }, [video, seekSlider, rewind10Button]);
 
