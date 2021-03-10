@@ -18,6 +18,7 @@ import Replay10Icon from '@material-ui/icons/Replay10';
 const EVENTS = {
     PLAY: "PLAY",
     PAUSE: "PAUSE",
+    SKIP_INIT: "SKIP_INIT",
     SKIP_BACK: "SKIP_BACK",
     SKIP_FORWARD: "SKIP_FORWARD",
     RATECHANGE: "RATECHANGE",
@@ -89,10 +90,12 @@ export default function VideoPlayer({videoData, actions}) {
             document.onkeydown = (e) => {
                 if (e.keyCode == BUTTON_KEYS.LEFT_KEY) {
                     e.preventDefault();
+                    generateEventlog(EVENTS.SKIP_INIT);
                     rewind(10);
                     generateEventlog(EVENTS.SKIP_BACK);
                 } else if (e.keyCode == BUTTON_KEYS.RIGHT_KEY) {
                     e.preventDefault();
+                    generateEventlog(EVENTS.SKIP_INIT);
                     forward(10);
                     generateEventlog(EVENTS.SKIP_FORWARD);
                 }
@@ -110,7 +113,11 @@ export default function VideoPlayer({videoData, actions}) {
             playpauseButton.current.addEventListener('click', () => togglePlay());
             video.current.addEventListener("click", () => togglePlay());
             stopButton.current.addEventListener('click', () => stopVideo());
-            rewind10Button.current.addEventListener('click', () => rewind(10));
+            rewind10Button.current.addEventListener('click', () => {
+                generateEventlog(EVENTS.SKIP_INIT);
+                rewind(10);
+                generateEventlog(EVENTS.SKIP_BACK);
+            });
             
             // seeker controls
             seekSlider.current.addEventListener('mousedown', () => setIsSeeking(true));
@@ -126,7 +133,6 @@ export default function VideoPlayer({videoData, actions}) {
             video.current.addEventListener("play", () => generateEventlog(EVENTS.PLAY));
             video.current.addEventListener("pause", () => generateEventlog(EVENTS.PAUSE));
             video.current.addEventListener("ratechange", () => generateEventlog(EVENTS.RATECHANGE));
-            rewind10Button.current.addEventListener("click", () => generateEventlog(EVENTS.SKIP_BACK));
             seekSlider.current.addEventListener("mousedown", () => generateEventlog(EVENTS.SEEK_START));
             seekSlider.current.addEventListener("click", () => generateEventlog(EVENTS.SEEK_END));
         }
