@@ -120,10 +120,13 @@ export default function VideoPlayer({videoData, actions}) {
             });
             
             // seeker controls
-            seekSlider.current.addEventListener('mousedown', () => setIsSeeking(true));
+            seekSlider.current.addEventListener('mousedown', () => {
+                generateEventlog(EVENTS.SEEK_START);
+                setIsSeeking(true);
+            });
             seekSlider.current.addEventListener("change", e => setSeekValue(e.target.value));
             seekSlider.current.addEventListener('mouseup', () => setIsSeeking(false));
-
+            seekSlider.current.addEventListener("click", () => generateEventlog(EVENTS.SEEK_END));
         }
     }, [video, videoControls, playpauseButton, stopButton, rewind10Button, seekSlider]);
 
@@ -133,8 +136,6 @@ export default function VideoPlayer({videoData, actions}) {
             video.current.addEventListener("play", () => generateEventlog(EVENTS.PLAY));
             video.current.addEventListener("pause", () => generateEventlog(EVENTS.PAUSE));
             video.current.addEventListener("ratechange", () => generateEventlog(EVENTS.RATECHANGE));
-            seekSlider.current.addEventListener("mousedown", () => generateEventlog(EVENTS.SEEK_START));
-            seekSlider.current.addEventListener("click", () => generateEventlog(EVENTS.SEEK_END));
         }
     }, [video, seekSlider, rewind10Button]);
 
