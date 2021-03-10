@@ -133,6 +133,82 @@ export default function VideoPlayer({videoData, actions}) {
         }
     }, [video, videoControls, playpauseButton, stopButton, rewind10Button, seekSlider]);
 
+    // basic video playback
+
+    function togglePlay() {
+        if (video.current.paused || video.current.ended) play();
+        else pause();
+    }
+
+    function play() {
+        video.current.play();
+        setIsPaused(false);
+    }
+    
+    function pause() {
+        video.current.pause();
+        setIsPaused(true);
+    }
+
+    function stopVideo() {
+        pause();
+        video.current.currentTime = 0;
+        seekSlider.current.value = 0;
+    }
+
+    function forward(seconds) {
+        video.current.currentTime += seconds;
+        if (video.current.paused) togglePlay();
+    }
+
+    function rewind(seconds) {
+        video.current.currentTime -= seconds;
+        if (video.current.paused) togglePlay();
+    }
+
+    // vido playback rate
+
+    function handlePlaybackSelect(speed) {
+        setPlaybackRate(speed);
+    }
+
+    function handlePlaybackClick() {
+        setPlaybackRate(video.current.playbackRate == 2 ? 0.5 : video.current.playbackRate + 0.25);
+    }
+
+    useEffect(() => {
+        video.current.playbackRate = playbackRate;
+    }, [playbackRate]);
+
+    // video time update handling
+
+    var timeUpdate = () => setCurrentTime(video.current.currentTime);
+
+    useEffect(() => {
+        var handleTimeUpdate = () => {
+            if (!isSeeking) seekSlider.current.value = currentTime;
+        }
+        handleTimeUpdate();
+    }, [currentTime, isSeeking]);
+
+    // handle seek
+
+    useEffect(() => {
+        var handleSeek = () => {
+            if (!isSeeking) {
+                seekSlider.current.value = seekValue;
+                if (isPaused) play();
+            }
+        }
+        handleSeek();
+    }, [isSeeking, seekValue]);
+
+    useEffect(() => {
+        var handleSeek = () => {
+            video.current.currentTime = seekValue;
+        }
+        handleSeek();
+    }, [seekValue]);
 
     var generateEventlog = (type) => {
         let timeranges = [];
@@ -210,83 +286,6 @@ export default function VideoPlayer({videoData, actions}) {
             })
         }
     }, [video, captionsButton]);
-
-    // basic video playback
-
-    function togglePlay() {
-        if (video.current.paused || video.current.ended) play();
-        else pause();
-    }
-
-    function play() {
-        video.current.play();
-        setIsPaused(false);
-    }
-    
-    function pause() {
-        video.current.pause();
-        setIsPaused(true);
-    }
-
-    function stopVideo() {
-        pause();
-        video.current.currentTime = 0;
-        seekSlider.current.value = 0;
-    }
-
-    function forward(seconds) {
-        video.current.currentTime += seconds;
-        if (video.current.paused) togglePlay();
-    }
-
-    function rewind(seconds) {
-        video.current.currentTime -= seconds;
-        if (video.current.paused) togglePlay();
-    }
-
-    // vido playback rate
-
-    function handlePlaybackSelect(speed) {
-        setPlaybackRate(speed);
-    }
-
-    function handlePlaybackClick() {
-        setPlaybackRate(video.current.playbackRate == 2 ? 0.5 : video.current.playbackRate + 0.25);
-    }
-
-    useEffect(() => {
-        video.current.playbackRate = playbackRate;
-    }, [playbackRate]);
-
-    // video time update handling
-
-    var timeUpdate = () => setCurrentTime(video.current.currentTime);
-
-    useEffect(() => {
-        var handleTimeUpdate = () => {
-            if (!isSeeking) seekSlider.current.value = currentTime;
-        }
-        handleTimeUpdate();
-    }, [currentTime, isSeeking]);
-
-    // handle seek
-
-    useEffect(() => {
-        var handleSeek = () => {
-            if (!isSeeking) {
-                seekSlider.current.value = seekValue;
-                if (isPaused) play();
-            }
-        }
-        handleSeek();
-    }, [isSeeking, seekValue]);
-
-    useEffect(() => {
-        var handleSeek = () => {
-            video.current.currentTime = seekValue;
-        }
-        handleSeek();
-    }, [seekValue]);
 
     // init volume event listeners
     useEffect(() => {
