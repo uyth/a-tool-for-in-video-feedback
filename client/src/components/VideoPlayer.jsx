@@ -22,8 +22,9 @@ const EVENTS = {
     SKIP_BACK: "SKIP_BACK",
     SKIP_FORWARD: "SKIP_FORWARD",
     RATECHANGE: "RATECHANGE",
-    SEEK_START: "SEEK_START",
-    SEEK_END: "SEEK_END"
+    SEEK_INIT: "SEEK_INIT",
+    SEEK_FORWARD: "SEEK_FORWARD",
+    SEEK_BACK: "SEEK_BACK"
 }
 
 const BUTTON_KEYS = {
@@ -62,7 +63,6 @@ export default function VideoPlayer({videoData, actions}) {
     let [isMute, setIsMute] = useState(false);
     let [volume, setVolume] = useState(1);
     let [isFullscreen, setFullscreen] = useState(false);
-    let [seekValue, setSeekValue] = useState(0);
 
     // volume controllers
     const muteButton = useRef();
@@ -124,12 +124,17 @@ export default function VideoPlayer({videoData, actions}) {
             
             // seek events
             seekSlider.current.addEventListener('mousedown', () => {
-                generateEventlog(EVENTS.SEEK_START);
+                generateEventlog(EVENTS.SEEK_INIT);
                 setIsSeeking(true);
             });
-            seekSlider.current.addEventListener("change", e => setSeekValue(e.target.value));
-            seekSlider.current.addEventListener('mouseup', () => setIsSeeking(false));
-            seekSlider.current.addEventListener("click", () => generateEventlog(EVENTS.SEEK_END));
+            seekSlider.current.addEventListener("change", e => {
+                let timeDiff = e.target.value - video.current.currentTime;
+                video.current.currentTime = e.target.value;
+                setCurrentTime(e.target.value);
+                generateEventlog(timeDiff > 0 ? EVENTS.SEEK_FORWARD : EVENTS.SEEK_BACK);
+                if (isPaused) play();
+                setIsSeeking(false);
+            });
         }
     }, [video, videoControls, playpauseButton, stopButton, rewind10Button, seekSlider]);
 
@@ -185,30 +190,11 @@ export default function VideoPlayer({videoData, actions}) {
     var timeUpdate = () => setCurrentTime(video.current.currentTime);
 
     useEffect(() => {
-        var handleTimeUpdate = () => {
+        var updateSeeker = () => {
             if (!isSeeking) seekSlider.current.value = currentTime;
         }
-        handleTimeUpdate();
+        updateSeeker();
     }, [currentTime, isSeeking]);
-
-    // handle seek
-
-    useEffect(() => {
-        var handleSeek = () => {
-            if (!isSeeking) {
-                seekSlider.current.value = seekValue;
-                if (isPaused) play();
-            }
-        }
-        handleSeek();
-    }, [isSeeking, seekValue]);
-
-    useEffect(() => {
-        var handleSeek = () => {
-            video.current.currentTime = seekValue;
-        }
-        handleSeek();
-    }, [seekValue]);
 
     var generateEventlog = (type) => {
         let timeranges = [];
