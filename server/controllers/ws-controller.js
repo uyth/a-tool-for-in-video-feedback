@@ -134,11 +134,17 @@ async function sendFeedback(socket, data) {
     let stackOverflow = await searchStackOverflow(session.lecture, timestamp);
     times.push(Date.now()) // TIME LOGGING
     console.log("search time: "+ Number(times[1]-times[0]))
-    socket.send(JSON.stringify({"type": "SET_FEEDBACK", "feedback": stackOverflow.feedback, meta: {
-        timestamp: stackOverflow.meta.timestamp,
-        timerange: stackOverflow.meta.timerange,
-        keywords: stackOverflow.meta.keywords
-    }}))
+    socket.send(JSON.stringify({
+        type: "SET_FEEDBACK",
+        data: {
+            feedback: stackOverflow.feedback,
+            meta: {
+                timestamp: stackOverflow.meta.timestamp,
+                timerange: stackOverflow.meta.timerange,
+                keywords: stackOverflow.meta.keywords
+            }
+        }
+    }))
 }
 
 const axios = require('axios');
@@ -146,16 +152,16 @@ const axios = require('axios');
 searchStackOverflow = async function (lectureId, timestamp, tagged) {
     let keywords = await extractKeywords(lectureId, timestamp);
     let response = await axios.get("https://api.stackexchange.com/2.2/search/advanced", {
-            params: {
-                site: "stackoverflow",
-                sort: "relevance",
-                order: "desc",
-                pagesize: 10,
-                accepted: true,
-                q: keywords.keywords.join(" "),
-                tagged: tagged,
-            }
-        });
+        params: {
+            site: "stackoverflow",
+            sort: "relevance",
+            order: "desc",
+            pagesize: 10,
+            accepted: true,
+            q: keywords.keywords.join(" "),
+            tagged: tagged,
+        }
+    });
 
 
     let questions = response.data["items"];
