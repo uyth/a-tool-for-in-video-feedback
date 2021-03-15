@@ -147,7 +147,7 @@ searchStackOverflow = async function (lectureId, timestamp, tagged) {
                 order: "desc",
                 pagesize: 10,
                 accepted: true,
-                q: keywords.join(" "),
+                q: keywords.keywords.join(" "),
                 tagged: tagged,
             }
         });
@@ -158,11 +158,11 @@ searchStackOverflow = async function (lectureId, timestamp, tagged) {
     questions = questions.map(q => {
         return {
             timestamp: timestamp,
-            timerange: ["1:20", "1:40"],
+            timerange: keywords.meta.timerange,
             id: q.question_id,
             title: q.title,
             link: q.link,
-            keywords: keywords
+            keywords: keywords.keywords
         }
     });
 
@@ -171,12 +171,19 @@ searchStackOverflow = async function (lectureId, timestamp, tagged) {
 
 extractKeywords = async (lectureId, timestamp) => {
     try {
-        let lecture = await Lecture.findById({_id: lectureId})
+        let lecture = await Lecture.findById({_id: lectureId});
 
-        let vttPath = lecture.video.tracks[0].src
-        let keywords = extractKeywordsFromVtt(vttPath, [[timestamp-10, timestamp+10]])
+        let vttPath = lecture.video.tracks[0].src;
+        let timerange = [timestamp-10, timestamp+10];
+        let keywords = extractKeywordsFromVtt(vttPath, [timerange]);
 
-        return keywords;
+        return {
+            keywords: keywords,
+            meta: {
+                timerange: timerange,
+                lecture: lectureId
+            }
+        };
     } catch (error) {
         console.log("ERROR extracting")
         console.log(error)
