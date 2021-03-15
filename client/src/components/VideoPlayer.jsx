@@ -38,7 +38,7 @@ var formatTime = function(seconds) {
     else return "00:00";
 }
 
-export default function VideoPlayer({videoData, actions}) {   
+export default function VideoPlayer({videoData, actions, childComponents}) {   
 
     const fullScreenEnabled = !!(document.fullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled || document.webkitSupportsFullscreen || document.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
 
@@ -295,6 +295,7 @@ export default function VideoPlayer({videoData, actions}) {
                     label={videoData.tracks[0].label}
                 />
             </video>
+            <childComponents.FeedbackAlert/>
             <div id="video-controls" ref={videoControls} className="controls">
                 <div id="timeline-container">
                     <input id="seeker" ref={seekSlider} type="range" min="0" step="1" outline="none"/>

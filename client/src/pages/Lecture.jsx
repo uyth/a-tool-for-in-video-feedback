@@ -6,6 +6,8 @@ import { Container, Button, Spinner } from 'react-bootstrap';
 import { useEffect } from 'react';
 import api from '../api'
 
+import Alert from 'react-bootstrap/Alert';
+
 const wsURL = "ws://localhost:3000";
 
 export default function Lecture(props) {
@@ -15,6 +17,7 @@ export default function Lecture(props) {
   const [session, setSession] = useState(null);
   const [feedback, setFeedback] = useState([]);
   
+  let [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     async function fetchVideo() {
@@ -68,16 +71,35 @@ export default function Lecture(props) {
         }
         if (message.type == "SET_FEEDBACK") {
             setFeedback(message.feedback);
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 10000);
         }
     }
   })
+
+  function FeedbackAlert() {
+    if (showAlert) {
+      return (
+        <div style={{
+          position: "absolute",
+          right: "1em",
+          top: "1em"
+        }}>
+          <Alert variant="info" dismissible onClose={() => setShowAlert(false)}>
+            Struggling with the lecture? Here is some feedback from StackOverflow!
+          </Alert>
+        </div>)
+    } else {
+      return null;
+    }
+  }
 
   return (
     <Container>
       {lecture && session ?
         <>
           <h1>{lecture.title}</h1>
-          <VideoPlayer videoData={lecture.video} actions={{logEvent: logEvent}}/>
+          <VideoPlayer videoData={lecture.video} actions={{logEvent: logEvent}} childComponents={{FeedbackAlert: FeedbackAlert}}/>
         </> : <Spinner animation="border" />
       }
       <Feedback feedbacks={feedback}/>
