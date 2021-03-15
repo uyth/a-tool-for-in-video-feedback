@@ -105,7 +105,7 @@ export default function Lecture(props) {
               <VideoPlayer videoData={lecture.video} actions={{logEvent: logEvent}} childComponents={{FeedbackAlert: FeedbackAlert}}/>
               <Button onClick={() => logEvent({eventType: "MANUAL_FEEDBACK_REQUEST", videoSnapshot: {currentTime: 100}})}>Request Feedback</Button>
             </Col>
-            <Col>
+            <Col style={{"max-height": "80vh", overflow: "auto"}}>
               <Feedback feedbacks={feedback}/>
             </Col>
           </Row>
