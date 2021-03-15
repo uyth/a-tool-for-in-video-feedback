@@ -102,6 +102,7 @@ export default function Lecture(props) {
           <VideoPlayer videoData={lecture.video} actions={{logEvent: logEvent}} childComponents={{FeedbackAlert: FeedbackAlert}}/>
         </> : <Spinner animation="border" />
       }
+      <Button onClick={() => logEvent({eventType: "MANUAL_FEEDBACK_REQUEST", videoSnapshot: {currentTime: 100}})}>Request Feedback</Button>
       <Feedback feedbacks={feedback}/>
     </Container>
   )

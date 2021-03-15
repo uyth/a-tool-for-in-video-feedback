@@ -30,6 +30,7 @@ processEvent = async (socket, data) => {
         else if (event.eventType == "SKIP_BACK") handleSkipBack(socket, data);
         else if (event.eventType == "SKIP_FORWARD") handleSkipForward(socket, data);
         else if (event.eventType == "SEEK_BACK") handleSeekBack(socket, data);
+        else if (event.eventType == "MANUAL_FEEDBACK_REQUEST") sendFeedback(socket, data);
 
     } catch (error) {
         console.log("Could not update session");
