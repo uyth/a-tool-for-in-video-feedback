@@ -133,7 +133,11 @@ async function sendFeedback(socket, data) {
     let stackOverflow = await searchStackOverflow(session.lecture, timestamp);
     times.push(Date.now()) // TIME LOGGING
     console.log("search time: "+ Number(times[1]-times[0]))
-    socket.send(JSON.stringify({"type": "SET_FEEDBACK", "feedback": stackOverflow}))
+    socket.send(JSON.stringify({"type": "SET_FEEDBACK", "feedback": stackOverflow.feedback, meta: {
+        timestamp: stackOverflow.meta.timestamp,
+        timerange: stackOverflow.meta.timerange,
+        keywords: stackOverflow.meta.keywords
+    }}))
 }
 
 const axios = require('axios');
@@ -166,7 +170,14 @@ searchStackOverflow = async function (lectureId, timestamp, tagged) {
         }
     });
 
-    return questions;
+    return {
+        feedback: questions,
+        meta: {
+            keywords: keywords.keywords,
+            timestamp: timestamp,
+            timerange: keywords.meta.timerange
+        }
+    };
 }
 
 extractKeywords = async (lectureId, timestamp) => {
