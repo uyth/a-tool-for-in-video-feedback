@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Card, Button, OverlayTrigger, Popover } from 'react-bootstrap'
+import ListGroup from 'react-bootstrap/ListGroup';
 
 function FeedbackCard({props}) {
     return (
@@ -28,10 +29,33 @@ function FeedbackCard({props}) {
     )
 }
 
-export default function Feedback({feedbacks}) {
+function decodeHtml(html) {
+    var txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+}
+
+export default function Feedback({stackoverflow}) {
     return (
-        <>
-            { feedbacks.map((f, key) => <FeedbackCard key={key} props={f}/>) }
-        </>
+        <Card>
+            <Card.Header>Feedback</Card.Header>
+            <Card.Body>
+                <p>This feedback was fetched from Stackoverflow.</p>
+                <strong>Why this feedback?</strong>
+                <p>Timerange: {stackoverflow.meta.timerange.join("-")}</p>
+                <p>Timestamp: {stackoverflow.meta.timestamp}</p>
+                <p>Keywords: {stackoverflow.meta.keywords}</p>
+            </Card.Body>
+            <ListGroup>
+                { stackoverflow.feedback.map((f, key) => (
+                <ListGroup.Item key={key}>
+                    <div style={{display: "flex", justifyContent: "space-between"}}>
+                        <div>{decodeHtml(f.title)}</div>
+                        <div><Button href={f.link}>Go to source</Button></div>
+                    </div>
+                </ListGroup.Item>)
+                )}
+            </ListGroup>
+        </Card>
     )
 }

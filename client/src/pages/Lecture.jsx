@@ -71,7 +71,7 @@ export default function Lecture(props) {
             setSession(message.session);
         }
         if (message.type == "SET_FEEDBACK") {
-            setFeedback(message.feedback);
+            setFeedback([message.data, ...feedback]);
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 10000);
         }
@@ -105,8 +105,11 @@ export default function Lecture(props) {
               <VideoPlayer videoData={lecture.video} actions={{logEvent: logEvent}} childComponents={{FeedbackAlert: FeedbackAlert}}/>
               <Button onClick={() => logEvent({eventType: "MANUAL_FEEDBACK_REQUEST", videoSnapshot: {currentTime: 100}})}>Request Feedback</Button>
             </Col>
-            <Col style={{"max-height": "80vh", overflow: "auto"}}>
-              <Feedback feedbacks={feedback}/>
+            <Col>
+              <h2>Feedback</h2>
+              <div style={{"max-height": "80vh", overflow: "auto"}}>
+                {feedback && feedback.map(f => <Feedback stackoverflow={f}/>)}
+              </div>
             </Col>
           </Row>
         </> : <Spinner animation="border" />
