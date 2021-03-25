@@ -12,7 +12,7 @@ function App() {
                 <Route path="/" exact component={LectureList} />
                 <Route path="/usertest/:lecture" component={UserTest} />
                 <Route
-                    path="/lectures/:id/:user"
+                    path="/lectures/:lectureId/:code"
                     exact
                     component={Lecture}
                 />

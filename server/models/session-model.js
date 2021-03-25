@@ -17,7 +17,8 @@ const Event = new Schema({
 const Session = new Schema({
 	lecture: { type: Schema.Types.ObjectId, ref: 'Lecture'},
 	events: [Event],
-	lastFeedback: {type: Date, default: null}
+	lastFeedback: {type: Date, default: null},
+	code: {type: String, default: null}
 },
 {timestamps: true})
 

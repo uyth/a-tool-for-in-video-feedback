@@ -7,9 +7,13 @@ import api from '../api'
 
 import Alert from 'react-bootstrap/Alert';
 
+import { useParams } from 'react-router-dom';
+
 const wsURL = "ws://localhost:3000";
 
 export default function Lecture(props) {
+
+  const { lectureId, code } = useParams();
 
   const ws = useRef(null);
   const [lecture, setLecture] = useState(null);
@@ -20,7 +24,7 @@ export default function Lecture(props) {
 
   useEffect(() => {
     async function fetchVideo() {
-      const res = await api.getLectureById(props.match.params.id);
+      const res = await api.getLectureById(lectureId);
       setLecture(res.data.data);
       console.log(res.data.data);
     }
@@ -54,7 +58,8 @@ export default function Lecture(props) {
           {
               "type": "INIT_SESSION",
               "data": {
-                  "lecture": props.match.params.id
+                  "lecture": lectureId,
+                  "code": code
               }
           }
       ))
