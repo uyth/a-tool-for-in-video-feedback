@@ -128,23 +128,28 @@ async function sendFeedback(socket, data) {
     let times = []
     times.push(Date.now()) // TIME LOGGING
     let session = await Session.findById(data.session);
-    let lastEvent = session.events[session.events.length-1];
-    let timestamp = lastEvent.videoSnapshot.currentTime;
     
-    let stackOverflow = await searchStackOverflow(session.lecture, timestamp);
-    times.push(Date.now()) // TIME LOGGING
-    console.log("search time: "+ Number(times[1]-times[0]))
-    socket.send(JSON.stringify({
-        type: "SET_FEEDBACK",
-        data: {
-            feedback: stackOverflow.feedback,
-            meta: {
-                timestamp: stackOverflow.meta.timestamp,
-                timerange: stackOverflow.meta.timerange,
-                keywords: stackOverflow.meta.keywords
+    // restrict throughput of feedback
+    if (session.lastFeedback == null || session.lastFeedback.getTime() + MILLIS_IN_SECONDS*3 < Date.now()) {
+        await Session.findByIdAndUpdate({_id: data.session}, {lastFeedback: Date.now()}).exec();
+        let lastEvent = session.events[session.events.length-1];
+        let timestamp = lastEvent.videoSnapshot.currentTime;
+        
+        let stackOverflow = await searchStackOverflow(session.lecture, timestamp);
+        times.push(Date.now()) // TIME LOGGING
+        console.log("search time: "+ Number(times[1]-times[0]))
+        socket.send(JSON.stringify({
+            type: "SET_FEEDBACK",
+            data: {
+                feedback: stackOverflow.feedback,
+                meta: {
+                    timestamp: stackOverflow.meta.timestamp,
+                    timerange: stackOverflow.meta.timerange,
+                    keywords: stackOverflow.meta.keywords
+                }
             }
-        }
-    }))
+        }))
+    }
 }
 
 const axios = require('axios');
