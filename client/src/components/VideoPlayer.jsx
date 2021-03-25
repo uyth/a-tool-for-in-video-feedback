@@ -17,6 +17,7 @@ import Replay10Icon from '@material-ui/icons/Replay10';
 import { StackOverflowIcon } from './StackOverflowIcon';
 import { Badge } from '@material-ui/core';
 import Feedback from './Feedback';
+import PanToolIcon from '@material-ui/icons/PanTool';
 
 const EVENTS = {
     PLAY: "PLAY",
@@ -29,7 +30,8 @@ const EVENTS = {
     SEEK_FORWARD: "SEEK_FORWARD",
     SEEK_BACK: "SEEK_BACK",
     OPEN_FEEDBACK: "OPEN_FEEDBACK",
-    CLOSE_FEEDBACK: "CLOSE_FEEDBACK"
+    CLOSE_FEEDBACK: "CLOSE_FEEDBACK",
+    MANUAL_FEEDBACK_REQUEST: "MANUAL_FEEDBACK_REQUEST"
 }
 
 const BUTTON_KEYS = {
@@ -308,6 +310,10 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
         }
     }, [feedback]);
 
+    function handleFeedbackRequest() {
+        generateEventlog(EVENTS.MANUAL_FEEDBACK_REQUEST);
+    }
+
     return (
         <figure id="video-container" ref={videoContainer} data-video-paused={video ? video.paused : true} data-fullscreen="false">
             <video id="video" ref={video}>
@@ -332,6 +338,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                         <span id="time-display">{formatTime(currentTime)} / {formatTime(duration)}</span>
                     </ButtonGroup>
                     <ButtonGroup className="button-bar-right">
+                        <Button variant="outline-light" onClick={() => handleFeedbackRequest()}><PanToolIcon/> I don't understand</Button>
                         <OverlayTrigger
                             trigger="click"
                             placement="top"

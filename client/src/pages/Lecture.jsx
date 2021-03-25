@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { VideoPlayer } from '../components';
 
-import { Container, Button, Spinner } from 'react-bootstrap';
+import { Container, Spinner } from 'react-bootstrap';
 import { useEffect } from 'react';
 import api from '../api'
 
@@ -99,7 +99,6 @@ export default function Lecture(props) {
         <>
           <h1>{lecture.title}</h1>
           <VideoPlayer videoData={lecture.video} actions={{logEvent: logEvent}} childComponents={{FeedbackAlert: FeedbackAlert}} feedback={feedback}/>
-          <Button onClick={() => logEvent({eventType: "MANUAL_FEEDBACK_REQUEST", videoSnapshot: {currentTime: 100}})}>Request Feedback</Button>
         </> : <Spinner animation="border" />
       }
     </Container>
