@@ -15,6 +15,7 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import Replay10Icon from '@material-ui/icons/Replay10';
 import { StackOverflowIcon } from './StackOverflowIcon';
+import { Badge } from '@material-ui/core';
 import Feedback from './Feedback';
 
 const EVENTS = {
@@ -67,7 +68,9 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
     let [isMute, setIsMute] = useState(false);
     let [volume, setVolume] = useState(1);
     let [isFullscreen, setFullscreen] = useState(false);
+
     let [openFeedback, setOpenFeedback] = useState(false);
+    let [newFeedback, setNewFeedback] = useState(false);
 
     // volume controllers
     const muteButton = useRef();
@@ -293,10 +296,17 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
         if (openFeedback) {
             generateEventlog(EVENTS.CLOSE_FEEDBACK);
         } else {
+            setNewFeedback(false);
             generateEventlog(EVENTS.OPEN_FEEDBACK);
         }
         setOpenFeedback(prev => !prev);
     }
+
+    useEffect(() => {
+        if (feedback.length != 0) {
+            setNewFeedback(true);
+        }
+    }, [feedback]);
 
     return (
         <figure id="video-container" ref={videoContainer} data-video-paused={video ? video.paused : true} data-fullscreen="false">
@@ -338,7 +348,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                             }
                         >
                             <Button variant="outline-light" onClick={() => toggleOpenFeedback()}>
-                                <StackOverflowIcon/> <span style={{verticalAlign: "middle", marginLeft: "0.5em"}}>Feedback</span>
+                                <Badge color="secondary" variant="dot" invisible={!newFeedback}><StackOverflowIcon/></Badge> <span style={{verticalAlign: "middle", marginLeft: "0.5em"}}>Feedback</span>
                             </Button>
                         </OverlayTrigger>
                         <div id="playback-container">
