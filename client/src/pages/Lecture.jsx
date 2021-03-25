@@ -1,9 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { VideoPlayer } from '../components';
-import { Feedback } from '../components';
 
 import { Container, Button, Spinner } from 'react-bootstrap';
-import { Row, Col } from 'react-bootstrap';
 import { useEffect } from 'react';
 import api from '../api'
 
@@ -96,22 +94,12 @@ export default function Lecture(props) {
   }
 
   return (
-    <Container style={{"max-width": "100%"}}>
+    <Container style={{"max-width": "70%"}}>
       {lecture && session ?
         <>
           <h1>{lecture.title}</h1>
-          <Row>
-            <Col xs={8}>
-              <VideoPlayer videoData={lecture.video} actions={{logEvent: logEvent}} childComponents={{FeedbackAlert: FeedbackAlert}}/>
-              <Button onClick={() => logEvent({eventType: "MANUAL_FEEDBACK_REQUEST", videoSnapshot: {currentTime: 100}})}>Request Feedback</Button>
-            </Col>
-            <Col>
-              <h2>Feedback</h2>
-              <div style={{"max-height": "80vh", overflow: "auto"}}>
-                {feedback && feedback.map(f => <Feedback stackoverflow={f}/>)}
-              </div>
-            </Col>
-          </Row>
+          <VideoPlayer videoData={lecture.video} actions={{logEvent: logEvent}} childComponents={{FeedbackAlert: FeedbackAlert}} feedback={feedback}/>
+          <Button onClick={() => logEvent({eventType: "MANUAL_FEEDBACK_REQUEST", videoSnapshot: {currentTime: 100}})}>Request Feedback</Button>
         </> : <Spinner animation="border" />
       }
     </Container>

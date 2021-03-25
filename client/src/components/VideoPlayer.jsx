@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './videoPlayer.css';
 
-import { ButtonGroup, Dropdown, SplitButton } from 'react-bootstrap'
+import { ButtonGroup, Dropdown, SplitButton, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
 import ClosedCaptionOutlinedIcon from '@material-ui/icons/ClosedCaptionOutlined';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
@@ -14,6 +14,8 @@ import StopIcon from '@material-ui/icons/Stop';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import Replay10Icon from '@material-ui/icons/Replay10';
+import { StackOverflowIcon } from './StackOverflowIcon';
+import Feedback from './Feedback';
 
 const EVENTS = {
     PLAY: "PLAY",
@@ -24,7 +26,9 @@ const EVENTS = {
     RATECHANGE: "RATECHANGE",
     SEEK_INIT: "SEEK_INIT",
     SEEK_FORWARD: "SEEK_FORWARD",
-    SEEK_BACK: "SEEK_BACK"
+    SEEK_BACK: "SEEK_BACK",
+    OPEN_FEEDBACK: "OPEN_FEEDBACK",
+    CLOSE_FEEDBACK: "CLOSE_FEEDBACK"
 }
 
 const BUTTON_KEYS = {
@@ -38,7 +42,7 @@ var formatTime = function(seconds) {
     else return "00:00";
 }
 
-export default function VideoPlayer({videoData, actions, childComponents}) {   
+export default function VideoPlayer({videoData, actions, childComponents, feedback}) {   
 
     const fullScreenEnabled = !!(document.fullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled || document.webkitSupportsFullscreen || document.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
 
@@ -63,6 +67,7 @@ export default function VideoPlayer({videoData, actions, childComponents}) {
     let [isMute, setIsMute] = useState(false);
     let [volume, setVolume] = useState(1);
     let [isFullscreen, setFullscreen] = useState(false);
+    let [openFeedback, setOpenFeedback] = useState(false);
 
     // volume controllers
     const muteButton = useRef();
@@ -284,6 +289,15 @@ export default function VideoPlayer({videoData, actions, childComponents}) {
     useEffect(() => { video.current.muted = isMute }, [isMute]);
     useEffect(() => { video.current.volume = volume }, [volume]);
 
+    function toggleOpenFeedback() {
+        if (openFeedback) {
+            generateEventlog(EVENTS.CLOSE_FEEDBACK);
+        } else {
+            generateEventlog(EVENTS.OPEN_FEEDBACK);
+        }
+        setOpenFeedback(prev => !prev);
+    }
+
     return (
         <figure id="video-container" ref={videoContainer} data-video-paused={video ? video.paused : true} data-fullscreen="false">
             <video id="video" ref={video}>
@@ -308,6 +322,25 @@ export default function VideoPlayer({videoData, actions, childComponents}) {
                         <span id="time-display">{formatTime(currentTime)} / {formatTime(duration)}</span>
                     </ButtonGroup>
                     <ButtonGroup className="button-bar-right">
+                        <OverlayTrigger
+                            trigger="click"
+                            placement="top"
+                            overlay={
+                                <Popover style={{maxWidth: "none", zIndex: 2147483647}}>
+                                    <Popover.Title as="h3">Feedback</Popover.Title>
+                                    <Popover.Content style={{padding: 0}}>
+                                        <div style={{maxHeight: "50vh", overflow: "auto", width: "max-content"}}>
+                                            {feedback && feedback.map(f => <Feedback stackoverflow={f}/>)}
+                                            {feedback==false && <p>No feedback</p>}
+                                        </div>
+                                    </Popover.Content>
+                                </Popover>
+                            }
+                        >
+                            <Button variant="outline-light" onClick={() => toggleOpenFeedback()}>
+                                <StackOverflowIcon/> <span style={{verticalAlign: "middle", marginLeft: "0.5em"}}>Feedback</span>
+                            </Button>
+                        </OverlayTrigger>
                         <div id="playback-container">
                             <SplitButton
                                 id={"playback-speed"}

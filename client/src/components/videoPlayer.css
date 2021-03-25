@@ -108,6 +108,10 @@ input:focus {
     outline: none;
 }
 
+#video-controls button:focus {
+    box-shadow: none;
+}
+
 /* WebVTT cues */
 ::cue { 
 	color:#ccc;

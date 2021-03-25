@@ -38,7 +38,6 @@ function decodeHtml(html) {
 export default function Feedback({stackoverflow}) {
     return (
         <Card>
-            <Card.Header>Feedback</Card.Header>
             <Card.Body>
                 <p>This feedback was fetched from Stackoverflow.</p>
                 <strong>Why this feedback?</strong>
