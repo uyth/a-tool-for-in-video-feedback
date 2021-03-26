@@ -31,7 +31,12 @@ const extractKeywordsFromVtt = function (vttPath, timeRanges) {
         .filter(k => k.score > MIN_SCORE_THRESHOLD)
         .slice(0, MAX_AMOUNT_KEYWORDS).map(k => k.keyword)
 
-    return keywords;
+    return {
+        keywords: keywords,
+        meta: {
+            text: text
+        }
+    };
 }
 
 const generateVttObject = function (vttPath) {

@@ -30,7 +30,8 @@ const Feedback = new Schema({
 	meta: {
 		keywords: [String],
 		timestamp: Number,
-		timerange: [Number]
+		timerange: [Number],
+		text: String
 	}
 },
 {timestamps: true});

@@ -178,7 +178,8 @@ searchStackOverflow = async function (lectureId, timestamp, tagged) {
         meta: {
             keywords: keywords.keywords,
             timestamp: timestamp,
-            timerange: keywords.meta.timerange
+            timerange: keywords.meta.timerange,
+            text: keywords.meta.text
         }
     };
 }
@@ -192,10 +193,11 @@ extractKeywords = async (lectureId, timestamp) => {
         let keywords = extractKeywordsFromVtt(vttPath, [timerange]);
 
         return {
-            keywords: keywords,
+            keywords: keywords.keywords,
             meta: {
                 timerange: timerange,
-                lecture: lectureId
+                lecture: lectureId,
+                text: keywords.meta.text
             }
         };
     } catch (error) {
