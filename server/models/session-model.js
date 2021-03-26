@@ -14,9 +14,31 @@ const Event = new Schema({
 },
 {timestamps: true})
 
+const StackOverflowQuestion = new Schema({
+	id: Number,
+	title: String,
+	link: String
+});
+
+
+const Feedback = new Schema({
+	feedback: [{
+		id: Number,
+		title: String,
+		link: String
+	}],
+	meta: {
+		keywords: [String],
+		timestamp: Number,
+		timerange: [Number]
+	}
+},
+{timestamps: true});
+
 const Session = new Schema({
 	lecture: { type: Schema.Types.ObjectId, ref: 'Lecture'},
 	events: [Event],
+	feedbacks: [Feedback],
 	lastFeedback: {type: Date, default: null},
 	code: {type: String, default: null}
 },

@@ -140,15 +140,9 @@ async function sendFeedback(socket, data) {
         console.log("search time: "+ Number(times[1]-times[0]))
         socket.send(JSON.stringify({
             type: "SET_FEEDBACK",
-            data: {
-                feedback: stackOverflow.feedback,
-                meta: {
-                    timestamp: stackOverflow.meta.timestamp,
-                    timerange: stackOverflow.meta.timerange,
-                    keywords: stackOverflow.meta.keywords
-                }
-            }
-        }))
+            data: stackOverflow
+        }));
+        await Session.findByIdAndUpdate({_id: data.session}, {$push: {feedbacks: stackOverflow}}).exec();
     }
 }
 
@@ -173,12 +167,9 @@ searchStackOverflow = async function (lectureId, timestamp, tagged) {
 
     questions = questions.map(q => {
         return {
-            timestamp: timestamp,
-            timerange: keywords.meta.timerange,
             id: q.question_id,
             title: q.title,
             link: q.link,
-            keywords: keywords.keywords
         }
     });
 
