@@ -43,6 +43,7 @@ export default function Feedback({stackoverflow}) {
                 <strong>Why this feedback?</strong>
                 <p>Timerange: {stackoverflow.meta.timerange.join("-")}</p>
                 <p>Timestamp: {stackoverflow.meta.timestamp}</p>
+                <p>Content analyzed: {stackoverflow.meta.text}</p>
                 <p>Keywords: {stackoverflow.meta.keywords}</p>
             </Card.Body>
             <ListGroup>
