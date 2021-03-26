@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Card, Button, OverlayTrigger, Popover } from 'react-bootstrap'
+import { Card, Button, OverlayTrigger, Popover, Accordion } from 'react-bootstrap'
 import ListGroup from 'react-bootstrap/ListGroup';
 
 function FeedbackCard({props}) {
@@ -39,12 +39,25 @@ export default function Feedback({stackoverflow}) {
     return (
         <Card>
             <Card.Body>
-                <p>This feedback was fetched from Stackoverflow.</p>
-                <strong>Why this feedback?</strong>
-                <p>Timerange: {stackoverflow.meta.timerange.join("-")}</p>
-                <p>Timestamp: {stackoverflow.meta.timestamp}</p>
-                <p>Content analyzed: {stackoverflow.meta.text}</p>
-                <p>Keywords: {stackoverflow.meta.keywords}</p>
+                <Accordion>
+                    <Accordion.Toggle
+                        as={Button}
+                        variant="link"
+                        eventKey="0"
+                        defaultActiveKey="0"
+                        style={{padding: 0, outline: 0, boxShadow: "none"}}
+                    >
+                        Why this feedback?
+                    </Accordion.Toggle>
+                    <Accordion.Collapse eventKey="0">
+                        <>
+                            <p>Timerange: {stackoverflow.meta.timerange.join("-")}</p>
+                            <p>Timestamp: {stackoverflow.meta.timestamp}</p>
+                            <p>Content analyzed: {stackoverflow.meta.text}</p>
+                            <p>Keywords: {stackoverflow.meta.keywords}</p>
+                        </>
+                    </Accordion.Collapse>
+                </Accordion>
             </Card.Body>
             <ListGroup>
                 { stackoverflow.feedback.map((f, key) => (
