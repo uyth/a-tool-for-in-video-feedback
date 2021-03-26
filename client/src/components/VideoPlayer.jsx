@@ -346,7 +346,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                 <Popover style={{maxWidth: "none", zIndex: 2147483647}}>
                                     <Popover.Title as="h3">Feedback from Stack Overflow</Popover.Title>
                                     <Popover.Content style={{padding: 0}}>
-                                        <div style={{maxHeight: "50vh", overflow: "auto", width: "max-content"}}>
+                                        <div style={{maxHeight: "50vh", overflow: "auto"}}>
                                             {feedback && feedback.map(f => <Feedback stackoverflow={f}/>)}
                                             {feedback==false && <p style={{padding: "0.5em 0.75em"}}>No feedback</p>}
                                         </div>

@@ -37,7 +37,7 @@ function decodeHtml(html) {
 
 export default function Feedback({stackoverflow}) {
     return (
-        <Card>
+        <Card style={{width: "40vw"}}>
             <Card.Body>
                 <Accordion>
                     <Accordion.Toggle
