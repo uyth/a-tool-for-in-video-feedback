@@ -18,6 +18,7 @@ import { StackOverflowIcon } from './StackOverflowIcon';
 import { Badge } from '@material-ui/core';
 import Feedback from './Feedback';
 import PanToolIcon from '@material-ui/icons/PanTool';
+import { formatTime } from '../utils';
 
 const EVENTS = {
     PLAY: "PLAY",
@@ -38,11 +39,6 @@ const BUTTON_KEYS = {
     SPACEBAR: 32,
     LEFT_KEY: 37,
     RIGHT_KEY: 39
-}
-
-var formatTime = function(seconds) {
-    if (seconds) return new Date(seconds * 1000).toISOString().substr(14, 5);
-    else return "00:00";
 }
 
 export default function VideoPlayer({videoData, actions, childComponents, feedback}) {   
