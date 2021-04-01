@@ -108,7 +108,7 @@ export default function Feedback({stackoverflow}) {
                 <ListGroup.Item key={key}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <div>{decodeHtml(f.title)}</div>
-                        <div><Button href={f.link}>Go to source</Button></div>
+                        <div><Button href={f.link} target="_blank">Go to source</Button></div>
                     </div>
                 </ListGroup.Item>)
                 )}
