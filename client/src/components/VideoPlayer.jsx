@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './videoPlayer.css';
 
-import { ButtonGroup, Dropdown, SplitButton, Button, OverlayTrigger, Popover } from 'react-bootstrap';
+import { ButtonGroup, Dropdown, SplitButton, Button, OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
 import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
 import ClosedCaptionOutlinedIcon from '@material-ui/icons/ClosedCaptionOutlined';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
@@ -328,60 +328,88 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                 </div>
                 <div className="button-bar">
                     <ButtonGroup className="button-bar-left">
-                        <button id="playpause" ref={playpauseButton}>{isPaused ? <PlayArrowIcon/> : <PauseIcon/>}</button>
-                        <button id="stop" ref={stopButton} type="button"><StopIcon/></button>
-                        <button id="rewind10" ref={rewind10Button} type="button"><Replay10Icon/></button>
+                        <OverlayTrigger
+                            overlay={<Tooltip>{isPaused ? "play" : "pause"}</Tooltip>}
+                        >
+                            <button id="playpause" ref={playpauseButton}>{isPaused ? <PlayArrowIcon/> : <PauseIcon/>}</button>
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            overlay={<Tooltip>stop</Tooltip>}
+                        >
+                            <button id="stop" ref={stopButton} type="button"><StopIcon/></button>
+                        </OverlayTrigger>
+                        <OverlayTrigger
+                            overlay={<Tooltip>rewind 10 seconds</Tooltip>}
+                        >
+                            <button id="rewind10" ref={rewind10Button} type="button"><Replay10Icon/></button>
+                        </OverlayTrigger>
                         <span id="time-display">{formatTime(currentTime)} / {formatTime(duration)}</span>
                     </ButtonGroup>
                     <ButtonGroup className="button-bar-right">
-                        <Button variant="outline-light" onClick={() => handleFeedbackRequest()}><PanToolIcon/> I don't understand</Button>
                         <OverlayTrigger
-                            trigger="click"
-                            placement="top"
-                            overlay={
-                                <Popover style={{maxWidth: "none", zIndex: 2147483647}}>
-                                    <Popover.Title as="h3">Feedback from Stack Overflow</Popover.Title>
-                                    <Popover.Content style={{padding: 0}}>
-                                        <div style={{maxHeight: "50vh", overflow: "auto"}}>
-                                            {feedback && feedback.map(f => <Feedback stackoverflow={f}/>)}
-                                            {feedback==false && <p style={{padding: "0.5em 0.75em"}}>No feedback</p>}
-                                        </div>
-                                    </Popover.Content>
-                                </Popover>
-                            }
+                            overlay={<Tooltip>Ask for help</Tooltip>}
                         >
-                            <Button variant="outline-light" onClick={() => toggleOpenFeedback()}>
-                                <Badge color="secondary" variant="dot" invisible={!newFeedback}><StackOverflowIcon/></Badge> <span style={{verticalAlign: "middle", marginLeft: "0.5em"}}>Feedback</span>
-                            </Button>
+                            <button variant="outline-light" onClick={() => handleFeedbackRequest()}><PanToolIcon/></button>
                         </OverlayTrigger>
-                        <div id="playback-container">
-                            <SplitButton
-                                id={"playback-speed"}
-                                as={ButtonGroup}
-                                drop={"up"}
-                                variant="light"
-                                onClick={handlePlaybackClick}
-                                onSelect={handlePlaybackSelect}
-                                title={`${playbackRate}x`}
-                            >
-                                <Dropdown.Item eventKey="2">2x</Dropdown.Item>
-                                <Dropdown.Item eventKey="1.75">1.75x</Dropdown.Item>
-                                <Dropdown.Item eventKey="1.5">1.5x</Dropdown.Item>
-                                <Dropdown.Item eventKey="1.25">1.25x</Dropdown.Item>
-                                <Dropdown.Item eventKey="1">1x</Dropdown.Item>
-                                <Dropdown.Item eventKey="0.75">0.75x</Dropdown.Item>
-                            </SplitButton>
-                        </div>
+                        <OverlayTrigger overlay={<Tooltip>Feedback</Tooltip>}>
+                            <div style={{display: "block"}}>
+                                <OverlayTrigger
+                                    placement="top"
+                                    trigger="click"
+                                    overlay={
+                                        <Popover style={{maxWidth: "none", zIndex: 2147483647}}>
+                                            <Popover.Title as="h3">Feedback from Stack Overflow</Popover.Title>
+                                            <Popover.Content style={{padding: 0}}>
+                                                <div style={{maxHeight: "50vh", overflow: "auto"}}>
+                                                    {feedback && feedback.map(f => <Feedback stackoverflow={f}/>)}
+                                                    {feedback==false && <p style={{padding: "0.5em 0.75em"}}>No feedback</p>}
+                                                </div>
+                                            </Popover.Content>
+                                        </Popover>
+                                    }
+                                >
+                                    <button onClick={() => {toggleOpenFeedback()}}>
+                                        <Badge color="secondary" variant="dot" invisible={!newFeedback}><StackOverflowIcon/></Badge> <span style={{verticalAlign: "middle", marginLeft: "0.5em"}}>Feedback</span>
+                                    </button>
+                                </OverlayTrigger>
+                            </div>
+                        </OverlayTrigger>
+                        <OverlayTrigger overlay={<Tooltip>Change speed</Tooltip>}>
+                            <div id="playback-container">
+                                <SplitButton
+                                    id={"playback-speed"}
+                                    as={ButtonGroup}
+                                    drop={"up"}
+                                    variant="light"
+                                    onClick={handlePlaybackClick}
+                                    onSelect={handlePlaybackSelect}
+                                    title={`${playbackRate}x`}
+                                >
+                                    <Dropdown.Item eventKey="2">2x</Dropdown.Item>
+                                    <Dropdown.Item eventKey="1.75">1.75x</Dropdown.Item>
+                                    <Dropdown.Item eventKey="1.5">1.5x</Dropdown.Item>
+                                    <Dropdown.Item eventKey="1.25">1.25x</Dropdown.Item>
+                                    <Dropdown.Item eventKey="1">1x</Dropdown.Item>
+                                    <Dropdown.Item eventKey="0.75">0.75x</Dropdown.Item>
+                                </SplitButton>
+                            </div>
+                        </OverlayTrigger>
                         <div id="volume-controls">
-                            <button id="mute" ref={muteButton} type="button">{isMute ? <VolumeOffIcon/> : volume < 0.1 ? <VolumeMuteIcon/> :  volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
+                            <OverlayTrigger overlay={<Tooltip>{isMute?"unmute":"mute"}</Tooltip>}>
+                                <button id="mute" ref={muteButton} type="button">{isMute ? <VolumeOffIcon/> : volume < 0.1 ? <VolumeMuteIcon/> :  volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
+                            </OverlayTrigger>
                             <input id="volume-slider" ref={volumeSlider} type="range" min="0" max="1" step="0.1"/>
                         </div>
-                        <button id="captions" ref={captionsButton} type="button">
-                            {activeCaptions ? <ClosedCaptionIcon data-state="active"/> : <ClosedCaptionOutlinedIcon/>}
-                        </button>
-                        <button id="fs" ref={fullscreenButton} type="button" data-state="go-fullscreen">
-                            {isFullscreen ? <FullscreenExitIcon/> : <FullscreenIcon/>}
-                        </button>
+                        <OverlayTrigger overlay={<Tooltip>{activeCaptions? "turn off captions":"turn on captions"}</Tooltip>}>
+                            <button id="captions" ref={captionsButton} type="button">
+                                {activeCaptions ? <ClosedCaptionIcon data-state="active"/> : <ClosedCaptionOutlinedIcon/>}
+                            </button>
+                        </OverlayTrigger>
+                        <OverlayTrigger overlay={<Tooltip>{isFullscreen? "exit fullscreen": "enter fullscreen"}</Tooltip>}>
+                            <button id="fs" ref={fullscreenButton} type="button" data-state="go-fullscreen">
+                                {isFullscreen ? <FullscreenExitIcon/> : <FullscreenIcon/>}
+                            </button>
+                        </OverlayTrigger>
                     </ButtonGroup>
                 </div>
             </div>
