@@ -46,7 +46,7 @@ function highlightKeywords(text, keywords) {
     ));
 }
 
-export default function Feedback({stackoverflow}) {
+export default function Feedback({stackoverflow, callback}) {
 
     return (
         <Card style={{width: "40vw"}}>
@@ -108,7 +108,7 @@ export default function Feedback({stackoverflow}) {
                 <ListGroup.Item key={key}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <div>{decodeHtml(f.title)}</div>
-                        <div><Button href={f.link} target="_blank">Go to source</Button></div>
+                        <div><Button onClick={() => callback()} href={f.link} target="_blank">Go to source</Button></div>
                     </div>
                 </ListGroup.Item>)
                 )}

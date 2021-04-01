@@ -32,7 +32,8 @@ const EVENTS = {
     SEEK_BACK: "SEEK_BACK",
     OPEN_FEEDBACK: "OPEN_FEEDBACK",
     CLOSE_FEEDBACK: "CLOSE_FEEDBACK",
-    MANUAL_FEEDBACK_REQUEST: "MANUAL_FEEDBACK_REQUEST"
+    MANUAL_FEEDBACK_REQUEST: "MANUAL_FEEDBACK_REQUEST",
+    OPEN_LINK: "OPEN_LINK"
 }
 
 const BUTTON_KEYS = {
@@ -310,6 +311,10 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
         generateEventlog(EVENTS.MANUAL_FEEDBACK_REQUEST);
     }
 
+    function openLink() {
+        generateEventlog(EVENTS.OPEN_LINK);
+    }
+
     return (
         <figure id="video-container" ref={videoContainer} data-video-paused={video ? video.paused : true} data-fullscreen="false">
             <video id="video" ref={video}>
@@ -361,7 +366,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                             <Popover.Title as="h3">Feedback from Stack Overflow</Popover.Title>
                                             <Popover.Content style={{padding: 0}}>
                                                 <div style={{maxHeight: "50vh", overflow: "auto"}}>
-                                                    {feedback && feedback.map(f => <Feedback stackoverflow={f}/>)}
+                                                    {feedback && feedback.map(f => <Feedback stackoverflow={f} callback={openLink}/>)}
                                                     {feedback==false && <p style={{padding: "0.5em 0.75em"}}>No feedback</p>}
                                                 </div>
                                             </Popover.Content>
