@@ -116,11 +116,12 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
 
         // Display the user defined video controls
         videoControls.current.style.display = 'block';
-
-        seekSlider.current.value = 0;
-        if (!seekSlider.current.getAttribute('max')) seekSlider.current.setAttribute('max', video.current.duration);
-
-        video.current.addEventListener("loadeddata", () => setDuration(video.current.duration));
+        
+        video.current.addEventListener("loadedmetadata", () => {
+            seekSlider.current.value = 0;
+            setDuration(video.current.duration);
+            if (!seekSlider.current.getAttribute('max')) seekSlider.current.setAttribute('max', video.current.duration);
+        });
 
     }, [video, videoControls, seekSlider]);
 
