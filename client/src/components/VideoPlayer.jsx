@@ -45,13 +45,12 @@ const BUTTON_KEYS = {
 const UpdatingPopover = React.forwardRef(
     ({ popper, children, show: _, ...props }, ref) => {
       useEffect(() => {
-        console.log('updating!');
         popper.scheduleUpdate();
       }, [children, popper]);
   
       return (
         <Popover ref={ref} content {...props} id="feedback-popover">
-          {children}
+            {children}
         </Popover>
       );
     },
@@ -60,7 +59,6 @@ const UpdatingPopover = React.forwardRef(
 const UpdatingTooltip = React.forwardRef(
     ({ popper, children, show: _, ...props }, ref) => {
       useEffect(() => {
-        console.log('updating!');
         popper.scheduleUpdate();
       }, [children, popper]);
   
@@ -82,6 +80,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
     const fullscreenButton = useRef();
     const captionsButton = useRef();
     const timelineThumb = useRef();
+    const scrubThumbnailContainer = useRef();
 
     // playback controllers
     const playpauseButton = useRef();
@@ -365,7 +364,10 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
             <div id="video-controls" ref={videoControls} className="controls">
                 <div id="timeline-container">
                     <Overlay target={timelineThumb} show={showThumb}>
-                        <UpdatingTooltip>{formatTime(scrubTime)}</UpdatingTooltip>
+                        <UpdatingTooltip id="thumbnail-tool-tip">
+                            <div ref={scrubThumbnailContainer} style={{width: "200px", height: "113px"}}/>
+                            {formatTime(scrubTime)}
+                        </UpdatingTooltip>
                     </Overlay>
                     <input id="seeker" ref={seekSlider} type="range" min="0" step="1" outline="none"
                         onMouseEnter={() => setShowThumb(true)}
@@ -377,6 +379,13 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
 
                             let duration = video.current.duration;
                             let scrub = (e.clientX - rect.left)/(rect.right-rect.left)*duration;
+                            
+                            let thumbIndex = Math.floor(scrub/4);
+                            try {
+                                scrubThumbnailContainer.current.style.background = `url("${videoData.thumbnail}") -${(thumbIndex+1)*200}px 0px`;
+                            } catch (error) {
+                                console.error(error);
+                            }
                             setScrubTime(scrub);
                         }}
                     />

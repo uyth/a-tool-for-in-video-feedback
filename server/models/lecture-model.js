@@ -15,6 +15,7 @@ const Lecture = new Schema({
 			srclang: String,
 			label: String
 		}],
+		thumbnail: String
 	},
 	sessions: [{ type: Schema.Types.ObjectId, ref: 'Session'}]
 })

@@ -120,3 +120,11 @@ input:focus {
 #feedback-popover > .popover-body {
     padding: 0;
 }
+
+.arrow {
+    display: none !important;
+}
+
+#thumbnail-tool-tip .tooltip-inner {
+    padding: 0;
+}
