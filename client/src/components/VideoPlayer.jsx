@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './videoPlayer.css';
 
-import { ButtonGroup, Dropdown, SplitButton, Button, OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
+import { ButtonGroup, Dropdown, SplitButton, Button, OverlayTrigger, Popover, Tooltip, Overlay } from 'react-bootstrap';
 import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
 import ClosedCaptionOutlinedIcon from '@material-ui/icons/ClosedCaptionOutlined';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
@@ -57,6 +57,21 @@ const UpdatingPopover = React.forwardRef(
     },
 );
 
+const UpdatingTooltip = React.forwardRef(
+    ({ popper, children, show: _, ...props }, ref) => {
+      useEffect(() => {
+        console.log('updating!');
+        popper.scheduleUpdate();
+      }, [children, popper]);
+  
+      return (
+        <Tooltip ref={ref} content {...props}>
+          {children}
+        </Tooltip>
+      );
+    },
+);
+
 export default function VideoPlayer({videoData, actions, childComponents, feedback}) {   
 
     const fullScreenEnabled = !!(document.fullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled || document.webkitSupportsFullscreen || document.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
@@ -66,6 +81,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
     const video = useRef();
     const fullscreenButton = useRef();
     const captionsButton = useRef();
+    const timelineThumb = useRef();
 
     // playback controllers
     const playpauseButton = useRef();
@@ -85,6 +101,9 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
 
     let [openFeedback, setOpenFeedback] = useState(false);
     let [newFeedback, setNewFeedback] = useState(false);
+
+    let [showThumb, setShowThumb] = useState(false);
+    let [scrubTime, setScrubTime] = useState(0);
 
     // volume controllers
     const muteButton = useRef();
@@ -344,7 +363,23 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
             <childComponents.FeedbackAlert/>
             <div id="video-controls" ref={videoControls} className="controls">
                 <div id="timeline-container">
-                    <input id="seeker" ref={seekSlider} type="range" min="0" step="1" outline="none"/>
+                    <Overlay target={timelineThumb} show={showThumb}>
+                        <UpdatingTooltip>{formatTime(scrubTime)}</UpdatingTooltip>
+                    </Overlay>
+                    <input id="seeker" ref={seekSlider} type="range" min="0" step="1" outline="none"
+                        onMouseEnter={() => setShowThumb(true)}
+                        onMouseLeave={() => setShowThumb(false)}
+                        onMouseMove={(e) => {
+                            let rect = e.target.getBoundingClientRect();
+                            let leftValue = e.clientX - rect.left;
+                            timelineThumb.current.style.left = leftValue + "px";
+
+                            let duration = video.current.duration;
+                            let scrub = (e.clientX - rect.left)/(rect.right-rect.left)*duration;
+                            setScrubTime(scrub);
+                        }}
+                    />
+                    <span id="timeline-thumb" ref={timelineThumb} style={{position: "absolute"}}></span>
                 </div>
                 <div className="button-bar">
                     <ButtonGroup className="button-bar-left">
