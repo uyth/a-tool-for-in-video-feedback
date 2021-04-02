@@ -42,6 +42,21 @@ const BUTTON_KEYS = {
     RIGHT_KEY: 39
 }
 
+const UpdatingPopover = React.forwardRef(
+    ({ popper, children, show: _, ...props }, ref) => {
+      useEffect(() => {
+        console.log('updating!');
+        popper.scheduleUpdate();
+      }, [children, popper]);
+  
+      return (
+        <Popover ref={ref} content {...props} id="feedback-popover">
+          {children}
+        </Popover>
+      );
+    },
+);
+
 export default function VideoPlayer({videoData, actions, childComponents, feedback}) {   
 
     const fullScreenEnabled = !!(document.fullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled || document.webkitSupportsFullscreen || document.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
@@ -362,7 +377,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                     placement="top"
                                     trigger="click"
                                     overlay={
-                                        <Popover style={{maxWidth: "none", zIndex: 2147483647}}>
+                                        <UpdatingPopover style={{maxWidth: "none", zIndex: 2147483647, padding: 0}}>
                                             <Popover.Title as="h3">Feedback from Stack Overflow</Popover.Title>
                                             <Popover.Content style={{padding: 0}}>
                                                 <div style={{maxHeight: "50vh", overflow: "auto"}}>
@@ -370,7 +385,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                                     {feedback==false && <p style={{padding: "0.5em 0.75em"}}>No feedback</p>}
                                                 </div>
                                             </Popover.Content>
-                                        </Popover>
+                                        </UpdatingPopover>
                                     }
                                 >
                                     <button onClick={() => {toggleOpenFeedback()}}>

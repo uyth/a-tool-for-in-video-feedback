@@ -116,3 +116,7 @@ input:focus {
 ::cue { 
 	color:#ccc;
 }
+
+#feedback-popover > .popover-body {
+    padding: 0;
+}
