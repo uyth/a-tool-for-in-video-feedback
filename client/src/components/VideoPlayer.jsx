@@ -426,7 +426,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                             <Popover.Title as="h3">Feedback from Stack Overflow</Popover.Title>
                                             <Popover.Content style={{padding: 0}}>
                                                 <div style={{maxHeight: "50vh", overflow: "auto"}}>
-                                                    {feedback && feedback.map(f => <Feedback stackoverflow={f} callback={openLink}/>)}
+                                                    {feedback && feedback[0] && <Feedback stackoverflow={feedback[0]} callback={openLink}/>}
                                                     {feedback==false && <p style={{padding: "0.5em 0.75em"}}>No feedback</p>}
                                                 </div>
                                             </Popover.Content>
