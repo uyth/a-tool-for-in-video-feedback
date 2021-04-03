@@ -389,6 +389,53 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                             setScrubTime(scrub);
                         }}
                     />
+                    <div style={{width: "100%", height: "0.75rem", padding: "0.25rem 0", position: "absolute", pointerEvents: "none"}}>
+                        {feedback.map(f => {
+                            return <div style={{
+                                position: "absolute",
+                                // background: "yellow",
+                                height:"0.5rem",
+                                left: `${f.meta.timerange[0]/duration*100}%`,
+                                right: `${100-f.meta.timerange[1]/duration*100}%`
+                            }}>
+                                <OverlayTrigger overlay={<Tooltip>Do you struggle?</Tooltip>}>
+                                    <div style={{display: "block", height: "inherit"}}>
+                                        <OverlayTrigger trigger="click"
+                                            overlay={
+                                                <Popover style={{maxWidth: "none", zIndex: 2147483647, padding: 0}}>
+                                                    <Popover.Title as="h3">Feedback from Stack Overflow</Popover.Title>
+                                                    <Popover.Content style={{padding: 0}}>
+                                                        <div style={{maxHeight: "50vh", overflow: "auto"}}>
+                                                            {<Feedback stackoverflow={f} callback={openLink}/>}
+                                                        </div>
+                                                    </Popover.Content>
+                                                </Popover>
+                                            }
+                                            rootClose={true}
+                                            onEnter={() => generateEventlog(EVENTS.OPEN_FEEDBACK)}
+                                            onExit={() => generateEventlog(EVENTS.CLOSE_FEEDBACK)}
+                                        >
+                                            <span style={{
+                                                margin: "auto",
+                                                marginTop: "-0.25rem",
+                                                background: "yellow",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                borderRadius: "0.5rem",
+                                                width: "1rem",
+                                                height: "1rem",
+                                                pointerEvents: "auto",
+                                                cursor: "pointer",
+                                            }}>
+                                            </span>
+                                        </OverlayTrigger>
+                                    </div>
+                                </OverlayTrigger> 
+                            </div>
+                        })}  
+                    </div>
+
                     <span id="timeline-thumb" ref={timelineThumb} style={{position: "absolute"}}></span>
                 </div>
                 <div className="button-bar">
@@ -421,6 +468,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                 <OverlayTrigger
                                     placement="top"
                                     trigger="click"
+                                    rootClose={true}
                                     overlay={
                                         <UpdatingPopover style={{maxWidth: "none", zIndex: 2147483647, padding: 0}}>
                                             <Popover.Title as="h3">Feedback from Stack Overflow</Popover.Title>
