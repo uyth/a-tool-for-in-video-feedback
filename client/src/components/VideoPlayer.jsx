@@ -398,7 +398,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                 left: `${f.meta.timerange[0]/duration*100}%`,
                                 right: `${100-f.meta.timerange[1]/duration*100}%`
                             }}>
-                                <OverlayTrigger overlay={<Tooltip>Do you struggle?</Tooltip>}>
+                                <OverlayTrigger overlay={<Tooltip>Do you struggle with {f.meta.keywords.join(", ")}?</Tooltip>}>
                                     <div style={{display: "block", height: "inherit"}}>
                                         <OverlayTrigger trigger="click"
                                             overlay={
