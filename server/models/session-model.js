@@ -48,5 +48,6 @@ const Session = new Schema({
 
 module.exports = {
 	Event: mongoose.model('Event', Event),
-	Session: mongoose.model('Session', Session)
+	Session: mongoose.model('Session', Session),
+	Feedback: mongoose.model('Feedback', Feedback)
 } 

@@ -1,4 +1,4 @@
-const { Event, Session } = require('../models/session-model')
+const { Event, Session, Feedback } = require('../models/session-model')
 const Lecture = require('../models/lecture-model')
 
 const { extractKeywordsFromVtt } = require('../utils/keyword-extraction');
@@ -138,11 +138,16 @@ async function sendFeedback(socket, data) {
         let stackOverflow = await searchStackOverflow(session.lecture, timestamp);
         times.push(Date.now()) // TIME LOGGING
         console.log("search time: "+ Number(times[1]-times[0]))
+        let feedback = await Feedback.create(stackOverflow);
+        await Session.findByIdAndUpdate({_id: data.session}, {$push: {feedbacks: feedback}}).exec();
         socket.send(JSON.stringify({
             type: "SET_FEEDBACK",
-            data: stackOverflow
+            data: {
+                id: feedback._id,
+                meta: feedback.meta,
+                feedback: feedback.feedback
+            }
         }));
-        await Session.findByIdAndUpdate({_id: data.session}, {$push: {feedbacks: stackOverflow}}).exec();
     }
 }
 

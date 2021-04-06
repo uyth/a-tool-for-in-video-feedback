@@ -391,8 +391,8 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                         }}
                     />
                     <div style={{width: "100%", height: "0.75rem", padding: "0.25rem 0", position: "absolute", pointerEvents: "none", margin: "0 0.5rem"}}>
-                        {feedback.map((f, index) => (
-                            <div key={index}
+                        {feedback.map((f) => (
+                            <div key={f.id}
                                 style={{
                                     position: "absolute",
                                     // background: "yellow",
