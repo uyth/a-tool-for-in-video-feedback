@@ -15,6 +15,7 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import Replay10Icon from '@material-ui/icons/Replay10';
 import { StackOverflowIcon } from './StackOverflowIcon';
+import CloseIcon from '@material-ui/icons/Close';
 import { Badge } from '@material-ui/core';
 import Feedback from './Feedback';
 import PanToolIcon from '@material-ui/icons/PanTool';
@@ -389,21 +390,24 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                             setScrubTime(scrub);
                         }}
                     />
-                    <div style={{width: "100%", height: "0.75rem", padding: "0.25rem 0", position: "absolute", pointerEvents: "none"}}>
-                        {feedback.map(f => {
-                            return <div style={{
-                                position: "absolute",
-                                // background: "yellow",
-                                height:"0.5rem",
-                                left: `${f.meta.timerange[0]/duration*100}%`,
-                                right: `${100-f.meta.timerange[1]/duration*100}%`
-                            }}>
-                                <OverlayTrigger overlay={<Tooltip>Do you struggle with {f.meta.keywords.join(", ")}?</Tooltip>}>
+                    <div style={{width: "100%", height: "0.75rem", padding: "0.25rem 0", position: "absolute", pointerEvents: "none", margin: "0 0.5rem"}}>
+                        {feedback.map((f, index) => (
+                            <div key={index}
+                                style={{
+                                    position: "absolute",
+                                    // background: "yellow",
+                                    height:"0.5rem",
+                                    left: `${f.meta.timerange[0]/duration*100}%`,
+                                    right: `${100-f.meta.timerange[1]/duration*100}%`
+                                }}
+                            >
+                                {
+                                <OverlayTrigger trigger="hover" rootClose={true} overlay={<Tooltip>Do you struggle with {f.meta.keywords.join(", ")}?</Tooltip>}>
                                     <div style={{display: "block", height: "inherit"}}>
                                         <OverlayTrigger trigger="click"
                                             overlay={
                                                 <Popover style={{maxWidth: "none", zIndex: 2147483647, padding: 0}}>
-                                                    <Popover.Title as="h3">Feedback from Stack Overflow</Popover.Title>
+                                                    <Popover.Title as="div" style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}><strong>Feedback from Stack Overflow</strong><Button variant="light" style={{}} onClick={() => document.body.click()}><CloseIcon/></Button></Popover.Title>
                                                     <Popover.Content style={{padding: 0}}>
                                                         <div style={{maxHeight: "50vh", overflow: "auto"}}>
                                                             {<Feedback stackoverflow={f} callback={openLink}/>}
@@ -431,11 +435,11 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                             </span>
                                         </OverlayTrigger>
                                     </div>
-                                </OverlayTrigger> 
+                                </OverlayTrigger>
+                                }
                             </div>
-                        })}  
+                        ))}
                     </div>
-
                     <span id="timeline-thumb" ref={timelineThumb} style={{position: "absolute"}}></span>
                 </div>
                 <div className="button-bar">
