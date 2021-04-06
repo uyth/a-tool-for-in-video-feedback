@@ -402,7 +402,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                 }}
                             >
                                 {
-                                <OverlayTrigger trigger="hover" rootClose={true} overlay={<Tooltip>Do you struggle with {f.meta.keywords.join(", ")}?</Tooltip>}>
+                                <OverlayTrigger trigger={["hover","focus"]} rootClose={true} overlay={<Tooltip>Do you struggle with {f.meta.keywords.join(", ")}?</Tooltip>}>
                                     <div style={{display: "block", height: "inherit"}}>
                                         <OverlayTrigger trigger="click"
                                             overlay={
