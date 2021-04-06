@@ -50,7 +50,7 @@ export default function Feedback({stackoverflow, callback}) {
                         </OverlayTrigger>
                     </div>
                     <p><strong>Struggle detected</strong> at <Badge variant="primary" pill>{formatTime(stackoverflow.meta.timestamp)}</Badge></p>
-                    <p><strong>Relevant keywords:</strong> {stackoverflow.meta.keywords.map(k => <><Badge pill variant="info">{k}</Badge>&nbsp;</>)}</p>
+                    <p><strong>Relevant keywords:</strong> {stackoverflow.meta.keywords.map(k => <Badge key={k} pill variant="info">{k}</Badge>)}</p>
                     <Accordion.Collapse eventKey="0">
                         <>
                             <p>
@@ -78,8 +78,8 @@ export default function Feedback({stackoverflow, callback}) {
                 </Accordion>
             </Card.Body>
             <ListGroup>
-                { stackoverflow.feedback.map((f, key) => (
-                <ListGroup.Item key={key}>
+                { stackoverflow.feedback.map((f) => (
+                <ListGroup.Item key={f.id}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <div>{decodeHtml(f.title)}</div>
                         <div><Button onClick={() => callback()} href={f.link} target="_blank">Go to source</Button></div>
