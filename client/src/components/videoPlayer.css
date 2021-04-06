@@ -13,28 +13,12 @@
     display: flex;
     flex-direction: column;
     margin-bottom: -0.5em;
+    position: relative;
 }
 
-#video-controls[data-state="hidden"] .button-bar {
-    margin-bottom: -3em;
-    transition-duration: 2s;
+#video-container {
+    padding-bottom: 3em;
 }
-
-#video-controls[data-state="active"] {
-    bottom: 0;
-    transition-duration: 0.5s;
-}
-
-
-#video-controls[data-state="hidden"] .button-bar {
-    opacity: 0;
-    transition-duration: 2s;
-} 
-
-#video-controls[data-state="active"] .button-bar {
-    opacity: 1;
-    transition-duration: 0.5s;
-} 
 
 #video-controls {
     position: absolute;
@@ -56,7 +40,7 @@
 
 .button-bar button, .button-bar button:active, .button-bar button:focus {
     border: 0;
-    padding: 0.5em;
+    margin: 0.5em;
     background: none;
     outline: none;
     color: inherit;
@@ -85,11 +69,11 @@
     display: flex;
 }
 
-.controls progress:hover {
+.controls #timeline-container input:hover {
     cursor: pointer;
 }
 
-button[data-state="active"] {
+button[data-state="active"], button > *[data-state="active"] {
     color: #0095dd;
 }
 
@@ -121,7 +105,27 @@ button[data-state="active"] {
     background-color:#0095dd;
 }
 
+input:focus {
+    outline: none;
+}
+
+#video-controls button:focus {
+    box-shadow: none;
+}
+
 /* WebVTT cues */
 ::cue { 
 	color:#ccc;
+}
+
+#feedback-popover > .popover-body {
+    padding: 0;
+}
+
+.arrow {
+    display: none !important;
+}
+
+#thumbnail-tool-tip .tooltip-inner {
+    padding: 0;
 }

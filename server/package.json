@@ -15,6 +15,7 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "ip": "^1.1.5",
     "mongoose": "^5.10.9",
     "natural": "^2.1.5",
     "retext": "^7.0.1",
@@ -22,7 +23,8 @@
     "retext-pos": "^3.0.0",
     "stopword": "^1.0.3",
     "to-vfile": "^6.1.0",
-    "vfile": "^4.2.0"
+    "vfile": "^4.2.0",
+    "ws": "^7.4.3"
   },
   "devDependencies": {
     "prettier": "2.1.2"

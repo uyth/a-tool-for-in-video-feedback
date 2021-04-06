@@ -98,3 +98,26 @@ Start the client:
 npm start
 ```
 
+## Video setup
+
+Videos are stored on the server in the public folder.
+
+```
+server > public > videos > "course-name" > lecture-<index>
+```
+
+The associated data for each lecture are:
+* Video lecture - mp4 format.
+* Transcript files - vtt format.
+* Video thumbnails - jpg format.
+
+### Generate thumbnails
+
+To generate thumbnails every 4 seconds from the video, go to the lecture folder and use the command:
+
+```
+mkdir thumbnails &&
+ffmpeg -i lecture.mp4 -r 0.25 -s 200x113 thumbnails/output_%04d.jpg &&
+convert +append thumbnails/*.jpg thumbnail.jpg &&
+rm -rf thumbnails
+```
