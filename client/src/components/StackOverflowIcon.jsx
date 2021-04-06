@@ -6,7 +6,7 @@ function StackOverflowIcon() {
     <SvgIcon fontSize="small">
       <svg
         aria-hidden="true"
-        class="svg-icon iconLogoGlyph"
+        className="svg-icon iconLogoGlyph"
         width="25"
         height="30"
         viewBox="0 0 25 30"

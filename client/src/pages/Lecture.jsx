@@ -99,7 +99,7 @@ export default function Lecture(props) {
   }
 
   return (
-    <Container style={{"max-width": "70%"}}>
+    <Container style={{maxWidth: "70%"}}>
       {lecture && session ?
         <>
           <h1>{lecture.title}</h1>
