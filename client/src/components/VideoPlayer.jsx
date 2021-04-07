@@ -14,9 +14,7 @@ import StopIcon from '@material-ui/icons/Stop';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import Replay10Icon from '@material-ui/icons/Replay10';
-import { StackOverflowIcon } from './StackOverflowIcon';
 import CloseIcon from '@material-ui/icons/Close';
-import { Badge } from '@material-ui/core';
 import Feedback from './Feedback';
 import PanToolIcon from '@material-ui/icons/PanTool';
 import { formatTime } from '../utils';
@@ -104,7 +102,6 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
     let [isFullscreen, setFullscreen] = useState(false);
 
     let [openFeedback, setOpenFeedback] = useState(false);
-    let [newFeedback, setNewFeedback] = useState(false);
 
     let [showThumb, setShowThumb] = useState(false);
     let [scrubTime, setScrubTime] = useState(0);
@@ -330,22 +327,6 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
     useEffect(() => { video.current.muted = isMute }, [isMute]);
     useEffect(() => { video.current.volume = volume }, [volume]);
 
-    function toggleOpenFeedback() {
-        if (openFeedback) {
-            generateEventlog(EVENTS.CLOSE_FEEDBACK);
-        } else {
-            setNewFeedback(false);
-            generateEventlog(EVENTS.OPEN_FEEDBACK);
-        }
-        setOpenFeedback(prev => !prev);
-    }
-
-    useEffect(() => {
-        if (feedback.length != 0) {
-            setNewFeedback(true);
-        }
-    }, [feedback]);
-
     function handleFeedbackRequest() {
         generateEventlog(EVENTS.MANUAL_FEEDBACK_REQUEST);
     }
@@ -470,30 +451,6 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                             overlay={<Tooltip>Ask for help</Tooltip>}
                         >
                             <button variant="outline-light" onClick={() => handleFeedbackRequest()}><PanToolIcon/></button>
-                        </OverlayTrigger>
-                        <OverlayTrigger overlay={<Tooltip>Feedback</Tooltip>}>
-                            <div style={{display: "block"}}>
-                                <OverlayTrigger
-                                    placement="top"
-                                    trigger="click"
-                                    rootClose={true}
-                                    overlay={
-                                        <UpdatingPopover style={{maxWidth: "none", zIndex: 2147483647, padding: 0}}>
-                                            <Popover.Title as="h3">Feedback from Stack Overflow</Popover.Title>
-                                            <Popover.Content style={{padding: 0}}>
-                                                <div style={{maxHeight: "50vh", overflow: "auto"}}>
-                                                    {feedback && feedback[0] && <Feedback stackoverflow={feedback[0]} callback={openLink}/>}
-                                                    {feedback==false && <p style={{padding: "0.5em 0.75em"}}>No feedback</p>}
-                                                </div>
-                                            </Popover.Content>
-                                        </UpdatingPopover>
-                                    }
-                                >
-                                    <button onClick={() => {toggleOpenFeedback()}}>
-                                        <Badge color="secondary" variant="dot" invisible={!newFeedback}><StackOverflowIcon/></Badge> <span style={{verticalAlign: "middle", marginLeft: "0.5em"}}>Feedback</span>
-                                    </button>
-                                </OverlayTrigger>
-                            </div>
                         </OverlayTrigger>
                         <OverlayTrigger overlay={<Tooltip>Change speed</Tooltip>}>
                             <div id="playback-container">
