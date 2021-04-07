@@ -376,16 +376,14 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                             setScrubTime(scrub);
                         }}
                     />
-                    <div style={{width: "100%", height: "0.75rem", padding: "0.25rem 0.5rem", position: "absolute", pointerEvents: "none"}}>
+                    <div style={{width: "100%", height: "0.25rem", position: "absolute", padding: "0 0.5rem", marginLeft: "-0.5rem", pointerEvents: "none"}}>
                         <div style={{width: "100%", height: "100%", position: "relative"}}>
                         {feedback.map((f) => (
                             <div key={f.id}
                                 style={{
                                     position: "absolute",
-                                    // background: "yellow",
-                                    height:"0.5rem",
-                                    left: `${f.meta.timerange[0]/duration*100}%`,
-                                    right: `${100-f.meta.timerange[1]/duration*100}%`
+                                    height:"inherit",
+                                    left: `${f.meta.timestamp/duration*100}%`,
                                 }}
                             >
                                 {
@@ -407,8 +405,8 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                             onExit={() => generateEventlog(EVENTS.CLOSE_FEEDBACK)}
                                         >
                                             <span style={{
-                                                margin: "auto",
-                                                marginTop: "-0.25rem",
+                                                // margin: "auto",
+                                                marginTop: "-0.375rem",
                                                 background: "yellow",
                                                 display: "flex",
                                                 justifyContent: "center",
