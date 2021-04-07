@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './videoPlayer.css';
 
-import { ButtonGroup, Dropdown, SplitButton, Button, OverlayTrigger, Popover, Tooltip, Overlay } from 'react-bootstrap';
+import { ButtonGroup, Dropdown, DropdownButton, Button, OverlayTrigger, Popover, Tooltip, Overlay } from 'react-bootstrap';
 import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
 import ClosedCaptionOutlinedIcon from '@material-ui/icons/ClosedCaptionOutlined';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
@@ -100,9 +100,10 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
     let [isMute, setIsMute] = useState(false);
     let [volume, setVolume] = useState(1);
     let [isFullscreen, setFullscreen] = useState(false);
-
+    
     let [openFeedback, setOpenFeedback] = useState(false);
-
+    
+    let [showSpeedTooltip, setShowSpeedTooltip] = useState(true);
     let [showThumb, setShowThumb] = useState(false);
     let [scrubTime, setScrubTime] = useState(0);
 
@@ -218,10 +219,6 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
 
     function handlePlaybackSelect(speed) {
         setPlaybackRate(speed);
-    }
-
-    function handlePlaybackClick() {
-        setPlaybackRate(video.current.playbackRate == 2 ? 0.5 : video.current.playbackRate + 0.25);
     }
 
     useEffect(() => {
@@ -452,25 +449,22 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                         >
                             <button variant="outline-light" onClick={() => handleFeedbackRequest()}><PanToolIcon/> <span style={{textAlign: "middle"}}>Ask ViTA</span></button>
                         </OverlayTrigger>
-                        <OverlayTrigger overlay={<Tooltip>Change speed</Tooltip>}>
-                            <div id="playback-container">
-                                <SplitButton
-                                    id={"playback-speed"}
-                                    as={ButtonGroup}
-                                    drop={"up"}
-                                    variant="light"
-                                    onClick={handlePlaybackClick}
-                                    onSelect={handlePlaybackSelect}
-                                    title={`${playbackRate}x`}
-                                >
-                                    <Dropdown.Item eventKey="2">2x</Dropdown.Item>
-                                    <Dropdown.Item eventKey="1.75">1.75x</Dropdown.Item>
-                                    <Dropdown.Item eventKey="1.5">1.5x</Dropdown.Item>
-                                    <Dropdown.Item eventKey="1.25">1.25x</Dropdown.Item>
-                                    <Dropdown.Item eventKey="1">1x</Dropdown.Item>
-                                    <Dropdown.Item eventKey="0.75">0.75x</Dropdown.Item>
-                                </SplitButton>
-                            </div>
+                        <OverlayTrigger trigger={["hover", "focus"]} overlay={showSpeedTooltip ? <Tooltip>Change speed</Tooltip> : <div style={{display: "none"}}></div>}>
+                            <DropdownButton id="playback-button"
+                                drop="up"
+                                title={`${playbackRate}x`}
+                                variant="light"
+                                onToggle={() => {showSpeedTooltip ? setShowSpeedTooltip(false) : setShowSpeedTooltip(true)}}
+                                onSelect={handlePlaybackSelect}
+                            >
+                                <Dropdown.Item eventKey="2">2x</Dropdown.Item>
+                                <Dropdown.Item eventKey="1.75">1.75x</Dropdown.Item>
+                                <Dropdown.Item eventKey="1.5">1.5x</Dropdown.Item>
+                                <Dropdown.Item eventKey="1.25">1.25x</Dropdown.Item>
+                                <Dropdown.Item eventKey="1">1x</Dropdown.Item>
+                                <Dropdown.Item eventKey="0.75">0.75x</Dropdown.Item>
+                                <Dropdown.Item eventKey="0.5">0.5x</Dropdown.Item>
+                            </DropdownButton>
                         </OverlayTrigger>
                         <div id="volume-controls" style={{display: "none"}}>
                             <OverlayTrigger overlay={<Tooltip>{isMute?"unmute":"mute"}</Tooltip>}>

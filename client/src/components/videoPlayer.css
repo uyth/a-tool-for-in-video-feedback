@@ -56,18 +56,10 @@
     padding-left: 1em;
 }
 
-#playback-container .btn-group {
-    height:100%;
+#playback-button {
+    width: 8ch;
 }
 
-#playback-container .btn-group button:first-child {
-    width: 4em;
-}
-
-#volume-controls {
-    padding-right: 1em;
-    display: flex;
-}
 
 .controls #timeline-container input:hover {
     cursor: pointer;
