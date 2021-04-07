@@ -372,7 +372,8 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                             setScrubTime(scrub);
                         }}
                     />
-                    <div style={{width: "100%", height: "0.75rem", padding: "0.25rem 0", position: "absolute", pointerEvents: "none", margin: "0 0.5rem"}}>
+                    <div style={{width: "100%", height: "0.75rem", padding: "0.25rem 0.5rem", position: "absolute", pointerEvents: "none"}}>
+                        <div style={{width: "100%", height: "100%", position: "relative"}}>
                         {feedback.map((f) => (
                             <div key={f.id}
                                 style={{
@@ -421,6 +422,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                 }
                             </div>
                         ))}
+                        </div>
                     </div>
                     <span id="timeline-thumb" ref={timelineThumb} style={{position: "absolute"}}></span>
                 </div>
