@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+import { config } from '../config';
+
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: config.url.API_URL,
 })
 
 export const insertLecture = payload => api.post(`/lectures`, payload)

@@ -9,7 +9,9 @@ import Alert from 'react-bootstrap/Alert';
 
 import { useParams } from 'react-router-dom';
 
-const wsURL = "ws://localhost:3000";
+import { config } from '../config';
+
+const wsURL = config.url.WEBSOCKET_URL;
 
 export default function Lecture(props) {
 
