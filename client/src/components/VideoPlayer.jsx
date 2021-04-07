@@ -472,7 +472,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                 </SplitButton>
                             </div>
                         </OverlayTrigger>
-                        <div id="volume-controls">
+                        <div id="volume-controls" style={{display: "none"}}>
                             <OverlayTrigger overlay={<Tooltip>{isMute?"unmute":"mute"}</Tooltip>}>
                                 <button id="mute" ref={muteButton} type="button">{isMute ? <VolumeOffIcon/> : volume < 0.1 ? <VolumeMuteIcon/> :  volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
                             </OverlayTrigger>
@@ -483,11 +483,13 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                 {activeCaptions ? <ClosedCaptionIcon data-state="active"/> : <ClosedCaptionOutlinedIcon/>}
                             </button>
                         </OverlayTrigger>
-                        <OverlayTrigger overlay={<Tooltip>{isFullscreen? "exit fullscreen": "enter fullscreen"}</Tooltip>}>
-                            <button id="fs" ref={fullscreenButton} type="button" data-state="go-fullscreen">
-                                {isFullscreen ? <FullscreenExitIcon/> : <FullscreenIcon/>}
-                            </button>
-                        </OverlayTrigger>
+                        <div style={{display: "none"}}>
+                            <OverlayTrigger overlay={<Tooltip>{isFullscreen? "exit fullscreen": "enter fullscreen"}</Tooltip>}>
+                                <button id="fs" ref={fullscreenButton} type="button" data-state="go-fullscreen">
+                                    {isFullscreen ? <FullscreenExitIcon/> : <FullscreenIcon/>}
+                                </button>
+                            </OverlayTrigger>
+                        </div>
                     </ButtonGroup>
                 </div>
             </div>
