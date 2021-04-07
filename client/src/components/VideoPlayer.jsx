@@ -450,7 +450,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                         <OverlayTrigger
                             overlay={<Tooltip>Ask for help</Tooltip>}
                         >
-                            <button variant="outline-light" onClick={() => handleFeedbackRequest()}><PanToolIcon/></button>
+                            <button variant="outline-light" onClick={() => handleFeedbackRequest()}><PanToolIcon/> <span style={{textAlign: "middle"}}>Ask ViTA</span></button>
                         </OverlayTrigger>
                         <OverlayTrigger overlay={<Tooltip>Change speed</Tooltip>}>
                             <div id="playback-container">
