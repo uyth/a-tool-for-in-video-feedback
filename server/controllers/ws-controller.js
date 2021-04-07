@@ -194,7 +194,7 @@ extractKeywords = async (lectureId, timestamp) => {
         let lecture = await Lecture.findById({_id: lectureId});
 
         let vttPath = lecture.video.tracks[0].src;
-        let timerange = [timestamp-10, timestamp+10];
+        let timerange = [Math.max(timestamp-10, 0), timestamp+10];
         let keywords = extractKeywordsFromVtt(vttPath, [timerange]);
 
         return {
