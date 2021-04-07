@@ -21,6 +21,10 @@ import Feedback from './Feedback';
 import PanToolIcon from '@material-ui/icons/PanTool';
 import { formatTime } from '../utils';
 
+import { config } from '../config';
+
+const FILE_URL = config.url.FILE_URL;
+
 const EVENTS = {
     PLAY: "PLAY",
     PAUSE: "PAUSE",
@@ -353,9 +357,9 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
     return (
         <figure id="video-container" ref={videoContainer} data-video-paused={video ? video.paused : true} data-fullscreen="false">
             <video id="video" ref={video}>
-                <source src={videoData.sources[0].src} type={videoData.sources[0].srctype}/>
+                <source src={FILE_URL + videoData.sources[0].src} type={videoData.sources[0].srctype}/>
                 <track
-                    src={videoData.tracks[0].src} default
+                    src={FILE_URL + videoData.tracks[0].src} default
                     kind={videoData.tracks[0].kind}
                     srcLang={videoData.tracks[0].srclang}
                     label={videoData.tracks[0].label}
