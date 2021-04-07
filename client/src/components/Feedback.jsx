@@ -27,21 +27,19 @@ export default function Feedback({stackoverflow, callback}) {
             <Card.Body>
                 <Accordion>
                     <div style={{display: "flex", flexDirection: "row"}}>
-                        <h3 style={{fontSize: "1.25rem"}}>Feedback details</h3>
+                        <h3 style={{fontSize: "1.25rem"}}>Aid details</h3>
                         <OverlayTrigger
                            overlay={
                                 <Popover style={{zIndex:2147483647, maxWidth: "20vw"}}>
-                                    <Popover.Title>How does feedback work?</Popover.Title>
+                                    <Popover.Title>How does ViTA work?</Popover.Title>
                                     <Popover.Content>
-                                        <h4 style={{fontSize: "1rem", fontWeight:600}}>When are feedbacks triggered?</h4>
+                                        <h4 style={{fontSize: "1rem", fontWeight:600}}>Why am I given aid?</h4>
                                         <p>
-                                            Feedbacks are triggered when the system has detected that you struggle based on your video navigation patterns 
-                                            or when you manually asks for feedback.
+                                            ViTA detects when you struggle based on your video navigation patterns 
+                                            or when you manually asks for help and tries to aid you with best effort.
                                         </p>
-                                        <h4 style={{fontSize: "1rem", fontWeight:600}}>How does the system find the feedback?</h4>
-                                        <p>The feedbacks uses Stack Overflow, the content from the lecture and your video navigation patterns to
-                                            personalize your feedback.
-                                        </p>
+                                        <h4 style={{fontSize: "1rem", fontWeight:600}}>Where does the aid come from?</h4>
+                                        <p>ViTA searches Stack Overflow and personalizes your aid based on the content you struggle with.</p>
                                     </Popover.Content>
                                 </Popover>
                             }

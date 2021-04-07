@@ -411,7 +411,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                                         <OverlayTrigger trigger="click"
                                             overlay={
                                                 <Popover style={{maxWidth: "none", zIndex: 2147483647, padding: 0}}>
-                                                    <Popover.Title as="div" style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}><strong>Feedback from Stack Overflow</strong><Button variant="light" style={{}} onClick={() => document.body.click()}><CloseIcon/></Button></Popover.Title>
+                                                    <Popover.Title as="div" style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}><strong>Aid from from ViTA</strong><Button variant="light" style={{}} onClick={() => document.body.click()}><CloseIcon/></Button></Popover.Title>
                                                     <Popover.Content style={{padding: 0}}>
                                                         <div style={{maxHeight: "50vh", overflow: "auto"}}>
                                                             {<Feedback stackoverflow={f} callback={openLink}/>}
