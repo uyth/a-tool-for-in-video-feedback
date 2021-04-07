@@ -329,6 +329,10 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
     }
 
     function openLink() {
+        video.current.pause();
+        if (!isPaused) {
+            setIsPaused(prev => !prev);
+        }
         generateEventlog(EVENTS.OPEN_LINK);
     }
 
