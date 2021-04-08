@@ -80,7 +80,7 @@ export default function Feedback({stackoverflow, callback}) {
                 <ListGroup.Item key={f.id}>
                     <div style={{display: "flex", justifyContent: "space-between"}}>
                         <div>{decodeHtml(f.title)}</div>
-                        <div><Button onClick={() => callback()} href={f.link} target="_blank">Go to source</Button></div>
+                        <div><Button onClick={() => callback(stackoverflow, f)} href={f.link} target="_blank">Go to source</Button></div>
                     </div>
                 </ListGroup.Item>)
                 )}

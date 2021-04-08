@@ -10,6 +10,14 @@ const Event = new Schema({
 		paused: Boolean,
 		playbackRate: Number,
 		played: [[Number]]
+	},
+	openedFeedback: {
+		feedback: { type: Schema.Types.ObjectId, ref: 'Feedback' },
+		feedbackEntry: {
+			id: Number,
+			title: String,
+			link: String
+		}
 	}
 },
 {timestamps: true})

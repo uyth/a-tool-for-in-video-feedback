@@ -236,7 +236,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
         updateSeeker();
     }, [currentTime, isSeeking]);
 
-    var generateEventlog = (type) => {
+    var generateEventlog = (type, openedFeedback=null) => {
         let timeranges = [];
         for (let i = 0; i < video.current.played.length; i++) {
             timeranges.push([video.current.played.start(i), video.current.played.end(i)])
@@ -250,7 +250,8 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                 paused: video.current.paused,
                 playbackRate: video.current.playbackRate,
                 played: timeranges,
-            }
+            },
+            openedFeedback: openedFeedback
         });
     }
 
@@ -328,12 +329,21 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
         generateEventlog(EVENTS.MANUAL_FEEDBACK_REQUEST);
     }
 
-    function openLink() {
+    function openLink(feedback, feedbackObject) {
         video.current.pause();
         if (!isPaused) {
             setIsPaused(prev => !prev);
         }
-        generateEventlog(EVENTS.OPEN_LINK);
+
+        let openedFeedback = {
+            feedback: feedback.id,
+            feedbackEntry: {
+                id: feedbackObject.id,
+                title: feedbackObject.title,
+                link: feedbackObject.link
+            }
+        }
+        generateEventlog(EVENTS.OPEN_LINK, openedFeedback=openedFeedback);
     }
 
     return (
