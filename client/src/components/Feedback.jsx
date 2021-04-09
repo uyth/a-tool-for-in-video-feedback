@@ -49,6 +49,7 @@ export default function Feedback({stackoverflow, callback}) {
                     </div>
                     <p><strong>Struggle detected</strong> at <Badge variant="primary" pill>{formatTime(stackoverflow.meta.timestamp)}</Badge></p>
                     <p><strong>Relevant keywords:</strong> {stackoverflow.meta.keywords.map(k => <Badge key={k} pill variant="info">{k}</Badge>)}</p>
+                    <p><strong>Lecture tags:</strong> {stackoverflow.meta.tags.map(t => <Badge key={t} pill variant="info">{t}</Badge>)}</p>
                     <Accordion.Collapse eventKey="0">
                         <>
                             <p>

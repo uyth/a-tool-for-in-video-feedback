@@ -22,12 +22,6 @@ const Event = new Schema({
 },
 {timestamps: true})
 
-const StackOverflowQuestion = new Schema({
-	id: Number,
-	title: String,
-	link: String
-});
-
 
 const Feedback = new Schema({
 	feedback: [{
@@ -36,6 +30,7 @@ const Feedback = new Schema({
 		link: String
 	}],
 	meta: {
+		tags: [String],
 		keywords: [String],
 		timestamp: Number,
 		timerange: [Number],

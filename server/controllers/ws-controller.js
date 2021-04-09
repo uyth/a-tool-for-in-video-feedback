@@ -153,8 +153,9 @@ async function sendFeedback(socket, data) {
 
 const axios = require('axios');
 
-searchStackOverflow = async function (lectureId, timestamp, tagged) {
+searchStackOverflow = async function (lectureId, timestamp) {
     let keywords = await extractKeywords(lectureId, timestamp);
+    console.log(keywords)
     let response = await axios.get("https://api.stackexchange.com/2.2/search/advanced", {
         params: {
             site: "stackoverflow",
@@ -163,7 +164,7 @@ searchStackOverflow = async function (lectureId, timestamp, tagged) {
             pagesize: 10,
             accepted: true,
             q: keywords.keywords.join(" "),
-            tagged: tagged,
+            tagged: keywords.tags.join(";"),
         }
     });
 
@@ -181,6 +182,7 @@ searchStackOverflow = async function (lectureId, timestamp, tagged) {
     return {
         feedback: questions,
         meta: {
+            tags: keywords.tags,
             keywords: keywords.keywords,
             timestamp: timestamp,
             timerange: keywords.meta.timerange,
@@ -199,6 +201,7 @@ extractKeywords = async (lectureId, timestamp) => {
 
         return {
             keywords: keywords.keywords,
+            tags: lecture.tags,
             meta: {
                 timerange: timerange,
                 lecture: lectureId,

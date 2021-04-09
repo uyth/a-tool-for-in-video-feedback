@@ -17,6 +17,7 @@ const Lecture = new Schema({
 		}],
 		thumbnail: String
 	},
+	tags: [String],
 	sessions: [{ type: Schema.Types.ObjectId, ref: 'Session'}]
 })
 
