@@ -165,7 +165,6 @@ const axios = require('axios');
 
 searchStackOverflow = async function (lectureId, timestamp) {
     let keywords = await extractKeywords(lectureId, timestamp);
-    console.log(keywords)
     let response = await axios.get("https://api.stackexchange.com/2.2/search/advanced", {
         params: {
             site: "stackoverflow",
