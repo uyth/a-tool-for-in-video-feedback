@@ -24,17 +24,27 @@ processEvent = async (socket, data) => {
         let event = await new Event(data.event).save();
         let session = await Session.findByIdAndUpdate({ _id: data.session }, {$push: {events: event}});
         await session.save();
-
-        if (event.eventType == "PAUSE") handlePauseEvent(socket, data);
-        else if (event.eventType == "RATECHANGE") handleRatechange(socket, data)
-        else if (event.eventType == "SKIP_BACK") handleSkipBack(socket, data);
-        else if (event.eventType == "SKIP_FORWARD") handleSkipForward(socket, data);
-        else if (event.eventType == "SEEK_BACK") handleSeekBack(socket, data);
-        else if (event.eventType == "MANUAL_FEEDBACK_REQUEST") sendFeedback(socket, data);
+        
+        if (!hasFeedbackNearTimestamp(session, data)) {
+            if (event.eventType == "PAUSE") handlePauseEvent(socket, data);
+            else if (event.eventType == "RATECHANGE") handleRatechange(socket, data)
+            else if (event.eventType == "SKIP_BACK") handleSkipBack(socket, data);
+            else if (event.eventType == "SKIP_FORWARD") handleSkipForward(socket, data);
+            else if (event.eventType == "SEEK_BACK") handleSeekBack(socket, data);
+            else if (event.eventType == "MANUAL_FEEDBACK_REQUEST") sendFeedback(socket, data);
+        }
 
     } catch (error) {
         console.log("Could not update session");
     }
+}
+
+hasFeedbackNearTimestamp = (session, data) => {
+    return session.feedbacks.some((f) => {
+        let timerange = f.meta.timerange;
+        let currentTime = data.event.videoSnapshot.currentTime;
+        return timerange[0] <= currentTime && currentTime <= timerange[1];
+    })
 }
 
 handlePauseEvent = (socket, data) => {
