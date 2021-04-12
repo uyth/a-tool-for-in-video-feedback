@@ -1,6 +1,12 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+var https = require('https');
+var fs = require('fs');
+
+var privateKey  = fs.readFileSync('certificate/server.key', 'utf8');
+var certificate = fs.readFileSync('certificate/server.crt', 'utf8');
+
 
 const db = require('./db')
 const lecturesRouter = require('./routes/lectures-router')
@@ -24,14 +30,17 @@ app.use('/api', feedbackRouter)
 
 app.use(express.static('public')) // serve static files
 
-const server = app.listen(apiPort, () => console.log(`Server running on port ${apiPort}`))
+const credentials = {key: privateKey, cert: certificate};
+const httpsServer = https.createServer(credentials, app);
+httpsServer.listen(apiPort, () => console.log(`Server running on port ${apiPort}`));
+
 
 const ws = require('ws');
 const wsController = require('./controllers/ws-controller')
 
-server.on('upgrade', (request, socket, head) => {
-    wsServer.handleUpgrade(request, socket, head, socket => {
-      wsServer.emit('connection', socket, request);
+httpsServer.on('upgrade', (request, socket, head) => {
+    wssServer.handleUpgrade(request, socket, head, socket => {
+      wssServer.emit('connection', socket, request);
     })}
 )
 
@@ -39,13 +48,18 @@ function generateID() {
   return '_' + Math.random().toString(36).substr(2, 9);
 };
 
-const wsServer = new ws.Server({ noServer: true });
-wsServer.on('connection', socket => {
+const wssServer = new ws.Server({ noServer: true });
+wssServer.on('connection', socket => {
   let ID = generateID();
   console.log("connected to user:" + ID);
   socket.on('message', payload => receiveMessage(ID, payload, socket));
   socket.on('close', () => console.log('connection closed'))
 })
+
+wssServer.on('close', () => {
+  console.log("disconnected");
+})
+
 
 async function receiveMessage(ID, payload, socket) {
     let data = JSON.parse(payload);
@@ -58,7 +72,3 @@ async function receiveMessage(ID, payload, socket) {
     }
     console.log("");
 }
-
-wsServer.on('close', () => {
-  console.log("disconnected");
-})
