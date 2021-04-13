@@ -89,7 +89,8 @@ export default function Lecture(props) {
         <div style={{
           position: "absolute",
           right: "1em",
-          top: "1em"
+          top: "1em",
+          zIndex: 1000
         }}>
           <Alert variant="info" dismissible onClose={() => setShowAlert(false)}>
             Struggling with the lecture? Here is some feedback from StackOverflow!
