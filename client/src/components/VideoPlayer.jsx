@@ -445,11 +445,13 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                         >
                             <button id="playpause" ref={playpauseButton}>{isPaused ? <PlayArrowIcon/> : <PauseIcon/>}</button>
                         </OverlayTrigger>
-                        <OverlayTrigger
-                            overlay={<Tooltip>stop</Tooltip>}
-                        >
-                            <button id="stop" ref={stopButton} type="button"><StopIcon/></button>
-                        </OverlayTrigger>
+                        <div style={{display: "none"}}>
+                            <OverlayTrigger
+                                overlay={<Tooltip>stop</Tooltip>}
+                            >
+                                <button id="stop" ref={stopButton} type="button"><StopIcon/></button>
+                            </OverlayTrigger>
+                        </div>
                         <OverlayTrigger
                             overlay={<Tooltip>rewind 10 seconds</Tooltip>}
                         >
