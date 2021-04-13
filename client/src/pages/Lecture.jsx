@@ -101,11 +101,10 @@ export default function Lecture(props) {
   }
 
   return (
-    <Container style={{maxWidth: "70%"}}>
+    <Container style={{maxWidth: "80%", height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center"}}>
       {lecture && session ?
         <>
-          <h1>{lecture.title}</h1>
-          <VideoPlayer videoData={lecture.video} actions={{logEvent: logEvent}} childComponents={{FeedbackAlert: FeedbackAlert}} feedback={feedback}/>
+          <VideoPlayer videoData={lecture.video} title={lecture.title} actions={{logEvent: logEvent}} childComponents={{FeedbackAlert: FeedbackAlert}} feedback={feedback}/>
         </> : <Spinner animation="border" />
       }
     </Container>

@@ -73,7 +73,7 @@ const UpdatingTooltip = React.forwardRef(
     },
 );
 
-export default function VideoPlayer({videoData, actions, childComponents, feedback}) {   
+export default function VideoPlayer({videoData, title, actions, childComponents, feedback}) {   
 
     const fullScreenEnabled = !!(document.fullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled || document.webkitSupportsFullscreen || document.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
 
@@ -117,7 +117,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
         video.current.controls = false;
 
         // Display the user defined video controls
-        videoControls.current.style.display = 'block';
+        // videoControls.current.style.display = 'block';
         
         video.current.addEventListener("loadedmetadata", () => {
             seekSlider.current.value = 0;
@@ -358,6 +358,7 @@ export default function VideoPlayer({videoData, actions, childComponents, feedba
                 />
             </video>
             <childComponents.FeedbackAlert/>
+            <div id="title-box"><h1>{title}</h1></div>
             <div id="video-controls" ref={videoControls} className="controls">
                 <div id="timeline-container">
                     <Overlay target={timelineThumb} show={showThumb}>
