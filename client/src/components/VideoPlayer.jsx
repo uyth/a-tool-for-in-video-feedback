@@ -418,7 +418,7 @@ export default function VideoPlayer({videoData, title, actions, childComponents,
                                             <span style={{
                                                 // margin: "auto",
                                                 marginTop: "-0.375rem",
-                                                background: "yellow",
+                                                background: "#bee5eb",
                                                 display: "flex",
                                                 justifyContent: "center",
                                                 alignItems: "center",
