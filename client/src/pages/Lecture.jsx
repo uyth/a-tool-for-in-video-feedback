@@ -21,7 +21,8 @@ export default function Lecture(props) {
   const [lecture, setLecture] = useState(null);
   const [session, setSession] = useState(null);
   const [feedback, setFeedback] = useState([]);
-  
+
+  let [alertText, setAlertText] = useState(null);
   let [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
@@ -77,7 +78,13 @@ export default function Lecture(props) {
         }
         if (message.type == "SET_FEEDBACK") {
             setFeedback([message.data, ...feedback]);
+            setAlertText("Struggling with the lecture? Here is some feedback from StackOverflow!");
             setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 10000);
+          }
+          if (message.type == "NO_FEEDBACK_NEED") {
+            setShowAlert(true);
+            setAlertText("You have already received feedback about this!");
             setTimeout(() => setShowAlert(false), 10000);
         }
     }
@@ -92,9 +99,7 @@ export default function Lecture(props) {
           top: "1em",
           zIndex: 1000
         }}>
-          <Alert variant="info" dismissible onClose={() => setShowAlert(false)}>
-            Struggling with the lecture? Here is some feedback from StackOverflow!
-          </Alert>
+          <Alert variant="info" dismissible onClose={() => setShowAlert(false)}>{alertText}</Alert>
         </div>)
     } else {
       return null;

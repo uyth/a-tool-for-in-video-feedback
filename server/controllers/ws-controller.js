@@ -24,8 +24,14 @@ processEvent = async (socket, data) => {
         let event = await new Event(data.event).save();
         let session = await Session.findByIdAndUpdate({ _id: data.session }, {$push: {events: event}});
         await session.save();
+
+        let needFeedback = !hasFeedbackNearTimestamp(session, data);
         
-        if (!hasFeedbackNearTimestamp(session, data)) {
+        if (!needFeedback && event.eventType == "MANUAL_FEEDBACK_REQUEST") {
+            socket.send(JSON.stringify({
+                type: "NO_FEEDBACK_NEED",
+            }));
+        } else if (needFeedback) {
             if (event.eventType == "PAUSE") handlePauseEvent(socket, data);
             else if (event.eventType == "RATECHANGE") handleRatechange(socket, data)
             else if (event.eventType == "SKIP_BACK") handleSkipBack(socket, data);
