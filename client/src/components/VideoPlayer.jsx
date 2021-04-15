@@ -358,6 +358,11 @@ export default function VideoPlayer({videoData, title, actions, childComponents,
                 />
             </video>
             <childComponents.FeedbackAlert/>
+            {isPaused &&
+            <div id="video-not-playing-overlay">
+                <span className={"circle-icon-wrapper"}><PlayArrowIcon/></span>
+            </div>
+            }
             <div id="title-box"><h1>{title}</h1></div>
             <div id="video-controls" ref={videoControls} className="controls">
                 <div id="timeline-container">
