@@ -36,7 +36,8 @@ const EVENTS = {
     OPEN_FEEDBACK: "OPEN_FEEDBACK",
     CLOSE_FEEDBACK: "CLOSE_FEEDBACK",
     MANUAL_FEEDBACK_REQUEST: "MANUAL_FEEDBACK_REQUEST",
-    OPEN_LINK: "OPEN_LINK"
+    OPEN_LINK: "OPEN_LINK",    
+    ENDED: "ENDED"
 }
 
 const BUTTON_KEYS = {
@@ -165,6 +166,7 @@ export default function VideoPlayer({videoData, title, actions, childComponents,
             stopButton.current.addEventListener('click', () => stopVideo());
             video.current.addEventListener("play", () => generateEventlog(EVENTS.PLAY));
             video.current.addEventListener("pause", () => generateEventlog(EVENTS.PAUSE));
+            video.current.addEventListener("ended", () => {stopVideo(); generateEventlog(EVENTS.ENDED)});
             
             // seek events
             seekSlider.current.addEventListener('mousedown', () => {
