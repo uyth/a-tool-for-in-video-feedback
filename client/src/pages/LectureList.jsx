@@ -86,7 +86,7 @@ class LecturesList extends Component {
                     <tbody>
                         {lectures.map((lecture, index) => (
                         <tr key={index}>
-                            <td><Link to={"/lectures/" + lecture._id} >{lecture._id}</Link></td>
+                            <td><Link to={"/usertest/" + lecture._id} >{lecture._id}</Link></td>
                             <td>{lecture.title}</td>
                             <td><DeleteLecture id={lecture._id}/></td>
                             <td><UpdateLecture id={lecture._id}/></td>
