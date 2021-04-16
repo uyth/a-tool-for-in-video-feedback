@@ -1,9 +1,9 @@
 // Constants.js
 const prod = {
   url: {
-    API_URL: "https://stud210302.idi.ntnu.no:3000/api",
-    FILE_URL: "https://stud210302.idi.ntnu.no:3000",
-    WEBSOCKET_URL: "wss://stud210302.idi.ntnu.no:3000",
+    API_URL: "https://vita.idi.ntnu.no:3000/api",
+    FILE_URL: "https://vita.idi.ntnu.no:3000",
+    WEBSOCKET_URL: "wss://vita.idi.ntnu.no:3000",
   },
 };
 const dev = {
