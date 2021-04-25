@@ -1,0 +1,977 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:02.530
+The Pandas module provides
+
+2
+00:00:02.530 --> 00:00:05.635
+access to various
+data analysis tools.
+
+3
+00:00:05.635 --> 00:00:09.400
+It can connect to and
+interact with a database.
+
+4
+00:00:09.400 --> 00:00:12.590
+It can also read and
+write Excel files.
+
+5
+00:00:12.590 --> 00:00:15.265
+After importing
+the Pandas module,
+
+6
+00:00:15.265 --> 00:00:19.090
+we have access to a
+useful read_excel method,
+
+7
+00:00:19.090 --> 00:00:22.190
+which can read an Excel
+file into a DataFrame.
+
+8
+00:00:22.190 --> 00:00:26.035
+A DataFrame is a two-dimensional
+labeled data structure.
+
+9
+00:00:26.035 --> 00:00:30.365
+You can think of it like a
+spreadsheet or database table.
+
+10
+00:00:30.365 --> 00:00:35.575
+The Pandas module also provides
+a useful Excel file class
+
+11
+00:00:35.575 --> 00:00:37.915
+with a parse method that can read
+
+12
+00:00:37.915 --> 00:00:40.675
+individual sheets
+in an Excel file.
+
+13
+00:00:40.675 --> 00:00:43.520
+We'll use this for
+loading our data.
+
+14
+00:00:44.527 --> 00:00:49.827
+Before we get started, confirm you've
+downloaded the Yelp data file.
+
+15
+00:00:49.827 --> 00:00:53.197
+It includes information
+about local businesses
+
+16
+00:00:53.197 --> 00:00:55.627
+in 13 cities in Pennsylvania and Nevada.
+
+17
+00:00:56.627 --> 00:00:59.987
+This was downloaded courtesy
+of the Yelp dataset challenge.
+
+18
+00:01:01.457 --> 00:01:07.114
+In the data file, the Yelp data tab
+contains the following data columns name,
+
+19
+00:01:07.114 --> 00:01:10.799
+which is the name of the business,
+category_0,
+
+20
+00:01:10.799 --> 00:01:14.914
+which is the first user
+assigned business category, and
+
+21
+00:01:14.914 --> 00:01:20.079
+category_1, which is the second
+user assigned business category.
+
+22
+00:01:20.079 --> 00:01:23.906
+In our data, these are the top
+two level business categories.
+
+23
+00:01:25.197 --> 00:01:27.707
+We also have take out, which is a true or
+
+24
+00:01:27.707 --> 00:01:30.907
+false flag,
+indicating if a business provides takeout.
+
+25
+00:01:32.077 --> 00:01:35.677
+Review count,
+which is the number of reviews.
+
+26
+00:01:35.677 --> 00:01:38.207
+And stars,
+which is the overall star rating.
+
+27
+00:01:39.247 --> 00:01:40.517
+Then we have city_id,
+
+28
+00:01:40.517 --> 00:01:44.277
+which is the identifier referencing
+the city of the business.
+
+29
+00:01:44.277 --> 00:01:47.948
+This could be matched to the id
+column on the cities tab.
+
+30
+00:01:47.948 --> 00:01:53.697
+And state_id, which is the identifier
+referencing the state of the business and
+
+31
+00:01:53.697 --> 00:01:56.375
+can be matched to the id
+column on the state's tab.
+
+32
+00:01:56.375 --> 00:02:02.337
+On the cities tab,
+we see the following two data columns,
+
+33
+00:02:02.337 --> 00:02:05.557
+the id column,
+which is the unique identifier for
+
+34
+00:02:05.557 --> 00:02:09.367
+the city, and the city column,
+which shows the name of the city.
+
+35
+00:02:11.137 --> 00:02:15.127
+On the state's tab,
+we also see two data columns.
+
+36
+00:02:15.127 --> 00:02:18.715
+The id column is the unique identifier for
+the state, and
+
+37
+00:02:18.715 --> 00:02:21.345
+the state column is the name of the state.
+
+38
+00:02:25.821 --> 00:02:30.861
+Let's load and read the Yelp data file,
+import pandas and
+
+39
+00:02:30.861 --> 00:02:35.221
+use the ExcelFile class to load
+the entire Yelp Excel file.
+
+40
+00:02:36.551 --> 00:02:40.421
+Then read the Yelp data sheet into
+a DataFrame using the parse method.
+
+41
+00:02:41.531 --> 00:02:45.441
+We see that the type of DF is a DataFrame.
+
+42
+00:02:45.441 --> 00:02:49.897
+We can get a count of the rows and
+get the size or
+
+43
+00:02:49.897 --> 00:02:54.041
+a count of the rows and
+columns by accessing the shape attribute.
+
+44
+00:02:55.211 --> 00:02:57.281
+Get a count of the values in each column.
+
+45
+00:02:58.871 --> 00:03:04.151
+You can inspect the column headers by
+accessing thee columns attribute and
+
+46
+00:03:04.151 --> 00:03:08.971
+get the type of data stored in each
+column by accessing the dtypes attribute.
+
+47
+00:03:10.891 --> 00:03:14.881
+The described method provides
+various summary statistics for
+
+48
+00:03:14.881 --> 00:03:16.916
+the numerical values in a DataFrame.
+
+49
+00:03:18.821 --> 00:03:23.051
+The head method displays
+the first five rows of data.
+
+50
+00:03:23.051 --> 00:03:27.681
+If you provide an argument,
+it will display the given number of rows.
+
+51
+00:03:27.681 --> 00:03:30.471
+This displays the first 100 rows of data.
+
+52
+00:03:32.401 --> 00:03:35.394
+You can drop the duplicates from
+a DataFrame by using the drop
+
+53
+00:03:35.394 --> 00:03:36.458
+duplicates method.
+
+54
+00:03:36.458 --> 00:03:40.931
+By default, this will look at
+all columns to identify and
+
+55
+00:03:40.931 --> 00:03:43.551
+drop duplicate rows in the data.
+
+56
+00:03:50.343 --> 00:03:52.963
+To select specific columns of data,
+
+57
+00:03:52.963 --> 00:03:57.593
+specify the names of the columns
+inside of square brackets.
+
+58
+00:03:57.593 --> 00:04:01.763
+To select just the names of
+the businesses, use the name attribute.
+
+59
+00:04:03.273 --> 00:04:08.273
+To query the location for the first
+100 businesses, we'll create a list of
+
+60
+00:04:08.273 --> 00:04:13.493
+column names, then put that list
+inside of square brackets and
+
+61
+00:04:13.493 --> 00:04:20.293
+get the first 100 records by calling
+the head method with an argument of 100.
+
+62
+00:04:20.293 --> 00:04:24.153
+This will only show the ID for
+each city and state but
+
+63
+00:04:24.153 --> 00:04:27.033
+we want to see the actual cities and
+states.
+
+64
+00:04:27.033 --> 00:04:29.733
+So, how can we get the actual values?
+
+65
+00:04:29.733 --> 00:04:31.916
+We need to join this
+data to other data sets.
+
+66
+00:04:38.363 --> 00:04:42.504
+We need to look up the values of each
+city and state in the "cities" sheet and
+
+67
+00:04:42.504 --> 00:04:43.623
+"states" sheet.
+
+68
+00:04:44.663 --> 00:04:48.403
+Then combine them with the data
+in the "yelp_data" sheet.
+
+69
+00:04:48.403 --> 00:04:54.193
+We do this by joining the data sets using
+a common field or identifier in each.
+
+70
+00:04:55.213 --> 00:04:58.523
+This process of joining tables is similar
+
+71
+00:04:58.523 --> 00:05:01.343
+to what we do with tables
+in a relational database.
+
+72
+00:05:02.603 --> 00:05:08.753
+The city_id in the "yelp_data" sheet
+will join to the id in the "cities" tab.
+
+73
+00:05:08.753 --> 00:05:13.843
+And the state_id in the "yelp_data" sheet
+will join to the id in the "states" tab.
+
+74
+00:05:15.253 --> 00:05:18.941
+The most common type of join
+is called an inner join.
+
+75
+00:05:18.941 --> 00:05:22.598
+This combines DataFrames
+based on a join key or
+
+76
+00:05:22.598 --> 00:05:27.758
+common identifier and
+returns a new DataFrame that contains only
+
+77
+00:05:27.758 --> 00:05:32.753
+those rows where the value being
+joined exists in BOTH tables.
+
+78
+00:05:37.024 --> 00:05:39.574
+In preparation for
+joining our data,
+
+79
+00:05:39.574 --> 00:05:40.954
+let's go ahead and import
+
+80
+00:05:40.954 --> 00:05:44.444
+the pandas library and
+load the Yelp data file,
+
+81
+00:05:44.444 --> 00:05:48.319
+the first thing I do is
+import pandas as pd.
+
+82
+00:05:48.319 --> 00:05:50.824
+This imports the
+pandas library and
+
+83
+00:05:50.824 --> 00:05:54.259
+allows me to reference
+it using an alias pd.
+
+84
+00:05:54.259 --> 00:05:57.004
+Using pd, I call
+
+85
+00:05:57.004 --> 00:05:58.744
+Excel file and give it the name
+
+86
+00:05:58.744 --> 00:06:00.874
+of the Excel file
+that I want to load.
+
+87
+00:06:00.874 --> 00:06:04.654
+In this case, it's yelp.xlsx.
+
+88
+00:06:04.654 --> 00:06:06.304
+That's an Excel file in
+
+89
+00:06:06.304 --> 00:06:09.049
+the same directory as my
+Jupyter Notebook file.
+
+90
+00:06:09.049 --> 00:06:11.834
+Here's the Yelp Excel file.
+
+91
+00:06:12.174 --> 00:06:17.824
+That returns an object and I
+store it in a variable xls.
+
+92
+00:06:17.824 --> 00:06:19.859
+Using that same xls,
+
+93
+00:06:19.859 --> 00:06:21.744
+I call the parse method,
+
+94
+00:06:21.744 --> 00:06:24.189
+which parses an
+individual worksheet
+
+95
+00:06:24.189 --> 00:06:26.109
+inside of the Excel file.
+
+96
+00:06:26.109 --> 00:06:27.804
+In this case, I'm going to parse
+
+97
+00:06:27.804 --> 00:06:29.754
+Yelp data that will return
+
+98
+00:06:29.754 --> 00:06:33.674
+a DataFrame and I'll store
+it in a variable df.
+
+99
+00:06:33.674 --> 00:06:36.464
+I can now import pandas,
+
+100
+00:06:36.464 --> 00:06:39.624
+load my data, and then view
+
+101
+00:06:39.624 --> 00:06:43.764
+the first five rows of
+the Yelp data worksheet.
+
+102
+00:06:43.764 --> 00:06:47.544
+Df.head, run that and I can see
+
+103
+00:06:47.544 --> 00:06:51.464
+the first five rows of data
+in the Yelp data worksheet.
+
+104
+00:06:51.464 --> 00:06:54.349
+To join to the cities data,
+
+105
+00:06:54.349 --> 00:06:57.134
+I'm going to first import
+the cities worksheet
+
+106
+00:06:57.134 --> 00:07:00.689
+into its own DataFrame
+using the parse method.
+
+107
+00:07:00.689 --> 00:07:04.044
+So xls.parse,
+
+108
+00:07:04.044 --> 00:07:07.274
+give it the name of the
+worksheet in this case cities,
+
+109
+00:07:07.274 --> 00:07:09.104
+that will return a DataFrame.
+
+110
+00:07:09.104 --> 00:07:12.054
+I'm going to store
+it in df_cities
+
+111
+00:07:12.324 --> 00:07:15.979
+equals xls.parse cities,
+
+112
+00:07:15.979 --> 00:07:17.864
+run that and I can view
+
+113
+00:07:17.864 --> 00:07:20.654
+the first five rows of
+data in that worksheet.
+
+114
+00:07:20.654 --> 00:07:25.564
+Df_cities.head, run that.
+
+115
+00:07:25.564 --> 00:07:28.544
+I can see the data in
+the cities worksheet,
+
+116
+00:07:28.544 --> 00:07:30.854
+I see the ID of the city and
+
+117
+00:07:30.854 --> 00:07:34.599
+then the name of the city
+associated with each ID.
+
+118
+00:07:34.599 --> 00:07:39.479
+The pandas function for
+performing joins is called merge.
+
+119
+00:07:39.479 --> 00:07:44.254
+Here's how it works, pd.merge
+
+120
+00:07:44.254 --> 00:07:46.334
+then I specify the DataFrames to
+
+121
+00:07:46.334 --> 00:07:49.094
+join in the left and
+right arguments.
+
+122
+00:07:49.094 --> 00:07:50.444
+So on the left,
+
+123
+00:07:50.444 --> 00:07:52.829
+I'm going to use
+the df DataFrame.
+
+124
+00:07:52.829 --> 00:07:57.228
+On the right, I'm going to
+use the df_cities DataFrame,
+
+125
+00:07:57.228 --> 00:07:58.994
+those of the two
+DataFrames that I'm going
+
+126
+00:07:58.994 --> 00:08:00.869
+to join or merge.
+
+127
+00:08:00.869 --> 00:08:03.219
+Then I specify how to join,
+
+128
+00:08:03.219 --> 00:08:07.509
+so how equals a string inner join
+
+129
+00:08:07.509 --> 00:08:11.864
+and then specify the join
+keys in the two DataFrames.
+
+130
+00:08:11.864 --> 00:08:15.239
+So in the left
+DataFrame, left_on,
+
+131
+00:08:15.239 --> 00:08:18.604
+I'm going to use
+the city_id column,
+
+132
+00:08:18.604 --> 00:08:20.459
+and in the right DataFrame,
+
+133
+00:08:20.459 --> 00:08:24.429
+right_on, I'm going
+to use the ID column.
+
+134
+00:08:24.429 --> 00:08:27.749
+Those are the two columns
+that I'm going to match.
+
+135
+00:08:27.749 --> 00:08:30.213
+That will return a new DataFrame,
+
+136
+00:08:30.213 --> 00:08:32.209
+and I'm going to call that df.
+
+137
+00:08:32.209 --> 00:08:33.474
+So if I run that,
+
+138
+00:08:33.474 --> 00:08:35.154
+it should have merged my data.
+
+139
+00:08:35.154 --> 00:08:37.404
+Let's look at the first
+five rows of data,
+
+140
+00:08:37.404 --> 00:08:42.054
+df.head and now I can see that
+
+141
+00:08:42.054 --> 00:08:43.884
+the city information has been
+
+142
+00:08:43.884 --> 00:08:47.154
+merged with the
+original DataFrame df.
+
+143
+00:08:47.154 --> 00:08:49.499
+Here's the city on the right now.
+
+144
+00:08:49.499 --> 00:08:52.699
+Now let's merge to
+the states data.
+
+145
+00:08:52.699 --> 00:08:54.634
+The first thing that we're
+going to want to do is import
+
+146
+00:08:54.634 --> 00:08:58.664
+the states worksheet
+into its own DataFrame.
+
+147
+00:08:59.154 --> 00:09:03.404
+I'm going to call xls.parse
+
+148
+00:09:03.404 --> 00:09:05.634
+and then give it the name of
+the worksheet, in this case,
+
+149
+00:09:05.634 --> 00:09:08.649
+it's states that's going
+to return a DataFrame,
+
+150
+00:09:08.649 --> 00:09:12.354
+will store that in df_states.
+
+151
+00:09:12.354 --> 00:09:14.424
+I can run that and I can see
+
+152
+00:09:14.424 --> 00:09:19.564
+the first five rows of that
+worksheet df_states.head,
+
+153
+00:09:19.934 --> 00:09:22.014
+here's the ID for
+
+154
+00:09:22.014 --> 00:09:24.054
+each state and then the
+name of the state or
+
+155
+00:09:24.054 --> 00:09:28.174
+the abbreviation for each
+state associated with that ID.
+
+156
+00:09:30.384 --> 00:09:32.794
+To merge the states data,
+
+157
+00:09:32.794 --> 00:09:34.789
+we're going to use
+the merge function,
+
+158
+00:09:34.789 --> 00:09:37.544
+so I'm going to call pd.merge.
+
+159
+00:09:37.544 --> 00:09:41.064
+The DataFrame on the
+left will be df,
+
+160
+00:09:41.064 --> 00:09:43.149
+the DataFrame on
+the right will be
+
+161
+00:09:43.149 --> 00:09:46.614
+df_states and then how
+I'm I going to join them?
+
+162
+00:09:46.614 --> 00:09:48.894
+How equals inner, that's
+
+163
+00:09:48.894 --> 00:09:52.779
+a string and then the join
+keys in both DataFrames.
+
+164
+00:09:52.779 --> 00:09:55.224
+So left_on will be
+
+165
+00:09:55.224 --> 00:10:02.259
+the state_id and then the
+right_on will be the ID.
+
+166
+00:10:02.259 --> 00:10:03.954
+That's the name of
+this column here.
+
+167
+00:10:03.954 --> 00:10:06.554
+It's called ID on the
+states worksheet.
+
+168
+00:10:06.554 --> 00:10:08.519
+That's going to return
+a new DataFrame.
+
+169
+00:10:08.519 --> 00:10:10.664
+Again, I'm going to call that df
+
+170
+00:10:10.664 --> 00:10:11.984
+and I'm going to run that.
+
+171
+00:10:11.984 --> 00:10:15.874
+Let's just get the shape of
+that DataFrame df.shape.
+
+172
+00:10:15.874 --> 00:10:17.094
+That's just an attribute.
+
+173
+00:10:17.094 --> 00:10:18.984
+If I run that, I can
+see that there's
+
+174
+00:10:18.984 --> 00:10:23.199
+now 600 rows and 12 columns.
+
+175
+00:10:23.199 --> 00:10:25.779
+So it added two new columns.
+
+176
+00:10:25.779 --> 00:10:28.629
+Let's get the first
+five rows of data
+
+177
+00:10:28.629 --> 00:10:32.524
+again, df_head call that.
+
+178
+00:10:32.524 --> 00:10:34.914
+I can see that the
+states information has
+
+179
+00:10:34.914 --> 00:10:37.509
+now been merged with
+the original DataFrame.
+
+180
+00:10:37.509 --> 00:10:41.694
+Here's the state associated
+with each state_id.
+
+181
+00:10:41.694 --> 00:10:44.514
+Now let's show the name, city,
+
+182
+00:10:44.514 --> 00:10:47.664
+and state for the
+first 100 businesses.
+
+183
+00:10:47.664 --> 00:10:50.189
+So I'm going to create
+a list of attributes,
+
+184
+00:10:50.189 --> 00:10:52.698
+A-T-T-S, we'll call atts,
+
+185
+00:10:52.698 --> 00:10:55.314
+and what are the list of
+columns that I want to see?
+
+186
+00:10:55.314 --> 00:10:58.059
+I want to see the name column,
+
+187
+00:10:58.059 --> 00:11:00.954
+I want to see the city column,
+
+188
+00:11:00.954 --> 00:11:04.224
+and I also want to
+see the state column.
+
+189
+00:11:04.224 --> 00:11:06.864
+Using those attributes in
+
+190
+00:11:06.864 --> 00:11:09.804
+my DataFrame and inside
+of square brackets,
+
+191
+00:11:09.804 --> 00:11:13.199
+I'm going to provide that
+list of column names,
+
+192
+00:11:13.199 --> 00:11:15.714
+and then from that
+I'm going to view
+
+193
+00:11:15.714 --> 00:11:19.284
+the first 100 businesses.
+
+194
+00:11:19.284 --> 00:11:22.344
+Now we can see the
+first 100 businesses,
+
+195
+00:11:22.344 --> 00:11:24.759
+just the name, and the city,
+
+196
+00:11:24.759 --> 00:11:28.534
+and the state associated
+with those businesses.
+
+197
+00:11:29.454 --> 00:11:32.214
+This id_x column is
+
+198
+00:11:32.214 --> 00:11:34.989
+just a duplicate of
+the city_id column.
+
+199
+00:11:34.989 --> 00:11:37.134
+This id_y column is
+
+200
+00:11:37.134 --> 00:11:39.939
+just a duplicate of
+this state_id column.
+
+201
+00:11:39.939 --> 00:11:42.924
+So let's delete these
+duplicate columns.
+
+202
+00:11:42.924 --> 00:11:47.184
+To do so, we're going
+to use the del keyword
+
+203
+00:11:47.184 --> 00:11:52.214
+from the DataFrame
+delete the id_x column.
+
+204
+00:11:52.214 --> 00:11:55.624
+Then del from the DataFrame,
+
+205
+00:11:55.624 --> 00:11:59.334
+let's delete the id_y column.
+
+206
+00:11:59.334 --> 00:12:02.109
+Now if we look at our data,
+
+207
+00:12:02.109 --> 00:12:04.494
+we no longer see those columns.
+
+208
+00:12:04.494 --> 00:12:06.789
+We just have the
+city_id, the state_id.
+
+209
+00:12:06.789 --> 00:12:10.674
+Those are the original columns
+in the Yelp data worksheet
+
+210
+00:12:10.674 --> 00:12:12.594
+and then the appended city and
+
+211
+00:12:12.594 --> 00:12:15.784
+state information that
+we merged earlier.
