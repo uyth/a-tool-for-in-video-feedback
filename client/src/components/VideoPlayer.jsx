@@ -162,7 +162,6 @@ export default function VideoPlayer({videoData, title}) {
     const scrubThumbnailContainer = useRef();
 
     // playback controllers
-    const stopButton = useRef();
     const seekSlider = useRef();
 
     let [isSeeking, setIsSeeking] = useState(false);
@@ -209,7 +208,7 @@ export default function VideoPlayer({videoData, title}) {
 
     // init playback controller event listeners
     useEffect(() => {
-        if (video && videoControls && stopButton && seekSlider && session) {
+        if (video && videoControls && seekSlider && session) {
             video.current.addEventListener('timeupdate', () => timeUpdate());
             video.current.addEventListener("ratechange", () => generateEventlog(EVENTS.RATECHANGE));
 
@@ -235,7 +234,6 @@ export default function VideoPlayer({videoData, title}) {
                     togglePlay();
                 }
             }
-            stopButton.current.addEventListener('click', () => stopVideo());
             video.current.addEventListener("play", () => generateEventlog(EVENTS.PLAY));
             video.current.addEventListener("pause", () => generateEventlog(EVENTS.PAUSE));
             video.current.addEventListener("ended", () => {stopVideo(); generateEventlog(EVENTS.ENDED)});
@@ -254,7 +252,7 @@ export default function VideoPlayer({videoData, title}) {
                 setIsSeeking(false);
             });
         }
-    }, [video, videoControls, stopButton, seekSlider, session]);
+    }, [video, videoControls, seekSlider, session]);
 
     // basic video playback
 
@@ -530,11 +528,6 @@ export default function VideoPlayer({videoData, title}) {
                         <OverlayTrigger overlay={<Tooltip>{isPaused ? "play" : "pause"}</Tooltip>}>
                             <button id="playpause" onClick={handlePlayButtonClick}>{isPaused ? <PlayArrowIcon/> : <PauseIcon/>}</button>
                         </OverlayTrigger>
-                        <div style={{display: "none"}}>
-                            <OverlayTrigger overlay={<Tooltip>stop</Tooltip>}>
-                                <button id="stop" ref={stopButton} type="button"><StopIcon/></button>
-                            </OverlayTrigger>
-                        </div>
                         <OverlayTrigger overlay={<Tooltip>rewind 10 seconds</Tooltip>}>
                             <button id="rewind10" onClick={handleRewindClick} type="button"><Replay10Icon/></button>
                         </OverlayTrigger>
