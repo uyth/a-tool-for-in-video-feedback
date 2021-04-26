@@ -16,11 +16,14 @@ import PauseIcon from '@material-ui/icons/Pause';
 import Replay10Icon from '@material-ui/icons/Replay10';
 import CloseIcon from '@material-ui/icons/Close';
 import Feedback from './Feedback';
+import Alert from 'react-bootstrap/Alert';
 import PanToolIcon from '@material-ui/icons/PanTool';
 import { formatTime } from '../utils';
 
 import { config } from '../config';
+import { useParams } from 'react-router-dom';
 
+const wsURL = config.url.WEBSOCKET_URL;
 const FILE_URL = config.url.FILE_URL;
 
 const EVENTS = {
@@ -74,7 +77,71 @@ const UpdatingTooltip = React.forwardRef(
     },
 );
 
-export default function VideoPlayer({videoData, title, actions, childComponents, feedback}) {   
+export default function VideoPlayer({videoData, title}) {   
+
+    const ws = useRef(null);
+    const [session, setSession] = useState(null);
+    const { lectureId, code } = useParams();
+
+    const [feedback, setFeedback] = useState([]);
+
+    let [alertText, setAlertText] = useState(null);
+    let [showAlert, setShowAlert] = useState(false);
+
+    useEffect(() => {
+        ws.current = new WebSocket(wsURL);
+        ws.current.onopen = () => initSession();
+        ws.current.onclose = () => console.log("ws closed");
+    
+        return () => {
+            ws.current.close();
+        };
+        
+        function initSession() {
+          console.log("Init Session")
+          ws.current.send(JSON.stringify(
+              {
+                  "type": "INIT_SESSION",
+                  "data": {
+                      "lecture": lectureId,
+                      "code": code
+                  }
+              }
+          ))
+        }
+    }, []);
+
+    useEffect(() => {
+        ws.current.onmessage = e => {
+            let message = JSON.parse(e.data);
+            if (message.type == "SET_SESSION_ID") {
+                console.log(message.session);
+                setSession(message.session);
+            }
+            if (message.type == "SET_FEEDBACK") {
+                setFeedback([message.data, ...feedback]);
+                setAlertText("Struggling with the lecture? Here is some feedback from StackOverflow!");
+                setShowAlert(true);
+                setTimeout(() => setShowAlert(false), 10000);
+              }
+              if (message.type == "NO_FEEDBACK_NEED") {
+                setShowAlert(true);
+                setAlertText("You have already received feedback about this!");
+                setTimeout(() => setShowAlert(false), 10000);
+            }
+        }
+    })
+
+    function logEvent(event) {
+        console.log(session);
+        ws.current.send(JSON.stringify(
+          {
+              "type": "EVENT",
+              "session": session,
+              "event": event        
+          }
+        ))
+    }
 
     const fullScreenEnabled = !!(document.fullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled || document.webkitSupportsFullscreen || document.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
 
@@ -243,7 +310,7 @@ export default function VideoPlayer({videoData, title, actions, childComponents,
         for (let i = 0; i < video.current.played.length; i++) {
             timeranges.push([video.current.played.start(i), video.current.played.end(i)])
         }
-        actions.logEvent({
+        logEvent({
             eventType: type,
             timestamp: Date.now(),
             videoSnapshot: {
@@ -359,7 +426,16 @@ export default function VideoPlayer({videoData, title, actions, childComponents,
                     label={videoData.tracks[0].label}
                 />
             </video>
-            <childComponents.FeedbackAlert/>
+            {showAlert && 
+                <div style={{
+                position: "absolute",
+                right: "1em",
+                top: "1em",
+                zIndex: 1000
+                }}>
+                    <Alert variant="info" dismissible onClose={() => setShowAlert(false)}>{alertText}</Alert>
+                </div>
+            }
             {isPaused &&
             <div id="video-not-playing-overlay">
                 <span className={"circle-icon-wrapper"}><PlayArrowIcon/></span>
