@@ -77,6 +77,14 @@ const UpdatingTooltip = React.forwardRef(
     },
 );
 
+function NotPlayingOverlay({show}) {
+    return show ? (
+        <div id="video-not-playing-overlay">
+            <span className={"circle-icon-wrapper"}><PlayArrowIcon/></span>
+        </div>
+    ) : null;
+}
+
 export default function VideoPlayer({videoData, title}) {   
 
     const ws = useRef(null);
@@ -436,11 +444,7 @@ export default function VideoPlayer({videoData, title}) {
                     <Alert variant="info" dismissible onClose={() => setShowAlert(false)}>{alertText}</Alert>
                 </div>
             }
-            {isPaused &&
-            <div id="video-not-playing-overlay">
-                <span className={"circle-icon-wrapper"}><PlayArrowIcon/></span>
-            </div>
-            }
+            <NotPlayingOverlay show={isPaused}/>
             <div id="title-box"><h1>{title}</h1></div>
             <div id="video-controls" ref={videoControls} className="controls">
                 <div id="timeline-container">
