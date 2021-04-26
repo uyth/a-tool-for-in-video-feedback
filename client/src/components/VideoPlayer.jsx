@@ -350,7 +350,7 @@ export default function VideoPlayer({videoData, title, actions, childComponents,
 
     return (
         <figure id="video-container" ref={videoContainer} data-video-paused={video ? video.paused : true} data-fullscreen="false">
-            <video id="video" ref={video}>
+            <video id="video" ref={video} crossOrigin="anonymous">
                 <source src={FILE_URL + videoData.sources[0].src} type={videoData.sources[0].srctype}/>
                 <track
                     src={FILE_URL + videoData.tracks[0].src} default
