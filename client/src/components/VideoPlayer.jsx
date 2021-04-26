@@ -527,19 +527,15 @@ export default function VideoPlayer({videoData, title}) {
                 </div>
                 <div className="button-bar">
                     <ButtonGroup className="button-bar-left">
-                        <OverlayTrigger
-                            overlay={<Tooltip>{isPaused ? "play" : "pause"}</Tooltip>}
-                        >
+                        <OverlayTrigger overlay={<Tooltip>{isPaused ? "play" : "pause"}</Tooltip>}>
                             <button id="playpause" ref={playpauseButton}>{isPaused ? <PlayArrowIcon/> : <PauseIcon/>}</button>
                         </OverlayTrigger>
                         <div style={{display: "none"}}>
-                            <OverlayTrigger
-                                overlay={<Tooltip>stop</Tooltip>}
-                            >
+                            <OverlayTrigger overlay={<Tooltip>stop</Tooltip>}>
                                 <button id="stop" ref={stopButton} type="button"><StopIcon/></button>
                             </OverlayTrigger>
                         </div>
-                        <OverlayTrigger overlay={<Tooltip>rewind 10 seconds</Tooltip>}                        >
+                        <OverlayTrigger overlay={<Tooltip>rewind 10 seconds</Tooltip>}>
                             <button id="rewind10" onClick={handleRewindClick} type="button"><Replay10Icon/></button>
                         </OverlayTrigger>
                         <div id="volume-controls">
@@ -551,9 +547,7 @@ export default function VideoPlayer({videoData, title}) {
                         <span id="time-display">{formatTime(currentTime)} / {formatTime(duration)}</span>
                     </ButtonGroup>
                     <ButtonGroup className="button-bar-right">
-                        <OverlayTrigger
-                            overlay={<Tooltip>Ask for help</Tooltip>}
-                        >
+                        <OverlayTrigger overlay={<Tooltip>Ask for help</Tooltip>}>
                             <button variant="outline-light" onClick={() => handleFeedbackRequest()}><PanToolIcon/> <span style={{textAlign: "middle"}}>Ask ViTA</span></button>
                         </OverlayTrigger>
                         <OverlayTrigger trigger={["hover", "focus"]} overlay={showSpeedTooltip ? <Tooltip>Change speed</Tooltip> : <div style={{display: "none"}}></div>}>
