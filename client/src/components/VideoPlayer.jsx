@@ -541,6 +541,12 @@ export default function VideoPlayer({videoData, title}) {
                         >
                             <button id="rewind10" ref={rewind10Button} type="button"><Replay10Icon/></button>
                         </OverlayTrigger>
+                        <div id="volume-controls">
+                            <OverlayTrigger overlay={<Tooltip>{isMute?"unmute":"mute"}</Tooltip>}>
+                                <button id="mute" ref={muteButton} type="button">{isMute ? <VolumeOffIcon/> : volume < 0.1 ? <VolumeMuteIcon/> :  volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
+                            </OverlayTrigger>
+                            <input id="volume-slider" ref={volumeSlider} type="range" min="0" max="1" step="0.1"/>
+                        </div>
                         <span id="time-display">{formatTime(currentTime)} / {formatTime(duration)}</span>
                     </ButtonGroup>
                     <ButtonGroup className="button-bar-right">
@@ -566,12 +572,6 @@ export default function VideoPlayer({videoData, title}) {
                                 <Dropdown.Item eventKey="0.5">0.5x</Dropdown.Item>
                             </DropdownButton>
                         </OverlayTrigger>
-                        <div id="volume-controls" style={{display: "none"}}>
-                            <OverlayTrigger overlay={<Tooltip>{isMute?"unmute":"mute"}</Tooltip>}>
-                                <button id="mute" ref={muteButton} type="button">{isMute ? <VolumeOffIcon/> : volume < 0.1 ? <VolumeMuteIcon/> :  volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
-                            </OverlayTrigger>
-                            <input id="volume-slider" ref={volumeSlider} type="range" min="0" max="1" step="0.1"/>
-                        </div>
                         <OverlayTrigger overlay={<Tooltip>{activeCaptions? "turn off captions":"turn on captions"}</Tooltip>}>
                             <button id="captions" ref={captionsButton} type="button">
                                 {activeCaptions ? <ClosedCaptionIcon data-state="active"/> : <ClosedCaptionOutlinedIcon/>}
