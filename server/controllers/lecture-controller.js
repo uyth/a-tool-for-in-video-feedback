@@ -60,6 +60,8 @@ updateLecture = async (req, res) => {
         }
         lecture.courseId = body.courseId
         lecture.video = body.video
+        lecture.tags = body.tags
+        lecture.sessions = body.sessions
         lecture
             .save()
             .then(() => {
