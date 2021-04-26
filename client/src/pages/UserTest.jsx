@@ -27,11 +27,11 @@ export default function UserTest() {
     >
       <div style={{ margin: "auto" }}>
         <h1>Welcome to the user test!</h1>
-        <Form inline>
+        <Form inline onSubmit={handleSubmit}>
           <InputGroup>
             <FormControl placeholder="Your code" value={code} onChange={(e) => setCode(e.target.value)}/>
             <InputGroup.Append>
-              <Button variant="primary" onClick={() => handleSubmit()}>Submit</Button>
+              <Button variant="primary" onClick={handleSubmit}>Submit</Button>
             </InputGroup.Append>
           </InputGroup>
         </Form>
