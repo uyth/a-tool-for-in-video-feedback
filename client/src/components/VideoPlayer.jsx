@@ -164,7 +164,6 @@ export default function VideoPlayer({videoData, title}) {
     // playback controllers
     const playpauseButton = useRef();
     const stopButton = useRef();
-    const rewind10Button = useRef();
     const seekSlider = useRef();
 
     let [isSeeking, setIsSeeking] = useState(false);
@@ -203,18 +202,18 @@ export default function VideoPlayer({videoData, title}) {
 
     }, [video, videoControls, seekSlider]);
 
+    const handleRewindClick = () => {
+        generateEventlog(EVENTS.SKIP_INIT);
+        rewind(10);
+        generateEventlog(EVENTS.SKIP_BACK);        
+    }
+
     // init playback controller event listeners
     useEffect(() => {
-        if (video && videoControls && playpauseButton && stopButton && rewind10Button && seekSlider) {
+        if (video && videoControls && playpauseButton && stopButton && seekSlider) {
             video.current.addEventListener('timeupdate', () => timeUpdate());
             video.current.addEventListener("ratechange", () => generateEventlog(EVENTS.RATECHANGE));
 
-            // skip events
-            rewind10Button.current.addEventListener('click', () => {
-                generateEventlog(EVENTS.SKIP_INIT);
-                rewind(10);
-                generateEventlog(EVENTS.SKIP_BACK);
-            });
             document.onkeydown = (e) => {
                 if (e.keyCode == BUTTON_KEYS.LEFT_KEY) {
                     e.preventDefault();
@@ -257,7 +256,7 @@ export default function VideoPlayer({videoData, title}) {
                 setIsSeeking(false);
             });
         }
-    }, [video, videoControls, playpauseButton, stopButton, rewind10Button, seekSlider]);
+    }, [video, videoControls, playpauseButton, stopButton, seekSlider]);
 
     // basic video playback
 
@@ -540,10 +539,8 @@ export default function VideoPlayer({videoData, title}) {
                                 <button id="stop" ref={stopButton} type="button"><StopIcon/></button>
                             </OverlayTrigger>
                         </div>
-                        <OverlayTrigger
-                            overlay={<Tooltip>rewind 10 seconds</Tooltip>}
-                        >
-                            <button id="rewind10" ref={rewind10Button} type="button"><Replay10Icon/></button>
+                        <OverlayTrigger overlay={<Tooltip>rewind 10 seconds</Tooltip>}                        >
+                            <button id="rewind10" onClick={handleRewindClick} type="button"><Replay10Icon/></button>
                         </OverlayTrigger>
                         <div id="volume-controls">
                             <OverlayTrigger overlay={<Tooltip>{isMute?"unmute":"mute"}</Tooltip>}>
