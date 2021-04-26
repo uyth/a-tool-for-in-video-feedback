@@ -182,10 +182,6 @@ export default function VideoPlayer({videoData, title}) {
     let [showThumb, setShowThumb] = useState(false);
     let [scrubTime, setScrubTime] = useState(0);
 
-    // volume controllers
-    const muteButton = useRef();
-    const volumeSlider = useRef();
-
     // init general video settings
     useEffect(() => {
         // Hide the default controls
@@ -390,13 +386,15 @@ export default function VideoPlayer({videoData, title}) {
         }
     }, [video, captionsButton]);
 
-    // init volume event listeners
-    useEffect(() => {
-        if (video && videoControls && muteButton && volumeSlider) {
-            muteButton.current.addEventListener('click', () => setIsMute(!video.current.muted));
-            volumeSlider.current.addEventListener("change", () => setVolume(volumeSlider.current.value));
-        }
-    }, [video, videoControls, muteButton, volumeSlider]);
+
+    // volume handlers
+    function handleMuteClick() {
+        setIsMute(!video.current.muted);
+    }
+
+    function handleVolumeChange(event) {
+        setVolume(event.target.value);
+    }
 
     useEffect(() => { video.current.muted = isMute }, [isMute]);
     useEffect(() => { video.current.volume = volume }, [volume]);
@@ -540,9 +538,9 @@ export default function VideoPlayer({videoData, title}) {
                         </OverlayTrigger>
                         <div id="volume-controls">
                             <OverlayTrigger overlay={<Tooltip>{isMute?"unmute":"mute"}</Tooltip>}>
-                                <button id="mute" ref={muteButton} type="button">{isMute ? <VolumeOffIcon/> : volume < 0.1 ? <VolumeMuteIcon/> :  volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
+                                <button id="mute" onClick={handleMuteClick} type="button">{isMute ? <VolumeOffIcon/> : volume < 0.1 ? <VolumeMuteIcon/> :  volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
                             </OverlayTrigger>
-                            <input id="volume-slider" ref={volumeSlider} type="range" min="0" max="1" step="0.1"/>
+                            <input id="volume-slider" onChange={handleVolumeChange} type="range" min="0" max="1" step="0.1"/>
                         </div>
                         <span id="time-display">{formatTime(currentTime)} / {formatTime(duration)}</span>
                     </ButtonGroup>
