@@ -14,7 +14,7 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import Replay10Icon from '@material-ui/icons/Replay10';
 import {FeedbackModal} from './Feedback';
-import Alert from 'react-bootstrap/Alert';
+import Toast from 'react-bootstrap/Toast'
 import PanToolIcon from '@material-ui/icons/PanTool';
 import { formatTime } from '../utils';
 
@@ -92,8 +92,7 @@ export default function VideoPlayer({videoData, title}) {
     const [feedbacks, setFeedbacks] = useState([]);
     const [activeFeedback, setActiveFeedback] = useState(null);
     let [showFeedback, setShowFeedback] = useState(false);
-    let [alertText, setAlertText] = useState(null);
-    let [showAlert, setShowAlert] = useState(false);
+    let [showToast, setShowToast] = useState(false);
 
     const handleFeedbackClose = () => {
         if (isPaused) togglePlay();
@@ -103,7 +102,8 @@ export default function VideoPlayer({videoData, title}) {
 
     const handleFeedbackShow = (index) => {
         if (!isPaused) togglePlay();
-        setActiveFeedback(feedbacks[index]);
+        if (index!= null) setActiveFeedback(feedbacks[index]);
+        setShowToast(false);
         generateEventlog(EVENTS.OPEN_FEEDBACK);
         setShowFeedback(true);
     };
@@ -140,14 +140,12 @@ export default function VideoPlayer({videoData, title}) {
             }
             if (message.type == "SET_FEEDBACK") {
                 setFeedbacks([message.data, ...feedbacks]);
-                setAlertText("Struggling with the lecture? Here is some feedback from StackOverflow!");
-                setShowAlert(true);
-                setTimeout(() => setShowAlert(false), 10000);
+                setActiveFeedback(message.data);
+                setShowToast(true);
               }
               if (message.type == "NO_FEEDBACK_NEED") {
-                setShowAlert(true);
-                setAlertText("You have already received feedback about this!");
-                setTimeout(() => setShowAlert(false), 10000);
+                setActiveFeedback(feedbacks.find(f => f.meta.timerange[0] <= video.current.currentTime && video.current.currentTime <= f.meta.timerange[1]));
+                setShowToast(true);
             }
         }
     })
@@ -441,15 +439,26 @@ export default function VideoPlayer({videoData, title}) {
                     label={videoData.tracks[0].label}
                 />
             </video>
-            {showAlert && 
-                <div style={{
-                position: "absolute",
-                right: "1em",
-                top: "1em",
-                zIndex: 1000
-                }}>
-                    <Alert variant="info" dismissible onClose={() => setShowAlert(false)}>{alertText}</Alert>
-                </div>
+            {activeFeedback && 
+            <Toast onClose={() => setShowToast(false)} show={showToast} delay={10000} autohide
+                style={{
+                    position: 'absolute',
+                    top: "1em",
+                    right: "1em",
+                    zIndex: 1000,
+                    background: "white"
+                }}
+            >
+                <Toast.Header>
+                    <span>Do you struggle with <strong style={{color:"black"}}>{activeFeedback.meta.keywords.join(", ")}</strong>?</span>
+                </Toast.Header>
+                <Toast.Body>
+                    <p>Struggle detected at {formatTime(activeFeedback.meta.timestamp)}</p>
+                    <div style={{display: "flex", flexDirection: "row-reverse"}}>
+                        <Button onClick={() => handleFeedbackShow(null)}>Open aid</Button>
+                    </div>
+                </Toast.Body>
+            </Toast>
             }
             {activeFeedback && <FeedbackModal show={showFeedback} callback={handleFeedbackClose} stackoverflow={activeFeedback}/>}
             <NotPlayingOverlay show={isPaused}/>
