@@ -10,12 +10,10 @@ import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import VolumeDownIcon from '@material-ui/icons/VolumeDown';
 import VolumeMuteIcon from '@material-ui/icons/VolumeMute';
 import VolumeOffIcon from '@material-ui/icons/VolumeOff';
-import StopIcon from '@material-ui/icons/Stop';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import Replay10Icon from '@material-ui/icons/Replay10';
-import CloseIcon from '@material-ui/icons/Close';
-import Feedback from './Feedback';
+import {FeedbackModal} from './Feedback';
 import Alert from 'react-bootstrap/Alert';
 import PanToolIcon from '@material-ui/icons/PanTool';
 import { formatTime } from '../utils';
@@ -91,10 +89,24 @@ export default function VideoPlayer({videoData, title}) {
     const [session, setSession] = useState(null);
     const { lectureId, code } = useParams();
 
-    const [feedback, setFeedback] = useState([]);
-
+    const [feedbacks, setFeedbacks] = useState([]);
+    const [activeFeedback, setActiveFeedback] = useState(null);
+    let [showFeedback, setShowFeedback] = useState(false);
     let [alertText, setAlertText] = useState(null);
     let [showAlert, setShowAlert] = useState(false);
+
+    const handleFeedbackClose = () => {
+        if (isPaused) togglePlay();
+        generateEventlog(EVENTS.CLOSE_FEEDBACK);
+        setShowFeedback(false);
+    };
+
+    const handleFeedbackShow = (index) => {
+        if (!isPaused) togglePlay();
+        setActiveFeedback(feedbacks[index]);
+        generateEventlog(EVENTS.OPEN_FEEDBACK);
+        setShowFeedback(true);
+    };
 
     useEffect(() => {
         ws.current = new WebSocket(wsURL);
@@ -127,7 +139,7 @@ export default function VideoPlayer({videoData, title}) {
                 setSession(message.session);
             }
             if (message.type == "SET_FEEDBACK") {
-                setFeedback([message.data, ...feedback]);
+                setFeedbacks([message.data, ...feedbacks]);
                 setAlertText("Struggling with the lecture? Here is some feedback from StackOverflow!");
                 setShowAlert(true);
                 setTimeout(() => setShowAlert(false), 10000);
@@ -173,8 +185,6 @@ export default function VideoPlayer({videoData, title}) {
     let [isMute, setIsMute] = useState(false);
     let [volume, setVolume] = useState(1);
     let [isFullscreen, setFullscreen] = useState(false);
-    
-    let [openFeedback, setOpenFeedback] = useState(false);
     
     let [showSpeedTooltip, setShowSpeedTooltip] = useState(true);
     let [showThumb, setShowThumb] = useState(false);
@@ -441,6 +451,7 @@ export default function VideoPlayer({videoData, title}) {
                     <Alert variant="info" dismissible onClose={() => setShowAlert(false)}>{alertText}</Alert>
                 </div>
             }
+            {activeFeedback && <FeedbackModal show={showFeedback} callback={handleFeedbackClose} stackoverflow={activeFeedback}/>}
             <NotPlayingOverlay show={isPaused}/>
             <div id="title-box"><h1>{title}</h1></div>
             <div id="video-controls" ref={videoControls} className="controls">
@@ -473,7 +484,7 @@ export default function VideoPlayer({videoData, title}) {
                     />
                     <div style={{width: "100%", height: "0.25rem", position: "absolute", padding: "0 0.5rem", marginLeft: "-0.5rem", pointerEvents: "none"}}>
                         <div style={{width: "100%", height: "100%", position: "relative"}}>
-                        {feedback.map((f) => (
+                        {feedbacks.map((f, index) => (
                             <div key={f.id}
                                 style={{
                                     position: "absolute",
@@ -484,22 +495,9 @@ export default function VideoPlayer({videoData, title}) {
                                 {
                                 <OverlayTrigger trigger={["hover","focus"]} rootClose={true} overlay={<Tooltip>Do you struggle with {f.meta.keywords.join(", ")}?</Tooltip>}>
                                     <div style={{display: "block", height: "inherit"}}>
-                                        <OverlayTrigger trigger="click"
-                                            overlay={
-                                                <Popover style={{maxWidth: "none", zIndex: 2147483647, padding: 0}}>
-                                                    <Popover.Title as="div" style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}><strong>Aid from from ViTA</strong><Button variant="light" style={{}} onClick={() => document.body.click()}><CloseIcon/></Button></Popover.Title>
-                                                    <Popover.Content style={{padding: 0}}>
-                                                        <div style={{maxHeight: "50vh", overflow: "auto"}}>
-                                                            {<Feedback stackoverflow={f} callback={openLink}/>}
-                                                        </div>
-                                                    </Popover.Content>
-                                                </Popover>
-                                            }
-                                            rootClose={true}
-                                            onEnter={() => generateEventlog(EVENTS.OPEN_FEEDBACK)}
-                                            onExit={() => generateEventlog(EVENTS.CLOSE_FEEDBACK)}
-                                        >
-                                            <span style={{
+                                        <span
+                                            onClick={() => handleFeedbackShow(index)}
+                                            style={{
                                                 // margin: "auto",
                                                 marginTop: "-0.375rem",
                                                 background: "#bee5eb",
@@ -512,8 +510,7 @@ export default function VideoPlayer({videoData, title}) {
                                                 pointerEvents: "auto",
                                                 cursor: "pointer",
                                             }}>
-                                            </span>
-                                        </OverlayTrigger>
+                                        </span>
                                     </div>
                                 </OverlayTrigger>
                                 }
