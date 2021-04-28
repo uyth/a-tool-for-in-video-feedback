@@ -40,7 +40,6 @@ figure {
     flex-direction: column;
     position: relative;
     height: 0.25rem;
-    z-index: 10000;
 }
 
 #timeline-container input {
