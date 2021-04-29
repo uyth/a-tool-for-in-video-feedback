@@ -467,7 +467,7 @@ export default function VideoPlayer({videoData, title}) {
                 </Toast.Body>
             </Toast>
             }
-            {activeFeedback && <FeedbackModal show={showFeedback} callback={openLink} stackoverflow={activeFeedback}/>}
+            {activeFeedback && <FeedbackModal show={showFeedback} callback={openLink} handleClose={handleFeedbackClose} stackoverflow={activeFeedback}/>}
             <NotPlayingOverlay show={isPaused}/>
             <div id="title-box"><h1>{title}</h1></div>
             <div id="video-controls" ref={videoControls} className="controls">
@@ -509,7 +509,7 @@ export default function VideoPlayer({videoData, title}) {
                                 }}
                             >
                                 {
-                                <OverlayTrigger trigger={["hover","focus"]} rootClose={true} overlay={<Tooltip>Do you struggle with {f.meta.keywords.join(", ")}?</Tooltip>}>
+                                <OverlayTrigger trigger={["hover","focus"]} rootClose={true} overlay={<Tooltip><div>Do you struggle with <strong>{f.meta.keywords.join(", ")}</strong>?</div><span>{formatTime(f.meta.timestamp)}</span></Tooltip>}>
                                     <div style={{display: "block", height: "inherit"}}>
                                         <span
                                             onClick={() => handleFeedbackShow(index)}
