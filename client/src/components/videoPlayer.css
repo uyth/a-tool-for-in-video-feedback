@@ -40,6 +40,7 @@ figure {
     flex-direction: column;
     position: relative;
     height: 0.25rem;
+    z-index: 10000;
 }
 
 #timeline-container input {
@@ -48,13 +49,13 @@ figure {
 
 figure:hover #video-controls, figure:hover #title-box {
     opacity: 1;
-    visibility: visible;
+    /* visibility: visible; */
 }
 
 #title-box, #video-controls {
     opacity: 0;
     transition: all 0.2s ease-in-out;
-    visibility: hidden;
+    /* visibility: hidden; */
 }
 
 #title-box {
@@ -168,4 +169,8 @@ input:focus {
 
 #thumbnail-tool-tip .tooltip-inner {
     padding: 0;
+}
+
+.tooltip {
+    pointer-events: none;
 }
