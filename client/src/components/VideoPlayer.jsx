@@ -204,14 +204,16 @@ export default function VideoPlayer({videoData, title}) {
 
     }, [video, videoControls, seekSlider]);
 
-    const handlePlayButtonClick = () => {
+    const handlePlayPause = () => {
+        let eventType = video.current.paused ? EVENTS.PLAY : EVENTS.PAUSE;
+        generateEventlog(eventType);
         togglePlay();
     }
 
     const handleRewindClick = () => {
         generateEventlog(EVENTS.SKIP_INIT);
         rewind(10);
-        generateEventlog(EVENTS.SKIP_BACK);        
+        generateEventlog(EVENTS.SKIP_BACK);
     }
 
     // init playback controller event listeners
@@ -235,15 +237,15 @@ export default function VideoPlayer({videoData, title}) {
             }
 
             // toggle play events
-            video.current.addEventListener("click", () => togglePlay());
+            video.current.addEventListener("click", handlePlayPause);
             document.body.onkeypress = (e) => {
                 if(e.keyCode == BUTTON_KEYS.SPACEBAR) {
                     e.preventDefault();
-                    togglePlay();
+                    handlePlayPause();
                 }
             }
-            video.current.addEventListener("play", () => generateEventlog(EVENTS.PLAY));
-            video.current.addEventListener("pause", () => generateEventlog(EVENTS.PAUSE));
+            // video.current.addEventListener("play", () => generateEventlog(EVENTS.PLAY));
+            // video.current.addEventListener("pause", () => generateEventlog(EVENTS.PAUSE));
             video.current.addEventListener("ended", () => {stopVideo(); generateEventlog(EVENTS.ENDED)});
             
             // seek events
@@ -462,7 +464,7 @@ export default function VideoPlayer({videoData, title}) {
                 <Toast.Body>
                     <p>Struggle detected at {formatTime(activeFeedback.meta.timestamp)}</p>
                     <div style={{display: "flex", flexDirection: "row-reverse"}}>
-                        <Button onClick={() => handleFeedbackShow(null)}>Open aid</Button>
+                        <Button onMouseDown={() => handleFeedbackShow(null)}>Open aid</Button>
                     </div>
                 </Toast.Body>
             </Toast>
@@ -512,7 +514,7 @@ export default function VideoPlayer({videoData, title}) {
                                 <OverlayTrigger trigger={["hover","focus"]} rootClose={true} overlay={<Tooltip><div>Do you struggle with <strong>{f.meta.keywords.join(", ")}</strong>?</div><span>{formatTime(f.meta.timestamp)}</span></Tooltip>}>
                                     <div style={{display: "block", height: "inherit"}}>
                                         <span
-                                            onClick={() => handleFeedbackShow(index)}
+                                            onMouseDown={() => handleFeedbackShow(index)}
                                             style={{
                                                 // margin: "auto",
                                                 marginTop: "-0.375rem",
@@ -539,22 +541,22 @@ export default function VideoPlayer({videoData, title}) {
                 <div className="button-bar">
                     <ButtonGroup className="button-bar-left">
                         <OverlayTrigger overlay={<Tooltip>{isPaused ? "play" : "pause"}</Tooltip>}>
-                            <button id="playpause" onClick={handlePlayButtonClick}>{isPaused ? <PlayArrowIcon/> : <PauseIcon/>}</button>
+                            <button id="playpause" onMouseDown={handlePlayPause}>{isPaused ? <PlayArrowIcon/> : <PauseIcon/>}</button>
                         </OverlayTrigger>
                         <OverlayTrigger overlay={<Tooltip>rewind 10 seconds</Tooltip>}>
-                            <button id="rewind10" onClick={handleRewindClick} type="button"><Replay10Icon/></button>
+                            <button id="rewind10" onMouseDown={handleRewindClick} type="button"><Replay10Icon/></button>
                         </OverlayTrigger>
                         <div id="volume-controls">
                             <OverlayTrigger overlay={<Tooltip>{isMute?"unmute":"mute"}</Tooltip>}>
-                                <button id="mute" onClick={handleMuteClick} type="button">{isMute ? <VolumeOffIcon/> : volume < 0.1 ? <VolumeMuteIcon/> :  volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
+                                <button id="mute" onMouseDown={handleMuteClick} type="button">{isMute ? <VolumeOffIcon/> : volume < 0.1 ? <VolumeMuteIcon/> :  volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
                             </OverlayTrigger>
-                            <input id="volume-slider" onChange={handleVolumeChange} type="range" min="0" max="1" step="0.1"/>
+                            <input id="volume-slider" onMouseDown={handleVolumeChange} type="range" min="0" max="1" step="0.1"/>
                         </div>
                         <span id="time-display">{formatTime(currentTime)} / {formatTime(duration)}</span>
                     </ButtonGroup>
                     <ButtonGroup className="button-bar-right">
                         <OverlayTrigger overlay={<Tooltip>Ask for help</Tooltip>}>
-                            <button variant="outline-light" onClick={() => handleFeedbackRequest()}><PanToolIcon/> <span style={{textAlign: "middle"}}>Ask ViTA</span></button>
+                            <button variant="outline-light" onMouseDown={() => handleFeedbackRequest()}><PanToolIcon/> <span style={{textAlign: "middle"}}>Ask ViTA</span></button>
                         </OverlayTrigger>
                         <OverlayTrigger trigger={["hover", "focus"]} overlay={showSpeedTooltip ? <Tooltip>Change speed</Tooltip> : <div style={{display: "none"}}></div>}>
                             <DropdownButton id="playback-button"
