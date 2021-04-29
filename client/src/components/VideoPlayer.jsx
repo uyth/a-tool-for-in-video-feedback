@@ -467,7 +467,7 @@ export default function VideoPlayer({videoData, title}) {
                 </Toast.Body>
             </Toast>
             }
-            {activeFeedback && <FeedbackModal show={showFeedback} callback={handleFeedbackClose} stackoverflow={activeFeedback}/>}
+            {activeFeedback && <FeedbackModal show={showFeedback} callback={openLink} stackoverflow={activeFeedback}/>}
             <NotPlayingOverlay show={isPaused}/>
             <div id="title-box"><h1>{title}</h1></div>
             <div id="video-controls" ref={videoControls} className="controls">

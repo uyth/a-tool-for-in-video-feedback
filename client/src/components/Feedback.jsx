@@ -22,31 +22,37 @@ function highlightKeywords(text, keywords) {
     ));
 }
 
-export function FeedbackModal({show, stackoverflow, callback}) {
+function VitaExplanation() {
     return (
-        <Modal show={show} centered size="lg" onHide={callback}>
+        <OverlayTrigger
+            placement="bottom"
+            overlay={
+                <Popover style={{zIndex:2147483647, maxWidth: "20vw"}}>
+                    <Popover.Title>How does ViTA work?</Popover.Title>
+                    <Popover.Content>
+                        <h4 style={{fontSize: "1rem", fontWeight:600}}>Why am I given aid?</h4>
+                        <p>
+                            ViTA detects when you struggle based on your video navigation patterns 
+                            or when you manually asks for help and tries to aid you with best effort.
+                        </p>
+                        <h4 style={{fontSize: "1rem", fontWeight:600}}>Where does the aid come from?</h4>
+                        <p>ViTA searches Stack Overflow and personalizes your aid based on the content you struggle with.</p>
+                    </Popover.Content>
+                </Popover>
+            }
+        >
+            <HelpIcon/>
+        </OverlayTrigger>
+    )
+}
+
+export function FeedbackModal({show, stackoverflow, handleClose, callback}) {
+    return (
+        <Modal show={show} centered size="lg" onHide={handleClose}>
             <Modal.Header closeButton>
                 <div style={{display: "flex", flexDirection: "row"}}>
-                    <h3 style={{fontSize: "1.25rem"}}>Aid details</h3>
-                    <OverlayTrigger
-                        placement="bottom"
-                        overlay={
-                            <Popover style={{zIndex:2147483647, maxWidth: "20vw"}}>
-                                <Popover.Title>How does ViTA work?</Popover.Title>
-                                <Popover.Content>
-                                    <h4 style={{fontSize: "1rem", fontWeight:600}}>Why am I given aid?</h4>
-                                    <p>
-                                        ViTA detects when you struggle based on your video navigation patterns 
-                                        or when you manually asks for help and tries to aid you with best effort.
-                                    </p>
-                                    <h4 style={{fontSize: "1rem", fontWeight:600}}>Where does the aid come from?</h4>
-                                    <p>ViTA searches Stack Overflow and personalizes your aid based on the content you struggle with.</p>
-                                </Popover.Content>
-                            </Popover>
-                        }
-                    >
-                        <HelpIcon/>
-                    </OverlayTrigger>
+                    <h3 style={{fontSize: "1.25rem"}}>Aid from ViTA</h3>
+                    <VitaExplanation/>
                 </div>
             </Modal.Header>
             <Modal.Body style={{maxHeight: "70vh", overflow: "auto"}}>
@@ -104,24 +110,7 @@ export default function Feedback({stackoverflow, callback}) {
                 <Accordion>
                     <div style={{display: "flex", flexDirection: "row"}}>
                         <h3 style={{fontSize: "1.25rem"}}>Aid details</h3>
-                        <OverlayTrigger
-                           overlay={
-                                <Popover style={{zIndex:2147483647, maxWidth: "20vw"}}>
-                                    <Popover.Title>How does ViTA work?</Popover.Title>
-                                    <Popover.Content>
-                                        <h4 style={{fontSize: "1rem", fontWeight:600}}>Why am I given aid?</h4>
-                                        <p>
-                                            ViTA detects when you struggle based on your video navigation patterns 
-                                            or when you manually asks for help and tries to aid you with best effort.
-                                        </p>
-                                        <h4 style={{fontSize: "1rem", fontWeight:600}}>Where does the aid come from?</h4>
-                                        <p>ViTA searches Stack Overflow and personalizes your aid based on the content you struggle with.</p>
-                                    </Popover.Content>
-                                </Popover>
-                            }
-                        >
-                            <HelpIcon/>
-                        </OverlayTrigger>
+                        <VitaExplanation/>
                     </div>
                     <p><strong>Struggle detected</strong> at <Badge variant="primary" pill>{formatTime(stackoverflow.meta.timestamp)}</Badge></p>
                     <p><strong>Relevant keywords:</strong> {stackoverflow.meta.keywords.map(k => <Badge key={k} pill variant="info">{k}</Badge>)}</p>
