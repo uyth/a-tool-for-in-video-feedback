@@ -450,6 +450,13 @@ export default function VideoPlayer({videoData, title}) {
                 }}
             >
                 <Toast.Header>
+                    <span style={{
+                        background: "#bee5eb",
+                        borderRadius: "0.5rem",
+                        width: "1rem",
+                        height: "1rem",
+                        marginRight: "0.75em"
+                    }}/>
                     <span>Do you struggle with <strong style={{color:"black"}}>{activeFeedback.meta.keywords.join(", ")}</strong>?</span>
                 </Toast.Header>
                 <Toast.Body>
