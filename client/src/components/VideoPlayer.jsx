@@ -244,8 +244,6 @@ export default function VideoPlayer({videoData, title}) {
                     handlePlayPause();
                 }
             }
-            // video.current.addEventListener("play", () => generateEventlog(EVENTS.PLAY));
-            // video.current.addEventListener("pause", () => generateEventlog(EVENTS.PAUSE));
             video.current.addEventListener("ended", () => {stopVideo(); generateEventlog(EVENTS.ENDED)});
             
             // seek events
