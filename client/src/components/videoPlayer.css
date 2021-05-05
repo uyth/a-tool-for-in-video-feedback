@@ -174,3 +174,35 @@ input:focus {
 .tooltip {
     pointer-events: none;
 }
+
+.video-cue-container {
+    position: absolute;
+    right: 20%;
+    left: 20%;
+    bottom: 2em;
+    pointer-events: "none";
+    transition: all 0.2s ease-in-out;
+}
+
+figure:hover .video-cue-container {
+    bottom: 4em;
+}
+
+.video-cue-text {
+    width: 100%;
+    text-align: center;
+    color: white;
+}
+
+@media (min-width: 1200px) {
+    .video-cue-text {
+        font-size: 32px;
+    }
+}
+
+
+@media (max-width: 1200px) {
+    .video-cue-text {
+        font-size: 24px;
+    }
+}

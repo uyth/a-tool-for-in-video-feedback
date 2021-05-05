@@ -94,6 +94,8 @@ export default function VideoPlayer({videoData, title}) {
     let [showFeedback, setShowFeedback] = useState(false);
     let [showToast, setShowToast] = useState(false);
 
+    let [cueText, setCueText] = useState(null)
+
     const handleFeedbackClose = () => {
         if (isPaused) togglePlay();
         generateEventlog(EVENTS.CLOSE_FEEDBACK);
@@ -190,6 +192,19 @@ export default function VideoPlayer({videoData, title}) {
 
     // init general video settings
     useEffect(() => {
+
+        const track = document.getElementById("track");
+        track.addEventListener("cuechange", (event) => {
+            let cues = event.target.track.activeCues;
+            try {
+                let text = cues ? cues[0].text : null; 
+                setCueText(text);
+            } catch (error) {
+                setCueText(null);
+                console.log("could not load next cue")
+            }
+        })
+
         // Hide the default controls
         video.current.controls = false;
 
@@ -219,6 +234,10 @@ export default function VideoPlayer({videoData, title}) {
     // init playback controller event listeners
     useEffect(() => {
         if (video && videoControls && seekSlider && session) {
+
+            for (var i = 0; i < video.current.textTracks.length; i++) {
+                video.current.textTracks[i].mode = 'hidden';
+            }
             video.current.addEventListener('timeupdate', () => timeUpdate());
             video.current.addEventListener("ratechange", () => generateEventlog(EVENTS.RATECHANGE));
 
@@ -376,23 +395,9 @@ export default function VideoPlayer({videoData, title}) {
     }, [fullScreenEnabled, fullscreenButton, videoContainer]);
 
     // captions
-    useEffect(() => {
-        if (video && captionsButton) {
-            // turn off autodisplay of captions
-            for (var i = 0; i < video.current.textTracks.length; i++) {
-                video.current.textTracks[i].mode = 'showing';
-            }
-            captionsButton.current.addEventListener('click', () => {
-                if (video.current.textTracks[0].mode === 'showing') {
-                    video.current.textTracks[0].mode = 'hidden';
-                    setActiveCaptions(false);
-                } else {
-                    video.current.textTracks[0].mode = 'showing'
-                    setActiveCaptions(true);
-                }
-            })
-        }
-    }, [video, captionsButton]);
+    function handleCaptionClick() {
+        setActiveCaptions(prev => !prev);
+    }
 
 
     // volume handlers
@@ -433,6 +438,7 @@ export default function VideoPlayer({videoData, title}) {
             <video id="video" ref={video} crossOrigin="anonymous">
                 <source src={FILE_URL + videoData.sources[0].src} type={videoData.sources[0].srctype}/>
                 <track
+                    id="track"
                     src={FILE_URL + videoData.tracks[0].src} default
                     kind={videoData.tracks[0].kind}
                     srcLang={videoData.tracks[0].srclang}
@@ -468,6 +474,11 @@ export default function VideoPlayer({videoData, title}) {
             </Toast>
             }
             {activeFeedback && <FeedbackModal show={showFeedback} callback={openLink} handleClose={handleFeedbackClose} stackoverflow={activeFeedback}/>}
+            {activeCaptions &&
+            <div class="video-cue-container">
+                <div class="video-cue-text"><span style={{background: "black"}}>{cueText}</span></div>
+            </div>
+            }
             <NotPlayingOverlay show={isPaused}/>
             <div id="title-box"><h1>{title}</h1></div>
             <div id="video-controls" ref={videoControls} className="controls">
@@ -574,7 +585,7 @@ export default function VideoPlayer({videoData, title}) {
                             </DropdownButton>
                         </OverlayTrigger>
                         <OverlayTrigger overlay={<Tooltip>{activeCaptions? "turn off captions":"turn on captions"}</Tooltip>}>
-                            <button id="captions" ref={captionsButton} type="button">
+                            <button id="captions" type="button" ref={captionsButton} onClick={() => handleCaptionClick()}>
                                 {activeCaptions ? <ClosedCaptionIcon data-state="active"/> : <ClosedCaptionOutlinedIcon/>}
                             </button>
                         </OverlayTrigger>
