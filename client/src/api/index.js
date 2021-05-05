@@ -12,6 +12,7 @@ export const updateLectureById = (id, payload) => api.put(`/lectures/${id}`, pay
 export const deleteLectureById = id => api.delete(`/lectures/${id}`)
 export const getLectureById = id => api.get(`/lectures/${id}`)
 export const createSession = payload => api.post(`/sessions/`, payload)
+export const findSession = code => api.get(`/sessions/${code}`)
 export const logVideoEvent = (id, payload) => api.patch(`/sessions/${id}`, payload)
 export const getFeedback = payload => api.post(`/feedback`, payload)
 
@@ -22,6 +23,7 @@ const apis = {
     deleteLectureById,
     getLectureById,
     createSession,
+    findSession,
     logVideoEvent,
     getFeedback
 }

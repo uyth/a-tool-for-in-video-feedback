@@ -58,6 +58,19 @@ getSessionById = async (req, res) => {
     }
 }
 
+findSession = async (req, res) => {
+    try {
+        const session = await Session.findOne({code: req.params.code});
+        console.log(req.params.code)
+        if (!session) {
+            return res.status(404).json({ success: false, error: `Session not found` });
+        }
+        return res.status(200).json({sucess: true, data: session});
+    } catch (error) {
+        return res.status(400).json({ success: false, error: error })
+    }
+}
+
 getSessions = async (req, res) => {
     try {
         const sessions = await Session.find({}).exec();
@@ -78,5 +91,6 @@ module.exports = {
     updateSession,
     deleteSession,
     getSessionById,
-    getSessions
+    getSessions,
+    findSession
 }

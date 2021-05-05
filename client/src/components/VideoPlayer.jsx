@@ -350,7 +350,8 @@ export default function VideoPlayer({videoData, title}) {
                 playbackRate: video.current.playbackRate,
                 played: timeranges,
             },
-            openedFeedback: openedFeedback
+            openedFeedback: openedFeedback,
+            activeFeedback: activeFeedback
         });
     }
 
