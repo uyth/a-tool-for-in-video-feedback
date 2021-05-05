@@ -33,13 +33,15 @@ export default function Lecture(props) {
   });
 
   return (
-    <Container style={{maxWidth: "80%", height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center"}}>
-      {lecture ?
-        <>
-          <p>{`${String(time.getHours()).padStart(2, "0")}:${String(time.getMinutes()).padStart(2, "0")}:${String(time.getSeconds()).padStart(2, "0")}`}</p>
-          <VideoPlayer videoData={lecture.video} title={lecture.title}/>
-        </> : <Spinner animation="border" />
-      }
-    </Container>
+    <div style={{background: "#f8f8f8", height: "100vh"}}>
+      <span style={{color: "grey", height: "5vh"}}>{`${String(time.getHours()).padStart(2, "0")}:${String(time.getMinutes()).padStart(2, "0")}:${String(time.getSeconds()).padStart(2, "0")}`}</span>
+      <Container style={{maxWidth: "80%", height: "95vh", display: "flex", flexDirection: "column", justifyContent: "center"}}>
+        {lecture ?
+          <>
+            <VideoPlayer videoData={lecture.video} title={lecture.title}/>
+          </> : <Spinner animation="border" />
+        }
+      </Container>
+    </div>
   )
 }
