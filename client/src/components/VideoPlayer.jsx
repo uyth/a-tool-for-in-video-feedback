@@ -16,6 +16,8 @@ import Replay10Icon from '@material-ui/icons/Replay10';
 import {FeedbackModal} from './Feedback';
 import Toast from 'react-bootstrap/Toast'
 import PanToolIcon from '@material-ui/icons/PanTool';
+import InfoIcon from '@material-ui/icons/Info';
+import CloseIcon from '@material-ui/icons/Close';
 import { formatTime } from '../utils';
 
 import { config } from '../config';
@@ -447,31 +449,24 @@ export default function VideoPlayer({videoData, title}) {
                 />
             </video>
             {activeFeedback && 
-            <Toast onClose={() => setShowToast(false)} show={showToast} delay={10000} autohide
+            <Toast onClose={() => setShowToast(false)} show={showToast} delay={8000} autohide
                 style={{
                     position: 'absolute',
                     top: "1em",
                     right: "1em",
                     zIndex: 1000,
-                    background: "white"
+                    background: "#bee5eb",
                 }}
             >
-                <Toast.Header>
-                    <span style={{
-                        background: "#bee5eb",
-                        borderRadius: "0.5rem",
-                        width: "1rem",
-                        height: "1rem",
-                        marginRight: "0.75em"
-                    }}/>
-                    <span>Do you struggle with <strong style={{color:"black"}}>{activeFeedback.meta.keywords.join(", ")}</strong>?</span>
-                </Toast.Header>
-                <Toast.Body>
-                    <p>Struggle detected at {formatTime(activeFeedback.meta.timestamp)}</p>
-                    <div style={{display: "flex", flexDirection: "row-reverse"}}>
-                        <Button onMouseDown={() => handleFeedbackShow(null)}>Open aid</Button>
+                <div style={{display: "flex", alignItems: "center"}}>
+                    <div style={{padding: "0.5em", cursor: "pointer", display: "flex", alignItems: "center"}}
+                        onClick={() => handleFeedbackShow(null)}
+                    >
+                        <InfoIcon style={{marginRight: "0.25em"}}/>
+                        <span>Here is some assistance about <strong style={{color:"black"}}>{activeFeedback.meta.tags.join(", ")}, {activeFeedback.meta.keywords.join(", ")}</strong></span>
                     </div>
-                </Toast.Body>
+                    <a role="button" onClick={() => setShowToast(false)}><CloseIcon style={{marginRight: "0.5em"}}/></a>
+                </div>
             </Toast>
             }
             {activeFeedback && <FeedbackModal show={showFeedback} callback={openLink} handleClose={handleFeedbackClose} stackoverflow={activeFeedback}/>}
@@ -521,7 +516,7 @@ export default function VideoPlayer({videoData, title}) {
                                 }}
                             >
                                 {
-                                <OverlayTrigger trigger={["hover","focus"]} rootClose={true} overlay={<Tooltip><div>Do you struggle with <strong>{f.meta.keywords.join(", ")}</strong>?</div><span>{formatTime(f.meta.timestamp)}</span></Tooltip>}>
+                                <OverlayTrigger trigger={["hover","focus"]} rootClose={true} overlay={<Tooltip><div>Assistance about <strong>{f.meta.keywords.join(", ")}</strong></div><span>{formatTime(f.meta.timestamp)}</span></Tooltip>}>
                                     <div style={{display: "block", height: "inherit"}}>
                                         <span
                                             onMouseDown={() => handleFeedbackShow(index)}
