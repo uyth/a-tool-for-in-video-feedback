@@ -54,10 +54,12 @@ hasFeedbackNearTimestamp = (session, data) => {
 }
 
 handlePauseEvent = (socket, data) => {
-    let session = await Session.findById(data.session);
-    let lastMinuteEvents = filterLastEvents(session, 60);
-    let pauseCount = lastMinuteEvents.reduce(((count, event) => count + (event.eventType=="PAUSE" ? 1 : 0)), 0);
-    if (pauseCount > 8) sendFeedback(socket, data);
+    setTimeout(async () => {
+        let session = await Session.findById(data.session);
+        let lastMinuteEvents = filterLastEvents(session, 60);
+        let pauseCount = lastMinuteEvents.reduce(((count, event) => count + (event.eventType=="PAUSE" ? 1 : 0)), 0);
+        if (pauseCount > 8) sendFeedback(socket, data);
+    }, 2000)
 
     setTimeout(async () => {
         let session = await Session.findById(data.session);
