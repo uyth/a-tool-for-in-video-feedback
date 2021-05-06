@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react';
 
 import { Card, Button, OverlayTrigger, Popover, Accordion, Badge } from 'react-bootstrap'
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -47,8 +47,16 @@ function VitaExplanation() {
 }
 
 export function FeedbackModal({show, stackoverflow, handleClose, callback}) {
+
+    const [showMoreFeedback, setShowMoreFeedback] = useState(false);
+
+    function closeModal() {
+        handleClose();
+        setShowMoreFeedback(false);
+    }
+
     return (
-        <Modal show={show} centered size="lg" onHide={handleClose}>
+        <Modal show={show} centered size="lg" onHide={closeModal}>
             <Modal.Header closeButton>
                 <div style={{display: "flex", flexDirection: "row"}}>
                     <h3 style={{fontSize: "1.25rem"}}>Aid from ViTA</h3>
@@ -87,7 +95,7 @@ export function FeedbackModal({show, stackoverflow, handleClose, callback}) {
                 </Accordion>
                 <h3 style={{fontSize: "1.3rem", fontWeight: 500}}>Stack Overflow Threads:</h3>
                 <ListGroup>
-                { stackoverflow.feedback.map((f) => (
+                {stackoverflow.feedback.slice(0, 5).map((f) => (
                     <ListGroup.Item key={f.id}>
                         <div style={{display: "flex", justifyContent: "space-between"}}>
                             <div>{decodeHtml(f.title)}</div>
@@ -96,6 +104,16 @@ export function FeedbackModal({show, stackoverflow, handleClose, callback}) {
                     </ListGroup.Item>)
                 )}
                 </ListGroup>
+                {showMoreFeedback && stackoverflow.feedback.slice(5).map((f) => (
+                    <ListGroup.Item key={f.id}>
+                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                            <div>{decodeHtml(f.title)}</div>
+                            <div><Button onClick={() => callback(stackoverflow, f)} href={f.link} target="_blank">Go to source</Button></div>
+                        </div>
+                    </ListGroup.Item>)
+                )}
+                <Button variant="link" style={{outline: 0, boxShadow: "none", padding: 0}} onClick={() => setShowMoreFeedback(prev => !prev)}
+                >{showMoreFeedback ? "Show less aid" : "Show more aid"}</Button>
             </Modal.Body>
         </Modal>
     )
