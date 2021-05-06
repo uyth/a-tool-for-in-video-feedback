@@ -33,7 +33,7 @@ processEvent = async (socket, data) => {
             }));
         } else if (needFeedback) {
             if (event.eventType == "PAUSE") handlePauseEvent(socket, data);
-            else if (event.eventType == "RATECHANGE") handleRatechange(socket, data)
+            else if (event.eventType == "RATECHANGE") handleRatechange(socket, data);
             else if (event.eventType == "SKIP_BACK") handleSkipBack(socket, data);
             else if (event.eventType == "SKIP_FORWARD") handleSkipForward(socket, data);
             else if (event.eventType == "SEEK_BACK") handleSeekBack(socket, data);
@@ -54,6 +54,7 @@ hasFeedbackNearTimestamp = (session, data) => {
 }
 
 handlePauseEvent = (socket, data) => {
+    let session = await Session.findById(data.session);
     let lastMinuteEvents = filterLastEvents(session, 60);
     let pauseCount = lastMinuteEvents.reduce(((count, event) => count + (event.eventType=="PAUSE" ? 1 : 0)), 0);
     if (pauseCount > 8) sendFeedback(socket, data);
