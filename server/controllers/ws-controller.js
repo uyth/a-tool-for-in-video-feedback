@@ -56,15 +56,15 @@ hasFeedbackNearTimestamp = (session, data) => {
 handlePauseEvent = (socket, data) => {
     setTimeout(async () => {
         let session = await Session.findById(data.session);
-        let lastMinuteEvents = filterLastEvents(session, 60);
-        let pauseCount = lastMinuteEvents.reduce(((count, event) => count + (event.eventType=="PAUSE" ? 1 : 0)), 0);
-        if (pauseCount > 8) sendFeedback(socket, data);
+        let recentEvents = filterLastEvents(session, 20);
+        let pauseCount = recentEvents.reduce(((count, event) => count + (event.eventType=="PAUSE" ? 1 : 0)), 0);
+        if (pauseCount > 4) sendFeedback(socket, data);
     }, 2000)
 
     setTimeout(async () => {
         let session = await Session.findById(data.session);
         let lastEvent = session.events[session.events.length-1];
-        if (lastEvent.eventType == "PAUSE") sendFeedback(socket, data);
+        if (lastEvent.videoSnapshot.currentTime == data.event.videoSnapshot.currentTime) sendFeedback(socket, data);
     }, 5000);
 }
 
