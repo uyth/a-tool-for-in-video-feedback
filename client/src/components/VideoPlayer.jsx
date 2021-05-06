@@ -192,6 +192,8 @@ export default function VideoPlayer({videoData, title}) {
     let [showThumb, setShowThumb] = useState(false);
     let [scrubTime, setScrubTime] = useState(0);
 
+    let [activeMouse, setActiveMouse] = useState(true);
+
     // init general video settings
     useEffect(() => {
 
@@ -280,8 +282,24 @@ export default function VideoPlayer({videoData, title}) {
                 if (isPaused) play();
                 setIsSeeking(false);
             });
+
+            let mousemoveTimer;
+            document.onmousemove = function() {
+                setActiveMouse(true);
+                clearTimeout(mousemoveTimer);
+                mousemoveTimer = setTimeout(function(){setActiveMouse(false)}, 4000)
+            }
+
         }
     }, [video, videoControls, seekSlider, session]);
+
+    useEffect(() => {
+        if (activeMouse) {
+            video.current.style.cursor = "auto";
+        } else {
+            video.current.style.cursor = "none";
+        }
+    }, [activeMouse]);
 
     // basic video playback
 
@@ -358,44 +376,44 @@ export default function VideoPlayer({videoData, title}) {
     }
 
     // // setup fullscreen support
-    useEffect(() => {
-        var toggleFullscreen = function(state) {
-            videoContainer.current.setAttribute('data-fullscreen', state);
-            setFullscreen(state);
-        };
+    // useEffect(() => {
+    //     var toggleFullscreen = function(state) {
+    //         videoContainer.current.setAttribute('data-fullscreen', state);
+    //         setFullscreen(state);
+    //     };
     
-        var isFullScreen = function() {
-            return !!(document.fullscreen || document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement || document.fullscreenElement);
-        };
+    //     var isFullScreen = function() {
+    //         return !!(document.fullscreen || document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement || document.fullscreenElement);
+    //     };
     
-        var handleFullscreen = function() {
-            if (isFullScreen()) {
-                if (document.exitFullscreen) document.exitFullscreen();
-                else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
-                else if (document.webkitCancelFullScreen) document.webkitCancelFullScreen();
-                else if (document.msExitFullscreen) document.msExitFullscreen();
-                toggleFullscreen(false);
-            } else {
-                if (videoContainer.current.requestFullscreen) videoContainer.current.requestFullscreen();
-                else if (videoContainer.current.mozRequestFullScreen) videoContainer.current.mozRequestFullScreen();
-                else if (videoContainer.current.webkitRequestFullScreen) videoContainer.current.webkitRequestFullScreen();
-                else if (videoContainer.current.msRequestFullscreen) videoContainer.current.msRequestFullscreen();
-                toggleFullscreen(true);
-            }
-        };
+    //     var handleFullscreen = function() {
+    //         if (isFullScreen()) {
+    //             if (document.exitFullscreen) document.exitFullscreen();
+    //             else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+    //             else if (document.webkitCancelFullScreen) document.webkitCancelFullScreen();
+    //             else if (document.msExitFullscreen) document.msExitFullscreen();
+    //             toggleFullscreen(false);
+    //         } else {
+    //             if (videoContainer.current.requestFullscreen) videoContainer.current.requestFullscreen();
+    //             else if (videoContainer.current.mozRequestFullScreen) videoContainer.current.mozRequestFullScreen();
+    //             else if (videoContainer.current.webkitRequestFullScreen) videoContainer.current.webkitRequestFullScreen();
+    //             else if (videoContainer.current.msRequestFullscreen) videoContainer.current.msRequestFullscreen();
+    //             toggleFullscreen(true);
+    //         }
+    //     };
 
-        if (fullscreenButton) {
-            if (!fullScreenEnabled) {
-                fullscreenButton.current.style.display = 'none';
-            }
-            fullscreenButton.current.addEventListener('click', () => handleFullscreen());
-            document.addEventListener('fullscreenchange', () => toggleFullscreen(!!(document.fullscreen || document.fullscreenElement)));
-            document.addEventListener('webkitfullscreenchange', () => toggleFullscreen(!!document.webkitIsFullScreen));
-            document.addEventListener('mozfullscreenchange', () => toggleFullscreen(!!document.mozFullScreen));
-            document.addEventListener('msfullscreenchange', () => toggleFullscreen(!!document.msFullscreenElement));
-        }
+    //     if (fullscreenButton) {
+    //         if (!fullScreenEnabled) {
+    //             fullscreenButton.current.style.display = 'none';
+    //         }
+    //         fullscreenButton.current.addEventListener('click', () => handleFullscreen());
+    //         document.addEventListener('fullscreenchange', () => toggleFullscreen(!!(document.fullscreen || document.fullscreenElement)));
+    //         document.addEventListener('webkitfullscreenchange', () => toggleFullscreen(!!document.webkitIsFullScreen));
+    //         document.addEventListener('mozfullscreenchange', () => toggleFullscreen(!!document.mozFullScreen));
+    //         document.addEventListener('msfullscreenchange', () => toggleFullscreen(!!document.msFullscreenElement));
+    //     }
 
-    }, [fullScreenEnabled, fullscreenButton, videoContainer]);
+    // }, [fullScreenEnabled, fullscreenButton, videoContainer]);
 
     // captions
     function handleCaptionClick() {
@@ -476,7 +494,7 @@ export default function VideoPlayer({videoData, title}) {
             </div>
             }
             <NotPlayingOverlay show={isPaused}/>
-            <div id="title-box"><h1>{title}</h1></div>
+            {activeMouse && <div id="title-box"><h1>{title}</h1></div>}
             <div id="video-controls" ref={videoControls} className="controls">
                 <div id="timeline-container">
                     <Overlay target={timelineThumb} show={showThumb}>
@@ -543,57 +561,58 @@ export default function VideoPlayer({videoData, title}) {
                     </div>
                     <span id="timeline-thumb" ref={timelineThumb} style={{position: "absolute"}}></span>
                 </div>
-                <div className="button-bar">
-                    <ButtonGroup className="button-bar-left">
-                        <OverlayTrigger overlay={<Tooltip>{isPaused ? "play" : "pause"}</Tooltip>}>
-                            <button id="playpause" onMouseDown={handlePlayPause}>{isPaused ? <PlayArrowIcon/> : <PauseIcon/>}</button>
-                        </OverlayTrigger>
-                        <OverlayTrigger overlay={<Tooltip>rewind 10 seconds</Tooltip>}>
-                            <button id="rewind10" onMouseDown={handleRewindClick} type="button"><Replay10Icon/></button>
-                        </OverlayTrigger>
-                        <div id="volume-controls">
-                            <OverlayTrigger overlay={<Tooltip>{isMute?"unmute":"mute"}</Tooltip>}>
-                                <button id="mute" onMouseDown={handleMuteClick} type="button">{isMute ? <VolumeOffIcon/> : volume < 0.1 ? <VolumeMuteIcon/> :  volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
+                {activeMouse && <div className="button-bar">
+                        <ButtonGroup className="button-bar-left">
+                            <OverlayTrigger overlay={<Tooltip>{isPaused ? "play" : "pause"}</Tooltip>}>
+                                <button id="playpause" onMouseDown={handlePlayPause}>{isPaused ? <PlayArrowIcon/> : <PauseIcon/>}</button>
                             </OverlayTrigger>
-                            <input id="volume-slider" onMouseDown={handleVolumeChange} type="range" min="0" max="1" step="0.1"/>
-                        </div>
-                        <span id="time-display">{formatTime(currentTime)} / {formatTime(duration)}</span>
-                    </ButtonGroup>
-                    <ButtonGroup className="button-bar-right">
-                        <OverlayTrigger overlay={<Tooltip>Ask for help</Tooltip>}>
-                            <button variant="outline-light" onMouseDown={() => handleFeedbackRequest()}><PanToolIcon/> <span style={{textAlign: "middle"}}>Ask ViTA</span></button>
-                        </OverlayTrigger>
-                        <OverlayTrigger trigger={["hover", "focus"]} overlay={showSpeedTooltip ? <Tooltip>Change speed</Tooltip> : <div style={{display: "none"}}></div>}>
-                            <DropdownButton id="playback-button"
-                                drop="up"
-                                title={`${playbackRate}x`}
-                                variant="light"
-                                onToggle={() => {showSpeedTooltip ? setShowSpeedTooltip(false) : setShowSpeedTooltip(true)}}
-                                onSelect={handlePlaybackSelect}
-                            >
-                                <Dropdown.Item eventKey="2">2x</Dropdown.Item>
-                                <Dropdown.Item eventKey="1.75">1.75x</Dropdown.Item>
-                                <Dropdown.Item eventKey="1.5">1.5x</Dropdown.Item>
-                                <Dropdown.Item eventKey="1.25">1.25x</Dropdown.Item>
-                                <Dropdown.Item eventKey="1">1x</Dropdown.Item>
-                                <Dropdown.Item eventKey="0.75">0.75x</Dropdown.Item>
-                                <Dropdown.Item eventKey="0.5">0.5x</Dropdown.Item>
-                            </DropdownButton>
-                        </OverlayTrigger>
-                        <OverlayTrigger overlay={<Tooltip>{activeCaptions? "turn off captions":"turn on captions"}</Tooltip>}>
-                            <button id="captions" type="button" ref={captionsButton} onClick={() => handleCaptionClick()}>
-                                {activeCaptions ? <ClosedCaptionIcon data-state="active"/> : <ClosedCaptionOutlinedIcon/>}
-                            </button>
-                        </OverlayTrigger>
-                        <div style={{display: "none"}}>
-                            <OverlayTrigger overlay={<Tooltip>{isFullscreen? "exit fullscreen": "enter fullscreen"}</Tooltip>}>
-                                <button id="fs" ref={fullscreenButton} type="button" data-state="go-fullscreen">
-                                    {isFullscreen ? <FullscreenExitIcon/> : <FullscreenIcon/>}
+                            <OverlayTrigger overlay={<Tooltip>rewind 10 seconds</Tooltip>}>
+                                <button id="rewind10" onMouseDown={handleRewindClick} type="button"><Replay10Icon/></button>
+                            </OverlayTrigger>
+                            <div id="volume-controls">
+                                <OverlayTrigger overlay={<Tooltip>{isMute?"unmute":"mute"}</Tooltip>}>
+                                    <button id="mute" onMouseDown={handleMuteClick} type="button">{isMute ? <VolumeOffIcon/> : volume < 0.1 ? <VolumeMuteIcon/> :  volume < 0.5 ? <VolumeDownIcon/>: <VolumeUpIcon/>}</button>
+                                </OverlayTrigger>
+                                <input id="volume-slider" onMouseDown={handleVolumeChange} type="range" min="0" max="1" step="0.1"/>
+                            </div>
+                            <span id="time-display">{formatTime(currentTime)} / {formatTime(duration)}</span>
+                        </ButtonGroup>
+                        <ButtonGroup className="button-bar-right">
+                            <OverlayTrigger overlay={<Tooltip>Ask for help</Tooltip>}>
+                                <button variant="outline-light" onMouseDown={() => handleFeedbackRequest()}><PanToolIcon/> <span style={{textAlign: "middle"}}>Ask ViTA</span></button>
+                            </OverlayTrigger>
+                            <OverlayTrigger trigger={["hover", "focus"]} overlay={showSpeedTooltip ? <Tooltip>Change speed</Tooltip> : <div style={{display: "none"}}></div>}>
+                                <DropdownButton id="playback-button"
+                                    drop="up"
+                                    title={`${playbackRate}x`}
+                                    variant="light"
+                                    onToggle={() => {showSpeedTooltip ? setShowSpeedTooltip(false) : setShowSpeedTooltip(true)}}
+                                    onSelect={handlePlaybackSelect}
+                                >
+                                    <Dropdown.Item eventKey="2">2x</Dropdown.Item>
+                                    <Dropdown.Item eventKey="1.75">1.75x</Dropdown.Item>
+                                    <Dropdown.Item eventKey="1.5">1.5x</Dropdown.Item>
+                                    <Dropdown.Item eventKey="1.25">1.25x</Dropdown.Item>
+                                    <Dropdown.Item eventKey="1">1x</Dropdown.Item>
+                                    <Dropdown.Item eventKey="0.75">0.75x</Dropdown.Item>
+                                    <Dropdown.Item eventKey="0.5">0.5x</Dropdown.Item>
+                                </DropdownButton>
+                            </OverlayTrigger>
+                            <OverlayTrigger overlay={<Tooltip>{activeCaptions? "turn off captions":"turn on captions"}</Tooltip>}>
+                                <button id="captions" type="button" ref={captionsButton} onClick={() => handleCaptionClick()}>
+                                    {activeCaptions ? <ClosedCaptionIcon data-state="active"/> : <ClosedCaptionOutlinedIcon/>}
                                 </button>
                             </OverlayTrigger>
-                        </div>
-                    </ButtonGroup>
-                </div>
+                            {/* <div style={{display: "none"}}>
+                                <OverlayTrigger overlay={<Tooltip>{isFullscreen? "exit fullscreen": "enter fullscreen"}</Tooltip>}>
+                                    <button id="fs" ref={fullscreenButton} type="button" data-state="go-fullscreen">
+                                        {isFullscreen ? <FullscreenExitIcon/> : <FullscreenIcon/>}
+                                    </button>
+                                </OverlayTrigger>
+                            </div> */}
+                        </ButtonGroup>
+                    </div>
+                }
             </div>
         </figure>
     )
