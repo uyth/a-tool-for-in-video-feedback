@@ -54,6 +54,10 @@ hasFeedbackNearTimestamp = (session, data) => {
 }
 
 handlePauseEvent = (socket, data) => {
+    let lastMinuteEvents = filterLastEvents(session, 60);
+    let pauseCount = lastMinuteEvents.reduce(((count, event) => count + (event.eventType=="PAUSE" ? 1 : 0)), 0);
+    if (pauseCount > 8) sendFeedback(socket, data);
+
     setTimeout(async () => {
         let session = await Session.findById(data.session);
         let lastEvent = session.events[session.events.length-1];
@@ -113,7 +117,7 @@ isRewatching = (snapshot) => {
 handleSkipForward = (socket, data) => {
     setTimeout(async () => {
         let session = await Session.findById(data.session);
-        let lastMinuteEvents = filterLastEvents(session, 60)
+        let lastMinuteEvents = filterLastEvents(session, 60);
     
         let skipCount = lastMinuteEvents.reduce(((count, event) => count + (event.eventType=="SKIP_FORWARD" ? 1 : 0)), 0);
 
