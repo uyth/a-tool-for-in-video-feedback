@@ -47,6 +47,14 @@ figure {
     height: 0.25rem;
 }
 
+figure:hover #video-controls {
+    pointer-events: auto;
+}
+
+figure #video-controls {
+    pointer-events: none;
+}
+
 figure:hover .button-bar, figure:hover #title-box {
     opacity: 1;
     height: 3em;
