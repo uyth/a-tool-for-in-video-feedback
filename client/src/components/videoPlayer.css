@@ -215,3 +215,7 @@ figure:hover .video-cue-container {
         font-size: 24px;
     }
 }
+
+#thumbnail-tool-tip {
+    opacity: 1!important;
+}

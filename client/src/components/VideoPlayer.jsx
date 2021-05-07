@@ -512,15 +512,19 @@ export default function VideoPlayer({videoData, title}) {
                             timelineThumb.current.style.left = leftValue + "px";
 
                             let duration = video.current.duration;
-                            let scrub = (e.clientX - rect.left)/(rect.right-rect.left)*duration;
+                            let scrubTime = (e.clientX - rect.left)/(rect.right-rect.left)*duration;
                             
-                            let thumbIndex = Math.floor(scrub/4);
+                            let thumbIndex = Math.floor(scrubTime/4);
+                            let imagePerRow = 60;
+                            let thumbX = thumbIndex % imagePerRow;
+                            let thumbY = Math.floor(thumbIndex/imagePerRow);
                             try {
-                                scrubThumbnailContainer.current.style.background = `url("${videoData.thumbnail}") -${(thumbIndex+1)*200}px 0px`;
+                                console.log(`time: ${scrubTime}, index: ${thumbIndex}, x:${thumbX}, y:${thumbY}`)
+                                scrubThumbnailContainer.current.style.background = `url("${FILE_URL}${videoData.thumbnail}") -${(thumbX)*200}px -${thumbY*113}px`;
                             } catch (error) {
                                 console.error(error);
                             }
-                            setScrubTime(scrub);
+                            setScrubTime(scrubTime);
                         }}
                     />
                     <div style={{width: "100%", height: "0.25rem", position: "absolute", padding: "0 0.5rem", marginLeft: "-0.5rem", pointerEvents: "none"}}>
