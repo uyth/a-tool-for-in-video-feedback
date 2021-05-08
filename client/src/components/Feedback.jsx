@@ -46,7 +46,7 @@ function VitaExplanation() {
     )
 }
 
-export function FeedbackModal({show, stackoverflow, handleClose, callback}) {
+export function FeedbackModal({show, stackoverflow, handleClose, callback, refineFeedback}) {
 
     const [showMoreFeedback, setShowMoreFeedback] = useState(false);
 
@@ -67,10 +67,10 @@ export function FeedbackModal({show, stackoverflow, handleClose, callback}) {
                 <Accordion>
                     <p><strong>Struggle detected</strong> at <Badge variant="primary" pill>{formatTime(stackoverflow.meta.timestamp)}</Badge></p>
                     <p><strong>Relevant keywords:</strong> {stackoverflow.meta.keywords.map(k => <Badge key={k} pill variant="info">{k}</Badge>)}</p>
+                    <p><strong>Use other keywords instead:</strong> {stackoverflow.meta.otherKeywords.map(k => <Badge key={k} style={{cursor: "pointer"}} onClick={() => refineFeedback(k)} pill variant="info">{k}</Badge>)}</p>
                     <p><strong>Lecture tags:</strong> {stackoverflow.meta.tags.map(t => <Badge key={t} pill variant="info">{t}</Badge>)}</p>
                     <Accordion.Collapse eventKey="0">
                         <>
-                            <p><strong>Other keywords (not used in aid):</strong> {stackoverflow.meta.otherKeywords.map(k => <Badge key={k} pill variant="info">{k}</Badge>)}</p>
                             <p>
                                 <strong>Content extracted</strong> from &nbsp;
                                 <Badge pill variant="primary">{formatTime(stackoverflow.meta.timerange[0])}</Badge>
@@ -140,6 +140,7 @@ export default function Feedback({stackoverflow, callback}) {
                     </div>
                     <p><strong>Struggle detected</strong> at <Badge variant="primary" pill>{formatTime(stackoverflow.meta.timestamp)}</Badge></p>
                     <p><strong>Relevant keywords:</strong> {stackoverflow.meta.keywords.map(k => <Badge key={k} pill variant="info">{k}</Badge>)}</p>
+                    <p><strong>Use other keywords instead:</strong> {stackoverflow.meta.otherKeywords.map(k => <Badge key={k} style={{cursor: "pointer"}} pill variant="info">{k}</Badge>)}</p>
                     <p><strong>Lecture tags:</strong> {stackoverflow.meta.tags.map(t => <Badge key={t} pill variant="info">{t}</Badge>)}</p>
                     <Accordion.Collapse eventKey="0">
                         <>

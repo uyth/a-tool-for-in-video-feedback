@@ -40,7 +40,8 @@ const EVENTS = {
     CLOSE_FEEDBACK: "CLOSE_FEEDBACK",
     MANUAL_FEEDBACK_REQUEST: "MANUAL_FEEDBACK_REQUEST",
     OPEN_LINK: "OPEN_LINK",    
-    ENDED: "ENDED"
+    ENDED: "ENDED",
+    REFINE_FEEDBACK: "REFINE_FEEDBACK"
 }
 
 const BUTTON_KEYS = {
@@ -150,6 +151,9 @@ export default function VideoPlayer({videoData, title}) {
               if (message.type == "NO_FEEDBACK_NEED") {
                 setActiveFeedback(feedbacks.find(f => f.meta.timerange[0] <= video.current.currentTime && video.current.currentTime <= f.meta.timerange[1]));
                 setShowToast(true);
+            }
+            if (message.type == "REFINE_FEEDBACK") {
+                setActiveFeedback(message.data);
             }
         }
     })
@@ -355,7 +359,7 @@ export default function VideoPlayer({videoData, title}) {
         updateSeeker();
     }, [currentTime, isSeeking]);
 
-    var generateEventlog = (type, openedFeedback=null) => {
+    var generateEventlog = (type, openedFeedback=null, feedbackRefinement=null) => {
         let timeranges = [];
         for (let i = 0; i < video.current.played.length; i++) {
             timeranges.push([video.current.played.start(i), video.current.played.end(i)])
@@ -371,7 +375,8 @@ export default function VideoPlayer({videoData, title}) {
                 played: timeranges,
             },
             openedFeedback: openedFeedback,
-            activeFeedback: activeFeedback
+            activeFeedback: activeFeedback,
+            feedbackRefinement: feedbackRefinement
         });
     }
 
@@ -454,6 +459,14 @@ export default function VideoPlayer({videoData, title}) {
         generateEventlog(EVENTS.OPEN_LINK, openedFeedback=openedFeedback);
     }
 
+    function refineFeedback(keyword) {
+        let feedbackRefinement = {
+            keyword: keyword,
+            meta: activeFeedback.meta
+        }
+        generateEventlog(EVENTS.REFINE_FEEDBACK, null, feedbackRefinement);
+    }
+
     return (
         <figure id="video-container" ref={videoContainer} data-video-paused={video ? video.paused : true} data-fullscreen="false">
             <video id="video" ref={video} crossOrigin="anonymous">
@@ -487,7 +500,7 @@ export default function VideoPlayer({videoData, title}) {
                 </div>
             </Toast>
             }
-            {activeFeedback && <FeedbackModal show={showFeedback} callback={openLink} handleClose={handleFeedbackClose} stackoverflow={activeFeedback}/>}
+            {activeFeedback && <FeedbackModal show={showFeedback} callback={openLink} handleClose={handleFeedbackClose} stackoverflow={activeFeedback} refineFeedback={refineFeedback}/>}
             {activeCaptions &&
             <div class="video-cue-container">
                 <div class="video-cue-text"><span style={{background: "black"}}>{cueText}</span></div>

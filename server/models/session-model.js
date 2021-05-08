@@ -18,6 +18,17 @@ const Event = new Schema({
 			title: String,
 			link: String
 		}
+	},
+	refineFeedback: {
+		keyword: String,
+		meta: {
+			tags: [String],
+			keywords: [String],
+			otherKeywords: [String],
+			timestamp: Number,
+			timerange: [Number],
+			text: String			
+		}
 	}
 },
 {timestamps: true})

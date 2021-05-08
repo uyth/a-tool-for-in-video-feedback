@@ -24,10 +24,12 @@ processEvent = async (socket, data) => {
         let event = await new Event(data.event).save();
         let session = await Session.findByIdAndUpdate({ _id: data.session }, {$push: {events: event}});
         await session.save();
-
-        let needFeedback = !hasFeedbackNearTimestamp(session, data);
         
-        if (!needFeedback && event.eventType == "MANUAL_FEEDBACK_REQUEST") {
+        let needFeedback = !hasFeedbackNearTimestamp(session, data);
+       
+        if (event.eventType == "REFINE_FEEDBACK") {
+            handleRefineFeedback(socket, data);
+        } else if (!needFeedback && event.eventType == "MANUAL_FEEDBACK_REQUEST") {
             socket.send(JSON.stringify({
                 type: "NO_FEEDBACK_NEED",
             }));
@@ -239,6 +241,54 @@ extractKeywords = async (lectureId, timestamp) => {
         return []
     }
 }
+
+handleRefineFeedback = async (socket, data) => {
+    console.log(data.event);
+    
+    let searchKeyword = data.event.feedbackRefinement.keyword;
+    let tags = data.event.feedbackRefinement.meta.tags;
+
+    let response = await axios.get("https://api.stackexchange.com/2.2/search/advanced", {
+        params: {
+            site: "stackoverflow",
+            sort: "relevance",
+            order: "desc",
+            pagesize: 10,
+            accepted: true,
+            q: searchKeyword,
+            tagged: tags,
+        }
+    });
+
+
+    let questions = response.data["items"];
+
+    questions = questions.map(q => {
+        return {
+            id: q.question_id,
+            title: q.title,
+            link: q.link,
+        }
+    });
+
+    let stackOverflow = {
+        feedback: questions,
+        meta: data.event.feedbackRefinement.meta
+    };
+
+    let feedback = await Feedback.create(stackOverflow);
+    await Session.findByIdAndUpdate({_id: data.session}, {$push: {feedbacks: feedback}}).exec();
+
+    socket.send(JSON.stringify({
+        type: "REFINE_FEEDBACK",
+        data: {
+            id: feedback._id,
+            meta: feedback.meta,
+            feedback: feedback.feedback
+        }
+    }));
+}
+
 
 module.exports = {
     createSession,
