@@ -70,6 +70,7 @@ export function FeedbackModal({show, stackoverflow, handleClose, callback}) {
                     <p><strong>Lecture tags:</strong> {stackoverflow.meta.tags.map(t => <Badge key={t} pill variant="info">{t}</Badge>)}</p>
                     <Accordion.Collapse eventKey="0">
                         <>
+                            <p><strong>Other keywords (not used in aid):</strong> {stackoverflow.meta.otherKeywords.map(k => <Badge key={k} pill variant="info">{k}</Badge>)}</p>
                             <p>
                                 <strong>Content extracted</strong> from &nbsp;
                                 <Badge pill variant="primary">{formatTime(stackoverflow.meta.timerange[0])}</Badge>

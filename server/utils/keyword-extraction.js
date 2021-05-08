@@ -5,7 +5,7 @@ const { stopwords, instrucationalWords } = require('./stopwords');
 const domainStopwords = [...stopwords, ...instrucationalWords];
 
 const MIN_SCORE_THRESHOLD = 0.1;
-const MAX_AMOUNT_KEYWORDS = 1;
+const MAX_AMOUNT_KEYWORDS = 5;
 const MAX_WORDS_PER_KEYWORD = 2;
 
 const extractKeywordsFromVtt = function (vttPath, timeRanges) {

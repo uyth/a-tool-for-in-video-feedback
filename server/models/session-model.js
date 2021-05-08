@@ -32,6 +32,7 @@ const Feedback = new Schema({
 	meta: {
 		tags: [String],
 		keywords: [String],
+		otherKeywords: [String],
 		timestamp: Number,
 		timerange: [Number],
 		text: String
