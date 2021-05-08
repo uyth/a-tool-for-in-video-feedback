@@ -94,26 +94,33 @@ export function FeedbackModal({show, stackoverflow, handleClose, callback}) {
                     </Accordion.Toggle>    
                 </Accordion>
                 <h3 style={{fontSize: "1.3rem", fontWeight: 500}}>Stack Overflow Threads:</h3>
-                <ListGroup>
-                {stackoverflow.feedback.slice(0, 5).map((f) => (
-                    <ListGroup.Item key={f.id}>
-                        <div style={{display: "flex", justifyContent: "space-between"}}>
-                            <div>{decodeHtml(f.title)}</div>
-                            <div><Button onClick={() => callback(stackoverflow, f)} href={f.link} target="_blank">Go to source</Button></div>
-                        </div>
-                    </ListGroup.Item>)
-                )}
-                </ListGroup>
-                {showMoreFeedback && stackoverflow.feedback.slice(5).map((f) => (
-                    <ListGroup.Item key={f.id}>
-                        <div style={{display: "flex", justifyContent: "space-between"}}>
-                            <div>{decodeHtml(f.title)}</div>
-                            <div><Button onClick={() => callback(stackoverflow, f)} href={f.link} target="_blank">Go to source</Button></div>
-                        </div>
-                    </ListGroup.Item>)
-                )}
-                <Button variant="link" style={{outline: 0, boxShadow: "none", padding: 0}} onClick={() => setShowMoreFeedback(prev => !prev)}
-                >{showMoreFeedback ? "Show less aid" : "Show more aid"}</Button>
+                {stackoverflow.feedback.length > 0 ?
+                <>
+                    <ListGroup>
+                    {stackoverflow.feedback.slice(0, 5).map((f) => (
+                        <ListGroup.Item key={f.id}>
+                            <div style={{display: "flex", justifyContent: "space-between"}}>
+                                <div>{decodeHtml(f.title)}</div>
+                                <div><Button onClick={() => callback(stackoverflow, f)} href={f.link} target="_blank">Go to source</Button></div>
+                            </div>
+                        </ListGroup.Item>)
+                    )}
+                    </ListGroup>
+                    {showMoreFeedback && stackoverflow.feedback.slice(5).map((f) => (
+                        <ListGroup.Item key={f.id}>
+                            <div style={{display: "flex", justifyContent: "space-between"}}>
+                                <div>{decodeHtml(f.title)}</div>
+                                <div><Button onClick={() => callback(stackoverflow, f)} href={f.link} target="_blank">Go to source</Button></div>
+                            </div>
+                        </ListGroup.Item>)
+                    )}
+                    {stackoverflow.feedback.length > 5 && 
+                    <Button variant="link" style={{outline: 0, boxShadow: "none", padding: 0}} onClick={() => setShowMoreFeedback(prev => !prev)}
+                        >{showMoreFeedback ? "Show less aid" : "Show more aid"}</Button>
+                    }
+                </>
+                : <p>Could not find any useful assistance on Stack Overflow.</p>}
+                
             </Modal.Body>
         </Modal>
     )
