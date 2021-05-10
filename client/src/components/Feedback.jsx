@@ -66,7 +66,7 @@ export function FeedbackModal({show, stackoverflow, handleClose, callback, refin
             <Modal.Body style={{maxHeight: "70vh", overflow: "auto"}}>
                 <Accordion>
                     <p><strong>Struggle detected</strong> at <Badge variant="primary" pill>{formatTime(stackoverflow.meta.timestamp)}</Badge></p>
-                    <p><strong>Relevant keywords:</strong> {stackoverflow.meta.keywords.map(k => <Badge key={k} pill variant="info">{k}</Badge>)}</p>
+                    <p><strong>Search keyword:</strong> {stackoverflow.meta.keywords.map(k => <Badge key={k} pill variant="info">{k}</Badge>)}</p>
                     <p><strong>Use other keywords instead:</strong> {stackoverflow.meta.otherKeywords.map(k => <Badge key={k} style={{cursor: "pointer"}} onClick={() => refineFeedback(k)} pill variant="info">{k}</Badge>)}</p>
                     <p><strong>Lecture tags:</strong> {stackoverflow.meta.tags.map(t => <Badge key={t} pill variant="info">{t}</Badge>)}</p>
                     <Accordion.Collapse eventKey="0">
@@ -139,7 +139,7 @@ export default function Feedback({stackoverflow, callback}) {
                         <VitaExplanation/>
                     </div>
                     <p><strong>Struggle detected</strong> at <Badge variant="primary" pill>{formatTime(stackoverflow.meta.timestamp)}</Badge></p>
-                    <p><strong>Relevant keywords:</strong> {stackoverflow.meta.keywords.map(k => <Badge key={k} pill variant="info">{k}</Badge>)}</p>
+                    <p><strong>Sear h keyword:</strong> {stackoverflow.meta.keywords.map(k => <Badge key={k} pill variant="info">{k}</Badge>)}</p>
                     <p><strong>Use other keywords instead:</strong> {stackoverflow.meta.otherKeywords.map(k => <Badge key={k} style={{cursor: "pointer"}} pill variant="info">{k}</Badge>)}</p>
                     <p><strong>Lecture tags:</strong> {stackoverflow.meta.tags.map(t => <Badge key={t} pill variant="info">{t}</Badge>)}</p>
                     <Accordion.Collapse eventKey="0">
