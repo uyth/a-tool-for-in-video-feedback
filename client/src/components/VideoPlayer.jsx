@@ -81,7 +81,7 @@ const UpdatingTooltip = React.forwardRef(
 function NotPlayingOverlay({show}) {
     return show ? (
         <div id="video-not-playing-overlay">
-            <span className={"circle-icon-wrapper"}><PlayArrowIcon/></span>
+            {/* <span className={"circle-icon-wrapper"}><PlayArrowIcon/></span> */}
         </div>
     ) : null;
 }
